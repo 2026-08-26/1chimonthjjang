@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>시그널 상세 | DATA TIP-OFF</title>
+  <link rel="stylesheet" href="../static/css/style.css" />
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="index.html">DATA TIP-OFF</a>
+    <nav>
+      <a href="index.html">홈</a>
+      <a class="active" href="category.html">시그널</a>
+      <a href="index.html#about">서비스 소개</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="detail-hero">
+      <div>
+        <div class="card-top">
+          <span class="badge economy">경제</span>
+          <span class="score">이상도 92</span>
+        </div>
+        <h1>금리 역행 시그널</h1>
+        <p>금리 상승 흐름과 반대로 아파트 가격이 움직인 지역을 탐지했습니다.</p>
+      </div>
+      <a class="secondary-btn" href="category.html">← 목록으로</a>
+    </section>
+
+    <section class="detail-grid section">
+      <div class="main-column">
+        <div class="panel">
+          <span class="eyebrow">SUMMARY</span>
+          <h2>무엇이 이상한가요?</h2>
+          <p class="lead">
+            기준금리가 상승하는 구간에서 특정 지역의 ㎡당 아파트 거래가격이
+            반대 방향으로 상승하는 패턴이 관측되었습니다.
+          </p>
+          <p class="hint">※ 아래 값은 프론트 설계용 예시이며 실제 분석 결과로 교체해야 합니다.</p>
+        </div>
+
+        <div class="panel">
+          <span class="eyebrow">CHART</span>
+          <h2>흐름 비교</h2>
+          <div class="chart-placeholder">
+            <div class="chart-axis">기준금리 / ㎡당 가격</div>
+            <div class="chart-line one"></div>
+            <div class="chart-line two"></div>
+            <p>실제 분석 후 Plotly / Chart.js 그래프가 들어갈 자리</p>
+          </div>
+        </div>
+
+        <div class="panel">
+          <span class="eyebrow">WHY DETECTED?</span>
+          <h2>왜 탐지됐나요?</h2>
+          <div class="reason-grid">
+            <div><span>기준금리</span><strong>1.25% → 3.25%</strong><em>상승</em></div>
+            <div><span>지역 ㎡당 가격</span><strong>예시 +12.4%</strong><em>상승</em></div>
+            <div><span>비교 흐름</span><strong>서로 같은 상승이지만 시장 기대와 역행</strong><em>검토 필요</em></div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <span class="eyebrow">EVIDENCE</span>
+          <h2>근거 데이터</h2>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr><th>기간</th><th>기준금리</th><th>지역 ㎡당 가격</th><th>거래량</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>2022.01</td><td>1.25%</td><td>예시 1,100</td><td>예시 320</td></tr>
+                <tr><td>2022.07</td><td>2.25%</td><td>예시 1,180</td><td>예시 285</td></tr>
+                <tr><td>2022.12</td><td>3.25%</td><td>예시 1,236</td><td>예시 241</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <aside class="side-column">
+        <div class="panel sticky">
+          <span class="eyebrow">AI REPORTING QUESTIONS</span>
+          <h2>후속 취재 질문</h2>
+          <ol class="question-list">
+            <li>금리 부담이 커지는 동안에도 이 지역의 가격이 오른 배경은 무엇일까?</li>
+            <li>같은 기간 인근 지역과 비교했을 때 어떤 차이가 있었을까?</li>
+            <li>거래량 감소 여부와 가격 상승이 동시에 나타났는지 확인할 필요가 있을까?</li>
+          </ol>
+          <div class="warning">
+            <strong>주의</strong>
+            <p>이 시그널은 인과관계를 의미하지 않습니다. 데이터에서 관측된 이상 흐름을 취재 후보로 제안합니다.</p>
+          </div>
+        </div>
+      </aside>
+    </section>
+  </main>
+
+  <footer>
+    <strong>DATA TIP-OFF</strong>
+    <span>숫자가 먼저 제보하는 취재 아이템 발굴 플랫폼</span>
+  </footer>
+</body>
+</html>

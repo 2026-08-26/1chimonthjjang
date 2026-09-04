@@ -1,0 +1,6 @@
+# 용량이 큰 아파트 원본 데이터는 GitHub에 올리지 않음
+data/raw/Apart Deal.csv
+
+# Python 임시 파일
+__pycache__/
+*.pyc

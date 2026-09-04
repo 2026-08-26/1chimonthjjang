@@ -485,3 +485,28 @@ print(
         index=False
     )
 )
+# ==================================================
+# 23. 최종 TOP 10 결과 CSV 저장
+# ==================================================
+
+cross_output = "result/social_cross_top10.csv"
+decline_output = "result/social_decline_top10.csv"
+
+cross_top.to_csv(
+    cross_output,
+    index=False,
+    encoding="utf-8-sig"
+)
+
+decline_top.to_csv(
+    decline_output,
+    index=False,
+    encoding="utf-8-sig"
+)
+
+print("\n" + "=" * 60)
+print("사회 시그널 TOP 10 저장 완료")
+print("=" * 60)
+
+print("인구 엇갈림:", cross_output)
+print("인구 이중감소:", decline_output)

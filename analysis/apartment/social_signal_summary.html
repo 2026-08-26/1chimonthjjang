@@ -1,0 +1,457 @@
+from pathlib import Path
+
+html = """<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DATA TIP-OFF 사회 시그널 분석 요약</title>
+  <style>
+    :root{
+      --bg:#f6f8fb;
+      --card:#ffffff;
+      --text:#172033;
+      --muted:#667085;
+      --line:#e5e7eb;
+      --blue:#315efb;
+      --blue-soft:#eaf0ff;
+      --orange:#ff6b4a;
+      --orange-soft:#fff0eb;
+      --green:#16845b;
+      --green-soft:#eaf8f2;
+      --red:#c2413b;
+      --red-soft:#fff0f0;
+      --shadow:0 14px 38px rgba(23,32,51,.08);
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      background:var(--bg);
+      color:var(--text);
+      font-family:Pretendard, "Noto Sans KR", Arial, sans-serif;
+      line-height:1.6;
+    }
+    .wrap{
+      width:min(1120px, 92vw);
+      margin:0 auto;
+      padding:56px 0 80px;
+    }
+    .hero{
+      background:linear-gradient(135deg,#173b95,#315efb);
+      color:white;
+      border-radius:26px;
+      padding:42px;
+      box-shadow:var(--shadow);
+      margin-bottom:28px;
+    }
+    .eyebrow{
+      font-size:12px;
+      font-weight:800;
+      letter-spacing:.14em;
+      opacity:.78;
+    }
+    h1{
+      font-size:42px;
+      line-height:1.2;
+      letter-spacing:-.04em;
+      margin:10px 0 12px;
+    }
+    .hero p{
+      max-width:800px;
+      margin:0;
+      font-size:17px;
+      opacity:.92;
+    }
+    .section{
+      margin-top:28px;
+    }
+    .section-title{
+      display:flex;
+      align-items:end;
+      justify-content:space-between;
+      gap:16px;
+      margin-bottom:14px;
+    }
+    .section-title h2{
+      margin:0;
+      font-size:26px;
+      letter-spacing:-.03em;
+    }
+    .section-title span{
+      color:var(--muted);
+      font-size:13px;
+    }
+    .card{
+      background:var(--card);
+      border:1px solid var(--line);
+      border-radius:18px;
+      padding:24px;
+      box-shadow:0 8px 24px rgba(23,32,51,.04);
+    }
+    .process{
+      display:grid;
+      grid-template-columns:repeat(5,1fr);
+      gap:12px;
+      align-items:stretch;
+    }
+    .step{
+      position:relative;
+      background:white;
+      border:1px solid var(--line);
+      border-radius:16px;
+      padding:18px;
+      min-height:148px;
+    }
+    .step .num{
+      display:inline-flex;
+      width:30px;
+      height:30px;
+      align-items:center;
+      justify-content:center;
+      border-radius:50%;
+      background:var(--blue-soft);
+      color:var(--blue);
+      font-weight:900;
+      font-size:13px;
+      margin-bottom:12px;
+    }
+    .step h3{
+      margin:0 0 6px;
+      font-size:17px;
+    }
+    .step p{
+      margin:0;
+      color:var(--muted);
+      font-size:13px;
+    }
+    .metric-grid,
+    .signal-grid{
+      display:grid;
+      grid-template-columns:repeat(2,1fr);
+      gap:18px;
+    }
+    .metric-card{
+      background:white;
+      border:1px solid var(--line);
+      border-radius:18px;
+      padding:22px;
+    }
+    .metric-card strong{
+      display:block;
+      font-size:20px;
+      margin-bottom:6px;
+    }
+    .metric-card p{
+      color:var(--muted);
+      margin:0;
+    }
+    .formula{
+      margin-top:14px;
+      background:#f8fafc;
+      border:1px solid var(--line);
+      border-radius:12px;
+      padding:12px 14px;
+      font-weight:800;
+    }
+    .signal{
+      border-radius:18px;
+      padding:24px;
+      border:1px solid var(--line);
+      background:white;
+    }
+    .signal.cross{
+      border-top:5px solid var(--blue);
+    }
+    .signal.decline{
+      border-top:5px solid var(--orange);
+    }
+    .badge{
+      display:inline-flex;
+      padding:5px 10px;
+      border-radius:999px;
+      font-size:12px;
+      font-weight:800;
+      margin-bottom:12px;
+    }
+    .cross .badge{
+      color:var(--blue);
+      background:var(--blue-soft);
+    }
+    .decline .badge{
+      color:var(--orange);
+      background:var(--orange-soft);
+    }
+    .signal h3{
+      font-size:24px;
+      margin:0 0 10px;
+    }
+    .signal .definition{
+      font-size:16px;
+      font-weight:700;
+      margin-bottom:16px;
+    }
+    .logic{
+      display:grid;
+      grid-template-columns:1fr auto 1fr;
+      gap:8px;
+      align-items:center;
+      margin:14px 0;
+    }
+    .logic-box{
+      padding:12px;
+      border-radius:12px;
+      text-align:center;
+      font-weight:800;
+      background:#f8fafc;
+      border:1px solid var(--line);
+    }
+    .arrow{
+      color:var(--muted);
+      font-weight:900;
+    }
+    .question{
+      margin-top:16px;
+      padding:14px;
+      background:#f8fafc;
+      border-radius:12px;
+      border:1px solid var(--line);
+    }
+    .question b{
+      display:block;
+      margin-bottom:5px;
+    }
+    .why{
+      display:grid;
+      grid-template-columns:1.2fr .8fr;
+      gap:18px;
+    }
+    .quote{
+      font-size:22px;
+      font-weight:800;
+      letter-spacing:-.02em;
+      line-height:1.45;
+      margin:0;
+    }
+    .note{
+      background:#fff7ed;
+      border:1px solid #fed7aa;
+      border-radius:16px;
+      padding:20px;
+    }
+    .note strong{
+      color:#9a3412;
+      display:block;
+      margin-bottom:6px;
+    }
+    .mini-table{
+      width:100%;
+      border-collapse:collapse;
+      font-size:14px;
+    }
+    .mini-table th,
+    .mini-table td{
+      padding:12px 10px;
+      border-bottom:1px solid var(--line);
+      text-align:left;
+    }
+    .mini-table th{
+      color:var(--muted);
+      font-weight:700;
+      background:#f8fafc;
+    }
+    footer{
+      margin-top:34px;
+      color:var(--muted);
+      font-size:12px;
+      text-align:center;
+    }
+    @media (max-width:900px){
+      .process{grid-template-columns:1fr}
+      .metric-grid,.signal-grid,.why{grid-template-columns:1fr}
+      h1{font-size:34px}
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <section class="hero">
+      <div class="eyebrow">DATA TIP-OFF · SOCIAL SIGNAL SUMMARY</div>
+      <h1>사회 시그널 분석 과정 한눈에 보기</h1>
+      <p>
+        인구 통계의 <b>자연증가</b>와 인구이동 통계의 <b>순이동</b>을 결합해,
+        기자가 놓치기 쉬운 지역 인구의 엇갈림과 동시 악화 패턴을 탐지했습니다.
+      </p>
+    </section>
+
+    <section class="section">
+      <div class="section-title">
+        <h2>1. 데이터 처리 과정</h2>
+        <span>원본 데이터 → 비교 기준 → 이상 패턴 탐지</span>
+      </div>
+      <div class="process">
+        <div class="step">
+          <div class="num">1</div>
+          <h3>원본 데이터 확인</h3>
+          <p>인구 데이터와 인구이동 데이터의 날짜, 지역, 핵심 지표 구조를 확인</p>
+        </div>
+        <div class="step">
+          <div class="num">2</div>
+          <h3>형식 통일</h3>
+          <p>인구이동 데이터를 가로형→세로형으로 변환하고 날짜·지역명을 통일</p>
+        </div>
+        <div class="step">
+          <div class="num">3</div>
+          <h3>지역+월 기준 결합</h3>
+          <p>자연증가와 순이동을 같은 지역, 같은 월 기준으로 하나의 데이터셋으로 병합</p>
+        </div>
+        <div class="step">
+          <div class="num">4</div>
+          <h3>전년 동월 비교</h3>
+          <p>계절성을 줄이기 위해 12개월 전 같은 달과 비교해 변화량을 계산</p>
+        </div>
+        <div class="step">
+          <div class="num">5</div>
+          <h3>이례성 계산</h3>
+          <p>각 지역의 평소 변동폭과 비교해 이번 변화가 얼마나 특이한지 점수화</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-title">
+        <h2>2. 핵심 지표</h2>
+        <span>두 지표의 방향 조합이 시그널을 만든다</span>
+      </div>
+      <div class="metric-grid">
+        <div class="metric-card">
+          <strong>자연증가</strong>
+          <p>출생자 수에서 사망자 수를 뺀 값. 음수이면 출생보다 사망이 많아 자연적으로 인구가 감소.</p>
+          <div class="formula">자연증가 = 출생 − 사망</div>
+        </div>
+        <div class="metric-card">
+          <strong>순이동</strong>
+          <p>전입자 수에서 전출자 수를 뺀 값. 양수이면 순유입, 음수이면 순유출.</p>
+          <div class="formula">순이동 = 전입 − 전출</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-title">
+        <h2>3. 최종 사회 시그널 2개</h2>
+        <span>조건 충족 + 평소보다 이례적인 변화까지 함께 확인</span>
+      </div>
+
+      <div class="signal-grid">
+        <div class="signal cross">
+          <div class="badge">사회 시그널 ①</div>
+          <h3>인구 엇갈림</h3>
+          <div class="definition">
+            자연적으로는 인구가 감소하는데, 외부에서는 사람이 들어오는 지역
+          </div>
+          <div class="logic">
+            <div class="logic-box">자연증가 ↓<br>자연감소</div>
+            <div class="arrow">↔</div>
+            <div class="logic-box">순이동 ↑<br>순유입</div>
+          </div>
+          <p>
+            단순히 자연감소와 순유입이 동시에 나타나는 것뿐 아니라,
+            전년 같은 달과 비교했을 때 두 지표가 서로 반대 방향으로 크게 움직인 사례를 우선 탐지합니다.
+          </p>
+          <div class="question">
+            <b>취재 질문</b>
+            자연감소가 심해지는 상황에서도 외부 인구가 들어오는 이유는 무엇일까?
+          </div>
+        </div>
+
+        <div class="signal decline">
+          <div class="badge">사회 시그널 ②</div>
+          <h3>인구 이중감소</h3>
+          <div class="definition">
+            자연감소와 순유출이 동시에 평소보다 크게 악화된 지역
+          </div>
+          <div class="logic">
+            <div class="logic-box">자연증가 ↓<br>자연감소</div>
+            <div class="arrow">+</div>
+            <div class="logic-box">순이동 ↓<br>순유출</div>
+          </div>
+          <p>
+            출생·사망 구조에서 인구가 줄고, 동시에 지역 밖으로도 사람이 빠져나가는
+            두 감소 흐름이 함께 강해진 사례를 탐지합니다.
+          </p>
+          <div class="question">
+            <b>취재 질문</b>
+            자연적인 인구 감소와 지역 이탈이 동시에 심해진 배경은 무엇일까?
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-title">
+        <h2>4. 탐지 방식 요약</h2>
+        <span>발표에서는 이렇게 설명하면 이해하기 쉽다</span>
+      </div>
+      <div class="card">
+        <table class="mini-table">
+          <thead>
+            <tr>
+              <th>단계</th>
+              <th>무엇을 했는가</th>
+              <th>왜 필요한가</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>전년 동월 비교</td>
+              <td>2022년 3월을 2021년 3월과 비교</td>
+              <td>월별 계절성 영향을 줄이기 위해</td>
+            </tr>
+            <tr>
+              <td>지역별 평소 변동폭 비교</td>
+              <td>각 지역에서 평소 나타나는 변화 수준과 비교</td>
+              <td>지역 규모 차이 때문에 단순 인원수만 비교하지 않기 위해</td>
+            </tr>
+            <tr>
+              <td>이상도 순위화</td>
+              <td>평소보다 크게 벗어난 사례를 높은 순위로 선정</td>
+              <td>수많은 후보 중 기자가 먼저 볼 시그널을 고르기 위해</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-title">
+        <h2>5. 발표 핵심 문장</h2>
+      </div>
+      <div class="why">
+        <div class="card">
+          <p class="quote">
+            “저희는 단순히 인구가 줄었는지만 보지 않았습니다.
+            출생·사망에 따른 자연증가와 지역 간 이동에 따른 순이동을 결합하고,
+            전년 같은 달과 각 지역의 평소 변화폭을 비교해
+            이례적인 패턴을 탐지했습니다.”
+          </p>
+        </div>
+        <div class="note">
+          <strong>중요</strong>
+          DATA TIP-OFF는 원인을 단정하지 않습니다.
+          이상한 숫자의 조합을 먼저 발견해
+          <b>‘취재가 필요한 지점’</b>을 기자에게 제보하는 플랫폼입니다.
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      DATA TIP-OFF · 사회 시그널 분석 요약
+    </footer>
+  </div>
+</body>
+</html>
+"""
+
+path = Path("/mnt/data/data_tipoff_social_signal_summary.html")
+path.write_text(html, encoding="utf-8")
+print(path)

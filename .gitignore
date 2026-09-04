@@ -4,3 +4,4 @@ data/raw/Apart Deal.csv
 # Python 임시 파일
 __pycache__/
 *.pyc
+.env

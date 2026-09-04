@@ -2,7 +2,7 @@ import datetime
 import json
 import os
 import random
-from anomaly import TrendAnomalyEngine
+from analysis.drama.anomaly import TrendAnomalyEngine
 import numpy as np
 import pandas as pd
 

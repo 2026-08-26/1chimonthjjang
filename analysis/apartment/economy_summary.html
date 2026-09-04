@@ -1,0 +1,1163 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>DATA TIP-OFF | 경제 시그널 분석</title>
+
+<style>
+
+:root {
+    --bg: #0b1220;
+    --panel: #111c2b;
+    --panel2: #172437;
+    --border: #2b3a50;
+
+    --text: #f8fafc;
+    --muted: #aab6c6;
+
+    --red: #ff6b4a;
+    --blue: #4da3ff;
+    --yellow: #ffd166;
+    --green: #45d483;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+
+    font-family:
+        "Malgun Gothic",
+        "Apple SD Gothic Neo",
+        sans-serif;
+
+    background:
+        linear-gradient(
+            180deg,
+            #08111d,
+            #0b1220
+        );
+
+    color: var(--text);
+
+    line-height: 1.7;
+}
+
+
+/* 전체 폭 */
+
+.container {
+
+    width: min(
+        1180px,
+        92%
+    );
+
+    margin: auto;
+
+    padding:
+        50px
+        0
+        80px;
+}
+
+
+/* 헤더 */
+
+.hero {
+
+    background:
+        linear-gradient(
+            135deg,
+            #111b2a,
+            #0c1623
+        );
+
+    border:
+        1px solid
+        var(--border);
+
+    border-radius: 25px;
+
+    padding:
+        42px;
+
+    margin-bottom:
+        35px;
+}
+
+
+.logo {
+
+    color:
+        var(--blue);
+
+    font-size:
+        14px;
+
+    font-weight:
+        bold;
+
+    letter-spacing:
+        2px;
+}
+
+
+h1 {
+
+    font-size:
+        42px;
+
+    margin:
+        8px
+        0;
+}
+
+
+.subtitle {
+
+    color:
+        var(--muted);
+
+    font-size:
+        19px;
+}
+
+
+.tip {
+
+    margin-top:
+        28px;
+
+    padding:
+        18px
+        20px;
+
+    background:
+        #0e1826;
+
+    border-left:
+        4px solid
+        var(--red);
+
+    border-radius:
+        12px;
+
+    font-size:
+        17px;
+}
+
+
+/* 섹션 */
+
+section {
+
+    margin-top:
+        40px;
+}
+
+
+h2 {
+
+    font-size:
+        28px;
+
+    margin-bottom:
+        18px;
+}
+
+
+.card {
+
+    background:
+        var(--panel);
+
+    border:
+        1px solid
+        var(--border);
+
+    border-radius:
+        18px;
+
+    padding:
+        25px;
+
+    margin-bottom:
+        18px;
+}
+
+
+.grid {
+
+    display:
+        grid;
+
+    grid-template-columns:
+        1fr 1fr;
+
+    gap:
+        18px;
+}
+
+
+/* 신호 */
+
+.signal-title {
+
+    font-size:
+        22px;
+
+    font-weight:
+        bold;
+
+    margin-bottom:
+        8px;
+}
+
+
+.red {
+    color:
+        var(--red);
+}
+
+.blue {
+    color:
+        var(--blue);
+}
+
+.yellow {
+    color:
+        var(--yellow);
+}
+
+
+/* 분석 과정 */
+
+.flow {
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    flex-wrap:
+        wrap;
+
+    gap:
+        10px;
+
+    margin-top:
+        15px;
+}
+
+
+.flow-box {
+
+    padding:
+        12px
+        16px;
+
+    background:
+        var(--panel2);
+
+    border:
+        1px solid
+        var(--border);
+
+    border-radius:
+        12px;
+
+    font-weight:
+        bold;
+}
+
+
+.arrow {
+
+    color:
+        var(--muted);
+}
+
+
+/* 표 */
+
+table {
+
+    width:
+        100%;
+
+    border-collapse:
+        collapse;
+
+    margin-top:
+        15px;
+}
+
+
+th,
+td {
+
+    border:
+        1px solid
+        var(--border);
+
+    padding:
+        12px;
+
+    text-align:
+        center;
+}
+
+
+th {
+
+    background:
+        var(--panel2);
+}
+
+
+td {
+
+    background:
+        #0f1927;
+}
+
+
+.up {
+
+    color:
+        var(--red);
+
+    font-weight:
+        bold;
+}
+
+
+.down {
+
+    color:
+        var(--blue);
+
+    font-weight:
+        bold;
+}
+
+
+/* 이미지 */
+
+.dashboard-image {
+
+    width:
+        100%;
+
+    border-radius:
+        18px;
+
+    border:
+        1px solid
+        var(--border);
+
+    margin-top:
+        15px;
+}
+
+
+/* 발표 문장 */
+
+.presentation {
+
+    background:
+        #0f1927;
+
+    padding:
+        25px;
+
+    border:
+        1px solid
+        var(--border);
+
+    border-radius:
+        18px;
+
+    font-size:
+        17px;
+}
+
+
+.presentation strong {
+
+    color:
+        var(--yellow);
+}
+
+
+/* 작은 설명 */
+
+.note {
+
+    color:
+        var(--muted);
+
+    font-size:
+        14px;
+
+    margin-top:
+        12px;
+}
+
+
+/* 반응형 */
+
+@media (
+    max-width: 800px
+) {
+
+    .grid {
+
+        grid-template-columns:
+            1fr;
+    }
+
+
+    h1 {
+
+        font-size:
+            32px;
+    }
+
+
+    table {
+
+        font-size:
+            12px;
+    }
+
+}
+
+</style>
+</head>
+
+
+<body>
+
+<div class="container">
+
+
+<!-- ==================================================
+     HEADER
+================================================== -->
+
+<div class="hero">
+
+    <div class="logo">
+
+        DATA TIP-OFF
+        ·
+        ECONOMY SIGNAL
+
+    </div>
+
+
+    <h1>
+
+        경제 데이터 시그널 분석
+
+    </h1>
+
+
+    <div class="subtitle">
+
+        숫자가 먼저 제보하는
+        취재 아이템 발굴 플랫폼
+
+    </div>
+
+
+    <div class="tip">
+
+        DATA TIP-OFF는
+        원인을 단정하지 않습니다.
+
+        서로 엇갈리거나
+        평소와 다른 숫자 조합을 발견해
+
+        <b>
+        "왜 이런 움직임이 나타났을까?"
+        </b>
+
+        라는 취재 질문을 먼저 제시합니다.
+
+    </div>
+
+</div>
+
+
+
+<!-- ==================================================
+     1 데이터
+================================================== -->
+
+<section>
+
+<h2>
+1. 경제 데이터 전처리
+</h2>
+
+
+<div class="card">
+
+    <div class="flow">
+
+        <div class="flow-box">
+            아파트 실거래 데이터
+        </div>
+
+        <span class="arrow">
+            →
+        </span>
+
+
+        <div class="flow-box">
+            거래금액·전용면적 정리
+        </div>
+
+        <span class="arrow">
+            →
+        </span>
+
+
+        <div class="flow-box">
+            ㎡당 가격 계산
+        </div>
+
+        <span class="arrow">
+            →
+        </span>
+
+
+        <div class="flow-box">
+            17개 시도 변환
+        </div>
+
+        <span class="arrow">
+            →
+        </span>
+
+
+        <div class="flow-box">
+            월별 중앙가격·거래량
+        </div>
+
+        <span class="arrow">
+            →
+        </span>
+
+
+        <div class="flow-box">
+            기준금리 결합
+        </div>
+
+    </div>
+
+
+    <p class="note">
+
+        아파트마다 전용면적이 다르기 때문에
+        단순 거래금액 대신
+        ㎡당 거래가격을 계산했습니다.
+
+        가격 이상치 영향을 줄이기 위해
+        월별 평균 대신 중앙값을 사용했습니다.
+
+        지역코드는 17개 시도로 변환했으며
+        변환 실패 건수는 0건입니다.
+
+    </p>
+
+</div>
+
+</section>
+
+
+
+<!-- ==================================================
+     2 분석 방식
+================================================== -->
+
+<section>
+
+<h2>
+2. 어떻게 이상 신호를 찾았나?
+</h2>
+
+
+<div class="grid">
+
+
+<div class="card">
+
+    <div class="signal-title yellow">
+
+        전년 동월 비교
+
+    </div>
+
+
+    바로 전 달과 비교하지 않고
+
+    <b>
+    전년 같은 달
+    </b>
+
+    과 비교했습니다.
+
+
+    <p class="note">
+
+        부동산 거래에는 계절성이 있기 때문에
+        전년 동월 비교를 사용해
+        계절 영향을 줄였습니다.
+
+    </p>
+
+</div>
+
+
+
+<div class="card">
+
+    <div class="signal-title yellow">
+
+        지역별 평소 변동폭 비교
+
+    </div>
+
+
+    지역마다 가격 수준과
+    평소 변동폭이 다르기 때문에
+
+    각 지역의 평소 움직임과 비교해
+
+    <b>
+    이번 변화가 얼마나 이례적인지
+    </b>
+
+    계산했습니다.
+
+</div>
+
+</div>
+
+</section>
+
+
+
+<!-- ==================================================
+     3 SIGNAL
+================================================== -->
+
+<section>
+
+<h2>
+3. 경제 시그널
+</h2>
+
+
+<div class="grid">
+
+
+<div class="card">
+
+    <div class="signal-title red">
+
+        SIGNAL 1
+        <br>
+        기준금리 ↑ + 가격 ↑
+
+    </div>
+
+
+    기준금리가 전년보다 높아졌는데도
+
+    같은 시기의
+    아파트 ㎡당 중앙가격이
+    함께 상승한 지역을 찾습니다.
+
+
+    <p class="note">
+
+        "금리가 올랐는데
+        가격도 함께 오른 지역은 어디인가?"
+
+        라는 취재 질문을 만들 수 있습니다.
+
+    </p>
+
+</div>
+
+
+
+<div class="card">
+
+    <div class="signal-title blue">
+
+        SIGNAL 2
+        <br>
+        가격 ↑ + 거래량 ↓
+
+    </div>
+
+
+    가격은 상승했지만
+
+    아파트 거래 건수는 감소한 지역을
+    찾습니다.
+
+
+    <p class="note">
+
+        "거래는 얼어붙었는데
+        가격은 왜 오른 것인가?"
+
+        라는 취재 질문을 만들 수 있습니다.
+
+    </p>
+
+</div>
+
+
+</div>
+
+</section>
+
+
+
+<!-- ==================================================
+     4 TOP1
+================================================== -->
+
+<section>
+
+<h2>
+4. 대표 탐지 결과
+</h2>
+
+
+<div class="card">
+
+<h3>
+
+    SIGNAL 1 TOP1
+    ·
+    2023년 2월 대전광역시
+
+</h3>
+
+
+<table>
+
+<thead>
+
+<tr>
+
+<th>
+전년 ㎡당 가격
+</th>
+
+<th>
+현재 ㎡당 가격
+</th>
+
+<th>
+가격 변화
+</th>
+
+<th>
+전년 금리
+</th>
+
+<th>
+현재 금리
+</th>
+
+<th>
+금리 변화
+</th>
+
+<th>
+신호 점수
+</th>
+
+</tr>
+
+</thead>
+
+
+<tbody>
+
+<tr>
+
+<td>
+261.90만원
+</td>
+
+<td>
+416.69만원
+</td>
+
+<td class="up">
++59.10%
+</td>
+
+<td>
+0.5%
+</td>
+
+<td>
+3.5%
+</td>
+
+<td class="up">
++3.0%p
+</td>
+
+<td>
+8.40
+</td>
+
+</tr>
+
+</tbody>
+
+</table>
+
+
+
+<h3 style="margin-top:35px;">
+
+    SIGNAL 2 TOP1
+    ·
+    2023년 1월 경상남도
+
+</h3>
+
+
+<table>
+
+<thead>
+
+<tr>
+
+<th>
+전년 ㎡당 가격
+</th>
+
+<th>
+현재 ㎡당 가격
+</th>
+
+<th>
+가격 변화
+</th>
+
+<th>
+전년 거래량
+</th>
+
+<th>
+현재 거래량
+</th>
+
+<th>
+거래량 변화
+</th>
+
+<th>
+신호 점수
+</th>
+
+</tr>
+
+</thead>
+
+
+<tbody>
+
+<tr>
+
+<td>
+235.78만원
+</td>
+
+<td>
+310.37만원
+</td>
+
+<td class="up">
++31.64%
+</td>
+
+<td>
+3,798건
+</td>
+
+<td>
+2,050건
+</td>
+
+<td class="down">
+-46.02%
+</td>
+
+<td>
+3.49
+</td>
+
+</tr>
+
+</tbody>
+
+</table>
+
+
+</div>
+
+</section>
+
+
+
+<!-- ==================================================
+     5 IMAGE
+================================================== -->
+
+<section>
+
+<h2>
+5. 경제 시그널 TOP10
+</h2>
+
+
+<div class="card">
+
+<!--
+아까 만든 이미지를
+economy_signal_dashboard.png
+라는 이름으로 저장해서
+HTML과 같은 폴더에 넣으세요.
+-->
+
+<img
+    src="economy_signal_dashboard.png"
+    class="dashboard-image"
+    alt="DATA TIP-OFF 경제 시그널 TOP10">
+
+
+<p class="note">
+
+    TOP10 결과를 먼저 보여준 뒤,
+    사용자가 특정 시그널을 클릭하면
+    TOP1 상세 그래프와
+    탐지 이유를 확인하는 구조입니다.
+
+</p>
+
+</div>
+
+</section>
+
+
+
+<!-- ==================================================
+     6 SERVICE FLOW
+================================================== -->
+
+<section>
+
+<h2>
+6. DATA TIP-OFF 서비스 흐름
+</h2>
+
+
+<div class="card">
+
+
+<div class="flow">
+
+
+<div class="flow-box">
+통계 알고리즘
+</div>
+
+<span class="arrow">
+→
+</span>
+
+
+<div class="flow-box">
+이상 시그널 탐지
+</div>
+
+<span class="arrow">
+→
+</span>
+
+
+<div class="flow-box">
+TOP10
+</div>
+
+<span class="arrow">
+→
+</span>
+
+
+<div class="flow-box">
+TOP1 상세 그래프
+</div>
+
+<span class="arrow">
+→
+</span>
+
+
+<div class="flow-box">
+왜 탐지됐나요?
+</div>
+
+<span class="arrow">
+→
+</span>
+
+
+<div class="flow-box">
+AI 취재 질문
+</div>
+
+
+</div>
+
+
+<p class="note">
+
+AI가 이상 현상을 직접 결정하는 것이 아니라,
+
+통계 알고리즘이 먼저
+숫자의 이상 패턴을 찾고,
+
+AI는 그 결과를 기반으로
+후속 취재 질문을 생성합니다.
+
+</p>
+
+
+</div>
+
+</section>
+
+
+
+<!-- ==================================================
+     7 PRESENTATION
+================================================== -->
+
+<section>
+
+<h2>
+7. 발표할 때 이렇게 설명
+</h2>
+
+
+<div class="presentation">
+
+<strong>
+경제 데이터 분석에서는
+</strong>
+
+아파트 실거래 데이터와
+한국은행 기준금리를 결합했습니다.
+
+<br><br>
+
+아파트마다 면적이 다르기 때문에
+단순 거래금액 대신
+㎡당 가격으로 변환했고,
+
+월별 가격은
+이상치 영향을 줄이기 위해
+중앙값을 사용했습니다.
+
+<br><br>
+
+또한 계절성을 줄이기 위해
+전년 동월과 비교했습니다.
+
+<br><br>
+
+첫 번째 시그널은
+
+<strong>
+기준금리가 전년보다 높은데도
+가격이 상승한 구간
+</strong>
+
+입니다.
+
+<br><br>
+
+두 번째 시그널은
+
+<strong>
+가격은 상승하지만
+거래량은 감소한 구간
+</strong>
+
+입니다.
+
+<br><br>
+
+DATA TIP-OFF는
+이 결과를 통해
+원인을 단정하는 것이 아니라,
+
+기자가 추가로 취재할 만한
+
+<strong>
+이례적인 숫자의 조합
+</strong>
+
+을 먼저 제보합니다.
+
+</div>
+
+</section>
+
+
+
+<!-- ==================================================
+     FOOTER
+================================================== -->
+
+<div
+style="
+margin-top:50px;
+text-align:center;
+color:#718096;
+font-size:13px;
+">
+
+DATA TIP-OFF
+·
+Economy Signal Analysis
+
+</div>
+
+
+</div>
+
+</body>
+</html>

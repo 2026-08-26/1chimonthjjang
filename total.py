@@ -3,16 +3,24 @@ from flask import Flask, render_template, jsonify
 from baseball_ai_agent import BaseballAIAgent
 
 
+# ==================================================
 # Flask 서버 생성
+# ==================================================
+
 app = Flask(__name__)
 
+
+# ==================================================
 # 야구 AI Agent 생성
+# ==================================================
+
 baseball_ai_agent = BaseballAIAgent()
 
 
 # ==================================================
 # 야구 이상신호 데이터 불러오기
 # ==================================================
+
 def load_baseball_signals():
 
     temp = pd.read_csv(
@@ -52,6 +60,7 @@ def load_baseball_signals():
 # ==================================================
 # 메인 페이지
 # ==================================================
+
 @app.route("/")
 def index():
     return render_template("index.html")
@@ -60,6 +69,7 @@ def index():
 # ==================================================
 # 야구 페이지
 # ==================================================
+
 @app.route("/baseball")
 def baseball():
 
@@ -117,12 +127,14 @@ def baseball():
 
 
 # ==================================================
-# 야구 AI Agent 리포트
+# 야구 AI Agent 리포트 API
 # ==================================================
+
 @app.route(
     "/api/baseball-ai-report/<int:item_id>",
     methods=["POST"]
 )
+
 def baseball_ai_report(item_id):
 
     # 전체 이상신호 데이터 가져오기
@@ -143,25 +155,65 @@ def baseball_ai_report(item_id):
     # 결과를 HTML/JS 쪽으로 반환
     return jsonify(report)
 
+@app.route("/api/baseball-ai-report/top", methods=["POST"])
+def baseball_ai_report_top():
 
+    try:
+        # 전체 이상신호 데이터
+        df = load_baseball_signals()
+
+        # 신호 강도 계산
+        df["signal_strength"] = df["signal_score"].abs()
+
+        # 가장 강한 이상신호 1개 선택
+        top_item = (
+            df
+            .sort_values("signal_strength", ascending=False)
+            .iloc[0]
+            .to_dict()
+        )
+
+        # AI Agent 분석
+        report = baseball_ai_agent.generate_report(top_item)
+
+        return jsonify(report)
+
+    except Exception as e:
+
+        print("AI REPORT ERROR:", e)
+
+        return jsonify({
+            "error": str(e)
+        }), 500
 # ==================================================
 # 서버 실행
 # ==================================================
+
 if __name__ == "__main__":
     app.run(debug=True)
 
-@app.route("/api/baseball-ai-report/<int:item_id>", methods=["POST"])
-def baseball_ai_report(item_id):
+# ==================================================
+# 가장 강한 야구 이상신호 AI 리포트
+# ==================================================
 
+@app.route("/api/baseball-ai-report/top", methods=["POST"])
+def baseball_ai_report_top():
+
+    # 기온 + 습도 + 강수 데이터 전부 가져오기
     df = load_baseball_signals()
 
-    if item_id < 0 or item_id >= len(df):
-        return jsonify({
-            "error": "데이터를 찾을 수 없습니다."
-        }), 404
+    # 이상신호 절대값 계산
+    df["signal_strength"] = df["signal_score"].abs()
 
-    item = df.iloc[item_id].to_dict()
+    # 가장 강한 이상신호 1개 선택
+    top_item = (
+        df
+        .sort_values("signal_strength", ascending=False)
+        .iloc[0]
+        .to_dict()
+    )
 
-    report = baseball_ai_agent.generate_report(item)
+    # AI Agent 분석
+    report = baseball_ai_agent.generate_report(top_item)
 
     return jsonify(report)

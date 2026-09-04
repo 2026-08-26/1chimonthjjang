@@ -10,7 +10,9 @@
           href="{{ url_for('static', filename='css/style.css') }}">
 
     <style>
-        /* 야구 페이지에서만 사용하는 스타일 */
+        /* =========================================
+           야구 페이지
+        ========================================= */
 
         .baseball-hero {
             padding: 90px 0 45px;
@@ -55,7 +57,7 @@
         }
 
         .strong-signal > p:not(.mini-label) {
-            color: rgba(255,255,255,.75);
+            color: rgba(255, 255, 255, .75);
             margin: 0;
         }
 
@@ -78,8 +80,8 @@
         }
 
         .signal-metrics div {
-            background: rgba(255,255,255,.09);
-            border: 1px solid rgba(255,255,255,.15);
+            background: rgba(255, 255, 255, .09);
+            border: 1px solid rgba(255, 255, 255, .15);
             border-radius: 12px;
             padding: 14px;
         }
@@ -115,6 +117,11 @@
             color: var(--muted);
         }
 
+
+        /* =========================================
+           날씨 탭
+        ========================================= */
+
         .weather-tabs {
             display: flex;
             gap: 8px;
@@ -143,6 +150,11 @@
         .weather-section.active {
             display: block;
         }
+
+
+        /* =========================================
+           테이블
+        ========================================= */
 
         .baseball-table td,
         .baseball-table th {
@@ -189,6 +201,11 @@
             border-radius: 999px;
         }
 
+
+        /* =========================================
+           그래프 + 취재 질문
+        ========================================= */
+
         .chart-image {
             width: 100%;
             display: block;
@@ -231,7 +248,160 @@
             font-size: 13px;
         }
 
+
+        /* =========================================
+           AI Agent 취재 리포트
+        ========================================= */
+
+        .baseball-ai-report {
+            width: 100%;
+            padding: 40px;
+            background: #10192d;
+            color: white;
+            border-radius: 22px;
+            box-sizing: border-box;
+            box-shadow: 0 20px 50px rgba(15, 25, 45, .15);
+        }
+
+        .baseball-ai-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 28px;
+            border-bottom: 1px solid rgba(255, 255, 255, .08);
+        }
+
+        .baseball-ai-label {
+            margin: 0 0 5px;
+            color: #58a6ff;
+            font-size: 14px;
+            font-weight: 800;
+        }
+
+        .baseball-ai-header h2 {
+            margin: 0;
+            color: white;
+            font-size: 26px;
+        }
+
+        #baseballAiBtn {
+            padding: 14px 22px;
+            border: 0;
+            border-radius: 13px;
+            background: #2d6bea;
+            color: white;
+            font-size: 15px;
+            font-weight: 800;
+            cursor: pointer;
+            box-shadow: 0 8px 20px rgba(45, 107, 234, .25);
+            transition: .15s;
+        }
+
+        #baseballAiBtn:hover {
+            background: #3979ff;
+            transform: translateY(-2px);
+        }
+
+        #baseballAiBtn:disabled {
+            opacity: .65;
+            cursor: wait;
+        }
+
+        .baseball-ai-empty {
+            padding: 55px 20px;
+            text-align: center;
+            color: #8997ac;
+        }
+
+        .baseball-ai-empty strong {
+            display: block;
+            margin-bottom: 7px;
+            color: #dbe3ef;
+            font-size: 17px;
+        }
+
+        .baseball-ai-empty p {
+            margin: 0;
+            color: #8997ac;
+        }
+
+        .baseball-executive {
+            margin-top: 28px;
+        }
+
+        .baseball-executive-label {
+            margin: 0 0 10px;
+            color: #58a6ff;
+            font-size: 13px;
+            font-weight: 900;
+            letter-spacing: .04em;
+        }
+
+        .baseball-briefing-box {
+            padding: 20px 22px;
+            background: #1c2940;
+            border: 1px solid #2b3a55;
+            border-radius: 14px;
+            color: #edf2fa;
+            font-size: 16px;
+            line-height: 1.7;
+        }
+
+        .baseball-briefing-box strong {
+            color: white;
+        }
+
+        .baseball-ai-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 18px;
+            margin-top: 28px;
+        }
+
+        .baseball-ai-card {
+            min-height: 170px;
+            padding: 22px;
+            background: #172238;
+            border: 1px solid #293954;
+            border-radius: 15px;
+        }
+
+        .baseball-ai-card h3 {
+            margin: 0 0 15px;
+            font-size: 15px;
+        }
+
+        .idea-title {
+            color: #ffb72c;
+        }
+
+        .question-title {
+            color: #38d39f;
+        }
+
+        .data-title {
+            color: #7b83ff;
+        }
+
+        .baseball-ai-card ul {
+            margin: 0;
+            padding-left: 20px;
+        }
+
+        .baseball-ai-card li {
+            margin-bottom: 10px;
+            color: #e1e6ef;
+            font-size: 14px;
+            line-height: 1.55;
+        }
+
+
+        /* =========================================
+           반응형
+        ========================================= */
+
         @media(max-width: 820px) {
+
             .signal-summary,
             .analysis-grid {
                 grid-template-columns: 1fr;
@@ -244,15 +414,32 @@
             .weather-tabs {
                 overflow-x: auto;
             }
+
+            .baseball-ai-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .baseball-ai-header {
+                align-items: flex-start;
+                flex-direction: column;
+                gap: 18px;
+            }
+
+            .baseball-ai-report {
+                padding: 28px;
+            }
         }
     </style>
 </head>
+
 
 <body>
 
 <header class="topbar">
 
-    <a class="brand" href="/">DATA TIP-OFF</a>
+    <a class="brand" href="/">
+        DATA TIP-OFF
+    </a>
 
     <nav>
         <a href="/">홈</a>
@@ -265,9 +452,9 @@
 
 <main>
 
-    <!-- ===============================
+    <!-- =========================================
          페이지 소개
-    ================================ -->
+    ========================================== -->
 
     <section class="baseball-hero">
 
@@ -286,8 +473,6 @@
             단순 성적 순위가 아니라 평소와 달라진 움직임을 취재 신호로 제공합니다.
         </p>
 
-
-        <!-- 가장 강한 신호 -->
 
         {% if temp_top %}
 
@@ -313,11 +498,17 @@
                 </p>
 
                 <div class="big-change">
+
                     {% if top.weather_diff > 0 %}
+
                         ▲ +{{ "%.3f"|format(top.weather_diff) }}
+
                     {% else %}
+
                         ▼ {{ "%.3f"|format(top.weather_diff) }}
+
                     {% endif %}
+
                 </div>
 
 
@@ -325,20 +516,27 @@
 
                     <div>
                         <span>평소 타율</span>
+
                         <strong>
                             {{ "%.3f"|format(top.season_avg) }}
                         </strong>
                     </div>
 
+
                     <div>
-                        <span>{{ top.temp_group }} 날 타율</span>
+                        <span>
+                            {{ top.temp_group }} 날 타율
+                        </span>
+
                         <strong>
                             {{ "%.3f"|format(top.weather_avg) }}
                         </strong>
                     </div>
 
+
                     <div>
                         <span>Signal Score</span>
+
                         <strong>
                             {{ "%.2f"|format(top.signal_score) }}
                         </strong>
@@ -380,16 +578,16 @@
     </section>
 
 
-
-    <!-- ===============================
-         이상 신호 순위
-    ================================ -->
+    <!-- =========================================
+         날씨 조건별 이상 신호
+    ========================================== -->
 
     <section class="section">
 
         <div class="section-head">
 
             <div>
+
                 <span class="eyebrow">
                     DETECTED SIGNALS
                 </span>
@@ -397,6 +595,7 @@
                 <h2>
                     날씨 조건별 이상 신호
                 </h2>
+
             </div>
 
         </div>
@@ -404,33 +603,38 @@
 
         <div class="weather-tabs">
 
-            <button class="weather-tab active"
-                    onclick="showWeather('temp', this)">
+            <button
+                class="weather-tab active"
+                onclick="showWeather('temp', this)">
                 🔥 기온
             </button>
 
-            <button class="weather-tab"
-                    onclick="showWeather('humidity', this)">
+            <button
+                class="weather-tab"
+                onclick="showWeather('humidity', this)">
                 💧 습도
             </button>
 
-            <button class="weather-tab"
-                    onclick="showWeather('rain', this)">
+            <button
+                class="weather-tab"
+                onclick="showWeather('rain', this)">
                 🌧 강수
             </button>
 
         </div>
 
 
+        <!-- =====================================
+             기온
+        ====================================== -->
 
-        <!-- 기온 -->
-
-        <div id="temp"
-             class="weather-section active">
+        <div id="temp" class="weather-section active">
 
             <div class="panel">
 
-                <h2>🔥 기온 이상 신호 TOP 10</h2>
+                <h2>
+                    🔥 기온 이상 신호 TOP 10
+                </h2>
 
                 <div class="table-wrap">
 
@@ -450,6 +654,7 @@
                         </tr>
 
                         </thead>
+
 
                         <tbody>
 
@@ -483,11 +688,7 @@
                                 {{ "%.3f"|format(player.weather_avg) }}
                             </td>
 
-                            <td class="{{
-                                'positive'
-                                if player.weather_diff > 0
-                                else 'negative'
-                            }}">
+                            <td class="{% if player.weather_diff > 0 %}positive{% else %}negative{% endif %}">
 
                                 {{ "%+.3f"|format(player.weather_diff) }}
 
@@ -499,8 +700,7 @@
 
                                     <div
                                         class="signal-bar"
-                                        style="width:
-                                        {{ [player.signal_score|abs * 70, 100]|min }}%">
+                                        style="width: {{ player.signal_strength * 70 }}%;">
                                     </div>
 
                                 </div>
@@ -524,15 +724,17 @@
         </div>
 
 
+        <!-- =====================================
+             습도
+        ====================================== -->
 
-        <!-- 습도 -->
-
-        <div id="humidity"
-             class="weather-section">
+        <div id="humidity" class="weather-section">
 
             <div class="panel">
 
-                <h2>💧 습도 이상 신호 TOP 10</h2>
+                <h2>
+                    💧 습도 이상 신호 TOP 10
+                </h2>
 
                 <div class="table-wrap">
 
@@ -553,6 +755,7 @@
 
                         </thead>
 
+
                         <tbody>
 
                         {% for player in humidity_top %}
@@ -564,14 +767,20 @@
                             </td>
 
                             <td>
+
                                 <span class="condition">
                                     {{ player.humidity_group }}
                                 </span>
+
                             </td>
 
-                            <td>{{ player.games }}</td>
+                            <td>
+                                {{ player.games }}
+                            </td>
 
-                            <td>{{ player.AB }}</td>
+                            <td>
+                                {{ player.AB }}
+                            </td>
 
                             <td>
                                 {{ "%.3f"|format(player.season_avg) }}
@@ -581,18 +790,25 @@
                                 {{ "%.3f"|format(player.weather_avg) }}
                             </td>
 
-                            <td class="{{
-                                'positive'
-                                if player.weather_diff > 0
-                                else 'negative'
-                            }}">
+                            <td class="{% if player.weather_diff > 0 %}positive{% else %}negative{% endif %}">
 
                                 {{ "%+.3f"|format(player.weather_diff) }}
 
                             </td>
 
                             <td>
+
+                                <div class="signal-bar-wrap">
+
+                                    <div
+                                        class="signal-bar"
+                                        style="width: {{ player.signal_strength * 70 }}%;">
+                                    </div>
+
+                                </div>
+
                                 {{ "%.2f"|format(player.signal_score) }}
+
                             </td>
 
                         </tr>
@@ -610,15 +826,17 @@
         </div>
 
 
+        <!-- =====================================
+             강수
+        ====================================== -->
 
-        <!-- 비 -->
-
-        <div id="rain"
-             class="weather-section">
+        <div id="rain" class="weather-section">
 
             <div class="panel">
 
-                <h2>🌧 비 오는 날 이상 신호 TOP 10</h2>
+                <h2>
+                    🌧 비 오는 날 이상 신호 TOP 10
+                </h2>
 
                 <div class="table-wrap">
 
@@ -638,6 +856,7 @@
 
                         </thead>
 
+
                         <tbody>
 
                         {% for player in rain_top %}
@@ -648,9 +867,13 @@
                                 {{ player.player_name }}
                             </td>
 
-                            <td>{{ player.games }}</td>
+                            <td>
+                                {{ player.games }}
+                            </td>
 
-                            <td>{{ player.AB }}</td>
+                            <td>
+                                {{ player.AB }}
+                            </td>
 
                             <td>
                                 {{ "%.3f"|format(player.season_avg) }}
@@ -660,18 +883,25 @@
                                 {{ "%.3f"|format(player.weather_avg) }}
                             </td>
 
-                            <td class="{{
-                                'positive'
-                                if player.weather_diff > 0
-                                else 'negative'
-                            }}">
+                            <td class="{% if player.weather_diff > 0 %}positive{% else %}negative{% endif %}">
 
                                 {{ "%+.3f"|format(player.weather_diff) }}
 
                             </td>
 
                             <td>
+
+                                <div class="signal-bar-wrap">
+
+                                    <div
+                                        class="signal-bar"
+                                        style="width: {{ player.signal_strength * 70 }}%;">
+                                    </div>
+
+                                </div>
+
                                 {{ "%.2f"|format(player.signal_score) }}
+
                             </td>
 
                         </tr>
@@ -691,10 +921,9 @@
     </section>
 
 
-
-    <!-- ===============================
+    <!-- =========================================
          그래프 + 취재 질문
-    ================================ -->
+    ========================================== -->
 
     <section class="section">
 
@@ -717,14 +946,16 @@
 
         <div class="analysis-grid">
 
+
             <div class="panel">
 
-                <h2>📊 기온별 선수 타격 변화</h2>
+                <h2>
+                    📊 기온별 선수 타격 변화
+                </h2>
 
                 <img
                     class="chart-image"
-                    src="{{ url_for('static',
-                    filename='images/temp_signal.png') }}"
+                    src="{{ url_for('static', filename='images/temp_signal.png') }}"
                     alt="기온별 선수 타격 이상 신호">
 
                 <p class="hint">
@@ -741,13 +972,15 @@
                     QUESTIONS TO INVESTIGATE
                 </span>
 
-                <h2>📰 후속 취재 포인트</h2>
+                <h2>
+                    📰 후속 취재 포인트
+                </h2>
 
 
                 <div class="question-box">
 
                     <strong>
-                        01. 왜 추운 날 강했을까?
+                        01. 왜 특정 기온에서 강했을까?
                     </strong>
 
                     <span>
@@ -788,7 +1021,11 @@
 
                 <div class="data-note">
 
-                    <strong>해석 주의</strong><br>
+                    <strong>
+                        해석 주의
+                    </strong>
+
+                    <br>
 
                     본 분석은 날씨와 성적 사이의 인과관계를
                     증명하는 분석이 아닙니다.
@@ -803,13 +1040,136 @@
 
     </section>
 
-</main>
 
+    <!-- =========================================
+         AI AGENT 취재 분석 리포트
+    ========================================== -->
+
+    <section class="section">
+
+        <div class="baseball-ai-report">
+
+            <div class="baseball-ai-header">
+
+                <div>
+
+                    <p class="baseball-ai-label">
+                        🤖 AI Agent 취재 분석 리포트
+                    </p>
+
+                    <h2>
+                        기자용 AI 취재 인사이트 브리핑
+                    </h2>
+
+                </div>
+
+
+                <button
+                    type="button"
+                    id="baseballAiBtn"
+                    onclick="generateBaseballAIReport()">
+
+                    ✨ 분석 생성
+
+                </button>
+
+            </div>
+
+
+            <!-- 생성 전 -->
+
+            <div
+                id="baseballAiEmpty"
+                class="baseball-ai-empty">
+
+                <strong>
+                    AI Agent 분석 준비 완료
+                </strong>
+
+                <p>
+                    기온 · 습도 · 강수 이상신호를 비교하여
+                    가장 주목할 만한 취재 후보를 분석합니다.
+                </p>
+
+            </div>
+
+
+            <!-- 생성 결과 -->
+
+            <div
+                id="baseballAiContent"
+                style="display: none;">
+
+
+                <!-- Executive Briefing -->
+
+                <div class="baseball-executive">
+
+                    <p class="baseball-executive-label">
+                        EXECUTIVE BRIEFING
+                    </p>
+
+                    <div
+                        id="baseballAiBriefing"
+                        class="baseball-briefing-box">
+                    </div>
+
+                </div>
+
+
+                <!-- 아래 3개 카드 -->
+
+                <div class="baseball-ai-grid">
+
+
+                    <div class="baseball-ai-card">
+
+                        <h3 class="idea-title">
+                            💡 기사 아이디어
+                        </h3>
+
+                        <ul id="baseballAiIdeas"></ul>
+
+                    </div>
+
+
+                    <div class="baseball-ai-card">
+
+                        <h3 class="question-title">
+                            ❓ 주요 취재 질문
+                        </h3>
+
+                        <ul id="baseballAiQuestions"></ul>
+
+                    </div>
+
+
+                    <div class="baseball-ai-card">
+
+                        <h3 class="data-title">
+                            🔎 추가 확인 필요 데이터
+                        </h3>
+
+                        <ul id="baseballAiVerification"></ul>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+</main>
 
 
 <footer>
 
-    <strong>DATA TIP-OFF</strong>
+    <strong>
+        DATA TIP-OFF
+    </strong>
 
     <span>
         숫자가 먼저 제보하는 취재 아이템 발굴 플랫폼
@@ -818,39 +1178,151 @@
 </footer>
 
 
-
 <script>
 
-function showWeather(type, button) {
+    /* =========================================
+       날씨 탭
+    ========================================== */
 
-    // 모든 내용 숨기기
-    document
-        .querySelectorAll(".weather-section")
-        .forEach(section => {
-            section.classList.remove("active");
-        });
+    function showWeather(type, button) {
 
-
-    // 모든 버튼 선택 해제
-    document
-        .querySelectorAll(".weather-tab")
-        .forEach(tab => {
-            tab.classList.remove("active");
-        });
+        document
+            .querySelectorAll(".weather-section")
+            .forEach(section => {
+                section.classList.remove("active");
+            });
 
 
-    // 선택한 내용 표시
-    document
-        .getElementById(type)
-        .classList.add("active");
+        document
+            .querySelectorAll(".weather-tab")
+            .forEach(tab => {
+                tab.classList.remove("active");
+            });
 
 
-    // 선택한 버튼 활성화
-    button.classList.add("active");
-}
+        document
+            .getElementById(type)
+            .classList.add("active");
+
+
+        button.classList.add("active");
+    }
+
+
+    /* =========================================
+       AI Agent
+    ========================================== */
+
+    async function generateBaseballAIReport() {
+
+        const btn =
+            document.getElementById("baseballAiBtn");
+
+        const empty =
+            document.getElementById("baseballAiEmpty");
+
+        const content =
+            document.getElementById("baseballAiContent");
+
+
+        btn.innerHTML = "⏳ 분석 중...";
+        btn.disabled = true;
+
+
+        try {
+
+            const response = await fetch(
+                "/api/baseball-ai-report/top",
+                {
+                    method: "POST"
+                }
+            );
+
+
+            const data = await response.json();
+
+
+            if (!response.ok) {
+
+                alert(
+                    data.error ||
+                    "AI 분석 결과를 생성하지 못했습니다."
+                );
+
+                btn.innerHTML = "✨ 다시 생성";
+
+                return;
+            }
+
+
+            /* 결과 표시 */
+
+            empty.style.display = "none";
+
+            content.style.display = "block";
+
+
+            /* 브리핑 */
+
+            document.getElementById(
+                "baseballAiBriefing"
+            ).innerHTML = data.briefing;
+
+
+            /* 기사 아이디어 */
+
+            document.getElementById(
+                "baseballAiIdeas"
+            ).innerHTML =
+                data.article_ideas
+                    .map(item => `<li>${item}</li>`)
+                    .join("");
+
+
+            /* 취재 질문 */
+
+            document.getElementById(
+                "baseballAiQuestions"
+            ).innerHTML =
+                data.questions
+                    .map(item => `<li>${item}</li>`)
+                    .join("");
+
+
+            /* 확인 데이터 */
+
+            document.getElementById(
+                "baseballAiVerification"
+            ).innerHTML =
+                data.verification_data
+                    .map(item => `<li>${item}</li>`)
+                    .join("");
+
+
+            btn.innerHTML = "✓ 생성 완료";
+
+        }
+
+        catch (error) {
+
+            console.error(error);
+
+            alert(
+                "서버와 통신하는 중 오류가 발생했습니다."
+            );
+
+            btn.innerHTML = "✨ 다시 생성";
+
+        }
+
+        finally {
+
+            btn.disabled = false;
+
+        }
+    }
 
 </script>
-
 
 </body>
 </html>

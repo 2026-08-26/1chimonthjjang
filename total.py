@@ -7,7 +7,7 @@ from baseball_ai_agent import BaseballAIAgent
 # K-콘텐츠
 from analysis.drama.ai_agent import TrendAIAgent
 from analysis.drama.mock_data import load_all_contents
-
+from web.economy_routes import economy_bp
 # ==================================================
 # Flask 서버 생성
 # ==================================================
@@ -18,7 +18,7 @@ app = Flask(__name__)
 # ==================================================
 # 야구 AI Agent 생성
 # ==================================================
-
+app.register_blueprint(economy_bp)
 baseball_ai_agent = BaseballAIAgent()
 
 # K-Contents AI Agent

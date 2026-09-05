@@ -170,6 +170,187 @@ def social_index():
         items=items,
         stats=stats
     )
+    # ==================================================
+# 사회 시그널 V2
+# 후보2 뉴스룸 디자인 테스트 페이지
+# ==================================================
+
+@social_bp.route("/social-v2")
+def social_index_v2():
+
+    df = load_social_signals()
+
+    # ----------------------------------------------
+    # 1. 상단 통계
+    # 후보2 템플릿에서 사용하는 이름에 맞춤
+    # ----------------------------------------------
+
+    stats = {
+        "total_candidates": len(df),
+
+        "total_rules": (
+            df["signal_type"]
+            .nunique()
+        ),
+
+        "high_count": (
+            df["severity"]
+            .eq("HIGH")
+            .sum()
+        ),
+
+        "medium_count": (
+            df["severity"]
+            .eq("MEDIUM")
+            .sum()
+        ),
+
+        "low_count": (
+            df["severity"]
+            .eq("LOW")
+            .sum()
+        )
+    }
+
+
+    # ----------------------------------------------
+    # 2. 취재 우선순위
+    # Signal Score가 높은 후보 TOP 7
+    # ----------------------------------------------
+
+    top_df = (
+        df
+        .sort_values(
+            ["Signal_score", "Date"],
+            ascending=[False, False]
+        )
+        .head(7)
+    )
+
+
+    top_signals = []
+
+    for _, row in top_df.iterrows():
+
+        top_signals.append({
+            "category": "사회",
+
+            "region":
+                row["Region_ko"],
+
+            "signal_name":
+                row["signal_name"],
+
+            "date":
+                row["Date"].strftime("%Y.%m"),
+
+            "score":
+                safe_number(
+                    row["Signal_score"],
+                    2
+                ),
+
+            "severity":
+                row["severity"],
+
+            "signal_type":
+                row["signal_type"],
+
+            "detail_url":
+                "/social/detail/"
+                + str(row["signal_type"])
+        })
+
+
+    # ----------------------------------------------
+    # 3. 월별 탐지량
+    # 후보2의 선 그래프에서 사용
+    # ----------------------------------------------
+
+    monthly = (
+        df
+        .set_index("Date")
+        .resample("MS")
+        .size()
+        .reset_index(name="count")
+    )
+
+
+    monthly_chart = []
+
+    for _, row in monthly.iterrows():
+
+        monthly_chart.append({
+            "date":
+                row["Date"].strftime("%Y.%m"),
+
+            "count":
+                int(row["count"])
+        })
+
+
+    # ----------------------------------------------
+    # 4. 탐지 규칙별 발생량
+    # 후보2 오른쪽 막대그래프에서 사용
+    # ----------------------------------------------
+
+    rule_counts = (
+        df
+        .groupby(
+            ["signal_type", "signal_name"]
+        )
+        .size()
+        .reset_index(name="count")
+        .sort_values(
+            "count",
+            ascending=False
+        )
+    )
+
+
+    max_count = (
+        rule_counts["count"].max()
+        if len(rule_counts) > 0
+        else 1
+    )
+
+
+    rule_chart = []
+
+    for _, row in rule_counts.iterrows():
+
+        rule_chart.append({
+            "name":
+                row["signal_name"],
+
+            "signal_type":
+                row["signal_type"],
+
+            "count":
+                int(row["count"]),
+
+            "width":
+                round(
+                    row["count"]
+                    / max_count
+                    * 100,
+                    1
+                )
+        })
+
+
+    # ----------------------------------------------
+    # 5. V2 템플릿 전달
+    # ----------------------------------------------
+
+    return render_template(
+        "social/social_index_v2.html",
+
+        stats=stats,
+        top_signals=top_signals,
+        monthly_chart=monthly_chart,
+        rule_chart=rule_chart
+    )
 
 
 # =========================================================

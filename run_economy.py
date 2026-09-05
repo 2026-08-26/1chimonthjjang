@@ -8,7 +8,7 @@ from web.home_v2_routes import home_v2_bp
 from web.home_v3_routes import home_v3_bp
 from web.home_v4_routes import home_v4_bp
 from web.home_v2_sidebar_routes import home_v2_sidebar_bp
-
+from web.home_v2_nav_routes import home_v2_nav_bp
 
 app = Flask(
     __name__,
@@ -21,6 +21,7 @@ app.register_blueprint(home_v2_bp)
 app.register_blueprint(home_v3_bp)
 app.register_blueprint(home_v4_bp)
 app.register_blueprint(home_v2_sidebar_bp)
+app.register_blueprint(home_v2_nav_bp)
 
 app.register_blueprint(economy_bp)
 app.register_blueprint(social_bp)

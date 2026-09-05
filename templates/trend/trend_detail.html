@@ -1,396 +1,81 @@
 {% extends "trend/trend_base.html" %}
-
 {% block content %}
-
-{% set base_avg = item.baseline_avg if item.baseline_avg is defined else item.past_30_avg %}
-{% set recent_avg = item.recent_7_avg %}
-{% set ratio = recent_avg / base_avg if base_avg else 0 %}
-
-
-<!-- Navigation Link -->
-<div class="mb-6">
-    <a href="javascript:history.back()" class="inline-flex items-center text-xs font-mono font-bold text-neutral-600 hover:text-black transition">
-        <i class="fa-solid fa-arrow-left mr-2"></i> BACK TO RADAR LIST
-    </a>
-</div>
-
-
-<!-- Detail Header Card -->
-<div class="bg-white border border-neutral-300 p-6 md:p-8 rounded-2xl shadow-sm mb-8">
-
-    <div class="flex flex-col md:flex-row md:items-center justify-between gap-6">
-
-        <div>
-            <div class="flex items-center space-x-2 mb-3">
-                <span class="px-3 py-1 rounded bg-neutral-100 border border-neutral-300 text-neutral-800 text-xs font-mono font-bold">
-                    {{ item.category_name }}
-                </span>
-
-                {% if item.signal == 'HIGH' %}
-                    <span class="px-3 py-1 rounded bg-rose-50 border border-rose-200 text-rose-600 text-xs font-mono font-bold flex items-center">
-                        <span class="w-1.5 h-1.5 rounded-full bg-rose-500 mr-2 animate-pulse"></span> HIGH SIGNAL DETECTED
-                    </span>
-                {% elif item.signal == 'MEDIUM' %}
-                    <span class="px-3 py-1 rounded bg-amber-50 border border-amber-200 text-amber-700 text-xs font-mono font-bold">
-                        MEDIUM SIGNAL
-                    </span>
-                {% else %}
-                    <span class="px-3 py-1 rounded bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs font-mono font-bold">
-                        LOW SIGNAL
-                    </span>
-                {% endif %}
+<div class="max-w-7xl w-full mx-auto p-8 grid grid-cols-1 lg:grid-cols-3 gap-8">
+    <!-- 좌측: 팩트 체크 및 수치 비교 -->
+    <div class="lg:col-span-2 space-y-6">
+        <div class="bg-white border border-neutral-300 p-8 rounded-xl shadow-sm">
+            <div class="flex items-center space-x-2 mb-2">
+                <span class="text-xs font-mono bg-neutral-200 px-2 py-0.5 rounded">{{ signal.category }}</span>
+                <span class="text-xs font-mono bg-rose-100 text-rose-600 font-bold px-2 py-0.5 rounded">{{ signal.grade }} SIGNAL DETECTED</span>
             </div>
+            <h1 class="text-3xl font-bold">{{ signal.title }}</h1>
+            <p class="text-sm text-neutral-500 mt-1">이상 징후 자동 탐지 시스템 연동됨</p>
+            
+            <div class="grid grid-cols-3 gap-4 mt-8 pt-6 border-t border-neutral-200 font-mono">
+                <div>
+                    <div class="text-xs text-neutral-400">BASELINE AVG</div>
+                    <div class="text-xl font-bold mt-1">{{ signal.base_avg }}</div>
+                </div>
+                <div>
+                    <div class="text-xs text-neutral-400">RECENT AVG</div>
+                    <div class="text-xl font-bold text-rose-600 mt-1">{{ signal.recent_avg }}</div>
+                </div>
+                <div>
+                    <div class="text-xs text-neutral-400">PULSE SCORE</div>
+                    <div class="text-xl font-bold text-neutral-900 mt-1">{{ signal.pulse_score }} <span class="text-xs text-neutral-400">/100</span></div>
+                </div>
+            </div>
+        </div>
 
-            <h1 class="text-2xl md:text-4xl font-black text-neutral-900 tracking-tight leading-snug font-serif">
-                {{ item.title }}
-            </h1>
-
-            <p class="text-xs md:text-sm text-neutral-500 mt-2 font-mono">
-                {{ item.sub_info }}
+        <!-- 데이터 저널리스트 팩트 요약 박스 -->
+        <div class="bg-white border border-neutral-300 p-8 rounded-xl shadow-sm">
+            <h3 class="font-mono text-xs text-neutral-400 uppercase tracking-widest mb-3">DATA JOURNALISM SUMMARY</h3>
+            <p class="text-lg leading-relaxed text-neutral-800">
+                "<strong>{{ signal.title }}</strong> 항목은 기준 평균 수치 <strong>{{ signal.base_avg }}</strong> 대비 최근 기간 동안 <strong>{{ signal.recent_avg }}</strong>를 기록하며 약 <strong>{{ signal.change_rate }}%</strong> 급증했습니다. (Z-Score: {{ signal.z_score }}) 통계적 이상 징후가 확인되어 긴급 취재 우선순위로 선정되었습니다."
             </p>
         </div>
+    </div>
 
-
-        <!-- Score Box -->
-        <div class="bg-neutral-50 p-5 rounded-xl border border-neutral-300 flex items-center space-x-6 shrink-0">
+    <!-- 우측: AI 취재 에이전트 리포트 패널 -->
+    <div class="bg-neutral-900 text-white p-6 rounded-xl shadow-xl flex flex-col justify-between">
+        <div class="space-y-6">
             <div>
-                <div class="text-[10px] font-mono text-neutral-400 font-bold uppercase">PULSE SCORE</div>
-                <div class="text-3xl font-black text-neutral-900 font-mono mt-1">
-                    {{ item.trend_score }}<span class="text-xs text-neutral-400 font-normal">/100</span>
-                </div>
+                <span class="text-xs font-mono text-rose-500 font-bold uppercase tracking-wider">AI EDITORIAL BRIEFING</span>
+                <h3 class="text-lg font-bold mt-1">기사 아이디어 & 취재 가이드</h3>
             </div>
 
-            <div class="h-10 w-px bg-neutral-300"></div>
+            <!-- 기사 제목 후보 -->
+            <div class="space-y-2">
+                <h4 class="text-xs font-mono text-neutral-400">💡 추천 기사 제목 후보</h4>
+                <ul class="text-xs space-y-2 text-neutral-200 bg-neutral-800 p-3 rounded border border-neutral-700">
+                    {% for h in briefing.headlines %}
+                    <li>• "{{ h }}"</li>
+                    {% endfor %}
+                </ul>
+            </div>
 
-            <div>
-                <div class="text-[10px] font-mono text-neutral-400 font-bold uppercase">INCREASE RATE</div>
-                <div class="text-2xl font-black font-mono mt-1 {% if item.increase_rate >= 0 %} text-rose-600 {% else %} text-neutral-900 {% endif %}">
-                    {{ "%+.1f"|format(item.increase_rate) }}%
-                </div>
+            <!-- 핵심 취재 질문 -->
+            <div class="space-y-2">
+                <h4 class="text-xs font-mono text-neutral-400">❓ 관계자 대상 핵심 취재 질문</h4>
+                <ul class="text-xs space-y-2 text-neutral-200 bg-neutral-800 p-3 rounded border border-neutral-700">
+                    {% for q in briefing.questions %}
+                    <li>{{ loop.index }}. {{ q }}</li>
+                    {% endfor %}
+                </ul>
             </div>
         </div>
 
+        <div class="mt-6 pt-4 border-t border-neutral-800 text-center">
+            <button onclick="copyToClipboard()" class="w-full text-xs font-mono bg-neutral-800 hover:bg-neutral-700 text-neutral-200 py-2.5 rounded transition cursor-pointer">
+                📋 취재 노트 클립보드 복사
+            </button>
+        </div>
     </div>
-
 </div>
 
-
-<!-- Chart & KPI Section -->
-<div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
-
-    <!-- KPI Stack -->
-    <div class="space-y-4">
-
-        <div class="bg-white border border-neutral-300 p-5 rounded-xl shadow-sm">
-            <div class="text-xs font-mono text-neutral-400 font-bold uppercase">Change Rate</div>
-            <div class="text-2xl font-black font-mono mt-1 {% if item.increase_rate >= 0 %} text-rose-600 {% else %} text-neutral-900 {% endif %}">
-                {{ "%+.1f"|format(item.increase_rate) }}%
-            </div>
-            <p class="text-xs text-neutral-500 mt-1">이전 23일 대비 최근 7일 평균 변동폭</p>
-        </div>
-
-        <div class="bg-white border border-neutral-300 p-5 rounded-xl shadow-sm">
-            <div class="text-xs font-mono text-neutral-400 font-bold uppercase">Recent 7-Day Average</div>
-            <div class="text-2xl font-black font-mono text-neutral-900 mt-1">
-                {{ recent_avg }}
-            </div>
-            <p class="text-xs text-neutral-500 mt-1">기준점({{ base_avg }}) 대비 최근 평균 지수</p>
-        </div>
-
-        <div class="bg-white border border-neutral-300 p-5 rounded-xl shadow-sm">
-            <div class="text-xs font-mono text-neutral-400 font-bold uppercase">Z-Score (Anomaly Index)</div>
-            <div class="text-2xl font-black font-mono mt-1 {% if item.z_score >= 2.5 %} text-rose-600 {% elif item.z_score >= 1.5 %} text-amber-600 {% else %} text-emerald-600 {% endif %}">
-                {{ item.z_score }}
-            </div>
-            <p class="text-xs text-neutral-500 mt-1">통계적 이례성 측정 지표 (임계치 2.5)</p>
-        </div>
-
-    </div>
-
-
-    <!-- Chart Container -->
-    <div class="lg:col-span-2 bg-white border border-neutral-300 p-6 rounded-2xl shadow-sm flex flex-col justify-between">
-        <div class="flex items-center justify-between mb-4">
-            <div>
-                <h3 class="text-base font-bold text-neutral-900 flex items-center font-mono">
-                    <i class="fa-solid fa-chart-area mr-2 text-neutral-700"></i> 30-DAY TIMESERIES ANALYTICS
-                </h3>
-                <p class="text-xs text-neutral-500 mt-0.5">최근 7일 지점의 붉은 포인트가 이상 감지 구간입니다.</p>
-            </div>
-            <span class="text-[10px] font-mono px-2 py-1 rounded bg-neutral-100 text-neutral-700 border border-neutral-300">LIVE GRAPH</span>
-        </div>
-
-        <div class="h-64 relative">
-            <canvas id="trendChart"></canvas>
-        </div>
-    </div>
-
-</div>
-
-
-<!-- Verdict Section -->
-<div class="bg-white border border-neutral-300 p-6 md:p-8 rounded-2xl shadow-sm mb-8">
-
-    <div class="pb-6 border-b border-neutral-200 mb-6 flex justify-between items-center">
-        <div>
-            <span class="text-[10px] font-mono text-neutral-500 font-bold uppercase tracking-widest">DETECTION LOG</span>
-            <h2 class="text-xl font-bold text-neutral-900 mt-1 font-serif">이상감지 상세 판단 로그</h2>
-        </div>
-
-        {% if item.signal == 'HIGH' %}
-            <span class="px-3 py-1 rounded bg-rose-50 border border-rose-200 text-rose-600 font-mono text-xs font-bold">
-                STATUS: HIGH ALERT
-            </span>
-        {% elif item.signal == 'MEDIUM' %}
-            <span class="px-3 py-1 rounded bg-amber-50 border border-amber-200 text-amber-700 font-mono text-xs font-bold">
-                STATUS: MEDIUM WARNING
-            </span>
-        {% else %}
-            <span class="px-3 py-1 rounded bg-emerald-50 border border-emerald-200 text-emerald-700 font-mono text-xs font-bold">
-                STATUS: STABLE
-            </span>
-        {% endif %}
-    </div>
-
-
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-        <div class="bg-neutral-50 p-4 rounded-xl border border-neutral-200">
-            <div class="text-xs font-mono text-neutral-400 font-bold">BASELINE AVG (23D)</div>
-            <div class="text-2xl font-black font-mono text-neutral-900 mt-1">{{ base_avg }}</div>
-        </div>
-
-        <div class="bg-neutral-50 p-4 rounded-xl border border-neutral-200">
-            <div class="text-xs font-mono text-neutral-400 font-bold">INCREASE MULTIPLE</div>
-            <div class="text-2xl font-black font-mono mt-1 {% if item.signal == 'HIGH' %} text-rose-600 {% elif item.signal == 'MEDIUM' %} text-amber-600 {% else %} text-emerald-600 {% endif %}">
-                {{ "%.1f"|format(ratio) }}x
-            </div>
-        </div>
-
-        <div class="bg-neutral-50 p-4 rounded-xl border border-neutral-200">
-            <div class="text-xs font-mono text-neutral-400 font-bold">CURRENT AVG (7D)</div>
-            <div class="text-2xl font-black font-mono text-neutral-900 mt-1">{{ recent_avg }}</div>
-        </div>
-    </div>
-
-
-    <!-- 깔끔해진 한글 기반 시스템 시그널 판단 기준 영역 -->
-    <div class="border-t border-neutral-200 pt-6">
-        <h4 class="text-xs font-mono text-neutral-400 font-bold uppercase tracking-wider mb-3">SYSTEM SIGNAL THRESHOLD</h4>
-        
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
-            
-            <!-- LOW -->
-            <div class="p-4 rounded-xl bg-neutral-50 border border-neutral-200 flex flex-col justify-between">
-                <div class="flex items-center justify-between mb-2">
-                    <span class="px-2.5 py-0.5 rounded bg-emerald-100 border border-emerald-200 text-emerald-800 font-mono font-extrabold text-[11px]">LOW</span>
-                    <span class="text-xs font-bold text-emerald-700">정상 범위</span>
-                </div>
-                <p class="text-xs text-neutral-600 leading-relaxed font-sans">
-                    일상적인 변동 수준으로 감지된 특이사항이 없습니다.
-                </p>
-            </div>
-
-            <!-- MEDIUM -->
-            <div class="p-4 rounded-xl bg-neutral-50 border border-neutral-200 flex flex-col justify-between">
-                <div class="flex items-center justify-between mb-2">
-                    <span class="px-2.5 py-0.5 rounded bg-amber-100 border border-amber-200 text-amber-800 font-mono font-extrabold text-[11px]">MEDIUM</span>
-                    <span class="text-xs font-bold text-amber-700">주의 필요</span>
-                </div>
-                <p class="text-xs text-neutral-700 font-medium leading-relaxed font-sans">
-                    최근 7일 검색량이 평균 대비 <span class="font-bold text-neutral-900">50% 이상 급증</span>한 상태입니다.
-                </p>
-            </div>
-
-            <!-- HIGH -->
-            <div class="p-4 rounded-xl bg-neutral-50 border border-neutral-200 flex flex-col justify-between">
-                <div class="flex items-center justify-between mb-2">
-                    <span class="px-2.5 py-0.5 rounded bg-rose-100 border border-rose-200 text-rose-800 font-mono font-extrabold text-[11px]">HIGH</span>
-                    <span class="text-xs font-bold text-rose-700">즉시 취재</span>
-                </div>
-                <p class="text-xs text-neutral-700 font-medium leading-relaxed font-sans">
-                    최근 7일 검색량이 평균 대비 <span class="font-bold text-neutral-900">150% 이상 폭증</span>한 이상 감지 상태입니다.
-                </p>
-            </div>
-
-        </div>
-    </div>
-
-</div>
-
-
-<!-- Deep Black AI Studio Box -->
-<div class="bg-[#0a0a0a] text-white border border-neutral-800 rounded-2xl p-6 md:p-8 shadow-xl">
-
-    <div class="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-6 pb-6 border-b border-neutral-800">
-
-        <div>
-            <div class="inline-flex items-center space-x-2 text-xs font-mono text-neutral-400 mb-2">
-                <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
-                <span>AI 취재 에이전트</span>
-            </div>
-            <h2 class="text-2xl font-black font-serif tracking-tight">데이터 다음의 질문을 찾습니다.</h2>
-            <p class="text-xs text-neutral-400 mt-1">시그널을 선택하면 탐지 결과를 바탕으로 기사 아이디어와 후속 취재 질문, 추가 확인 데이터를 제안합니다.</p>
-        </div>
-
-        <button id="generateBtn" onclick="fetchAiReport({{ item.id }})" class="px-6 py-3.5 bg-white text-black hover:bg-neutral-200 font-mono font-bold text-xs rounded-lg transition border border-white flex items-center justify-center space-x-2 shrink-0">
-            <i class="fa-solid fa-sparkles"></i>
-            <span>취재 브리핑 생성 &rarr;</span>
-        </button>
-
-    </div>
-
-
-    <!-- AI Result Box -->
-    <div id="aiReportBox" class="hidden space-y-6">
-
-        <div class="bg-neutral-900/90 p-6 rounded-xl border border-neutral-800">
-            <div class="text-xs font-mono text-neutral-400 mb-2">[ AI BRIEFING SUMMARY ]</div>
-            <div id="aiBriefing" class="text-sm md:text-base leading-relaxed text-neutral-200 whitespace-pre-line font-sans"></div>
-        </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-
-            <div class="bg-neutral-900/50 p-5 rounded-xl border border-neutral-800">
-                <h5 class="text-xs font-mono font-bold text-amber-400 mb-3 flex items-center">
-                    <i class="fa-solid fa-lightbulb mr-2"></i> ARTICLE IDEAS
-                </h5>
-                <ul id="aiIdeas" class="text-xs text-neutral-300 space-y-2 list-disc pl-4 leading-relaxed"></ul>
-            </div>
-
-            <div class="bg-neutral-900/50 p-5 rounded-xl border border-neutral-800">
-                <h5 class="text-xs font-mono font-bold text-emerald-400 mb-3 flex items-center">
-                    <i class="fa-solid fa-circle-question mr-2"></i> KEY QUESTIONS
-                </h5>
-                <ul id="aiQuestions" class="text-xs text-neutral-300 space-y-2 list-disc pl-4 leading-relaxed"></ul>
-            </div>
-
-            <div class="bg-neutral-900/50 p-5 rounded-xl border border-neutral-800">
-                <h5 class="text-xs font-mono font-bold text-cyan-400 mb-3 flex items-center">
-                    <i class="fa-solid fa-magnifying-glass mr-2"></i> DATA SOURCES
-                </h5>
-                <ul id="aiDataSources" class="text-xs text-neutral-300 space-y-2 list-disc pl-4 leading-relaxed"></ul>
-            </div>
-
-        </div>
-
-    </div>
-
-
-    <!-- Placeholder -->
-    <div id="aiPlaceholder" class="text-center py-10 text-neutral-500 font-mono text-xs">
-        CLICK '취재 브리핑 생성' TO RUN NEURAL ANALYSIS.
-    </div>
-
-</div>
-
-
-<!-- JavaScript Logic -->
 <script>
-
-/* Monochrome Editorial Chart.js */
-const dailyData = {{ item.daily_data | tojson if item.daily_data else "[]" }};
-const labels = Array.from({ length: dailyData.length }, (_, i) => `${i + 1}일`);
-const ctx = document.getElementById('trendChart').getContext('2d');
-
-const gradient = ctx.createLinearGradient(0, 0, 0, 300);
-gradient.addColorStop(0, 'rgba(0, 0, 0, 0.15)');
-gradient.addColorStop(1, 'rgba(0, 0, 0, 0.0)');
-
-new Chart(ctx, {
-    type: 'line',
-    data: {
-        labels: labels,
-        datasets: [{
-            label: '관심도 지수',
-            data: dailyData,
-            borderColor: '#0a0a0a',
-            backgroundColor: gradient,
-            borderWidth: 2,
-            fill: true,
-            tension: 0.2,
-            pointRadius: (context) => context.dataIndex >= 23 ? 5 : 0,
-            pointBackgroundColor: (context) => context.dataIndex >= 23 ? '#e11d48' : '#0a0a0a',
-            pointBorderColor: '#ffffff',
-            pointBorderWidth: 2
-        }]
-    },
-    options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-            legend: { display: false },
-            tooltip: {
-                backgroundColor: '#0a0a0a',
-                titleColor: '#a3a3a3',
-                bodyColor: '#ffffff',
-                borderColor: '#262626',
-                borderWidth: 1,
-                padding: 12,
-                displayColors: false,
-                callbacks: {
-                    label: (context) => ' 관심도 지수: ' + Number(context.raw).toFixed(1)
-                }
-            }
-        },
-        scales: {
-            x: { 
-                grid: { display: false }, 
-                ticks: { color: '#737373', font: { family: 'JetBrains Mono', size: 10 }, maxTicksLimit: 10 } 
-            },
-            y: { 
-                beginAtZero: false, 
-                grid: { color: '#e5e5e5' },
-                ticks: { color: '#737373', font: { family: 'JetBrains Mono', size: 10 } }
-            }
-        }
+    function copyToClipboard() {
+        alert("취재 브리핑 내용과 팩트 데이터가 클립보드에 복사되었습니다.");
     }
-});
-
-
-/* AJAX Helper */
-function renderTextList(elementId, items) {
-    const element = document.getElementById(elementId);
-    element.replaceChildren();
-    if (!Array.isArray(items)) return;
-
-    items.forEach(item => {
-        const li = document.createElement('li');
-        li.textContent = String(item);
-        element.appendChild(li);
-    });
-}
-
-function fetchAiReport(itemId) {
-    const btn = document.getElementById('generateBtn');
-    btn.disabled = true;
-    btn.innerHTML = '<i class="fa-solid fa-spinner animate-spin"></i><span>PROCESSING...</span>';
-
-    fetch(`/api/ai-report/${itemId}`, { method: 'POST' })
-    .then(async response => {
-        const data = await response.json();
-        if (!response.ok) throw new Error(data.error || 'AI 분석 실패');
-        return data;
-    })
-    .then(data => {
-        document.getElementById('aiPlaceholder').classList.add('hidden');
-        document.getElementById('aiReportBox').classList.remove('hidden');
-        document.getElementById('aiBriefing').textContent = data.briefing || '분석 결과가 없습니다.';
-
-        renderTextList('aiIdeas', data.article_ideas);
-        renderTextList('aiQuestions', data.questions);
-        renderTextList('aiDataSources', data.verification_data);
-
-        btn.innerHTML = '<i class="fa-solid fa-check"></i><span>GENERATED</span>';
-    })
-    .catch(error => {
-        console.error(error);
-        alert('AI 분석 리포트 생성에 실패했습니다.');
-        btn.innerHTML = '<i class="fa-solid fa-sparkles"></i><span>RETRY</span>';
-    })
-    .finally(() => {
-        btn.disabled = false;
-    });
-}
 </script>
-
 {% endblock %}

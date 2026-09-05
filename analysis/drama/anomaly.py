@@ -1,179 +1,64 @@
 import numpy as np
+import pandas as pd
 
 
 class TrendAnomalyEngine:
+  """드라마 및 트렌드 데이터의 이상 징후(Anomaly)를 감지하고
 
-    def __init__(
-        self, high_threshold=150, medium_threshold=50, z_threshold=1.96
-    ):
-        self.high_threshold = high_threshold
-        self.medium_threshold = medium_threshold
-        self.z_threshold = z_threshold
+  Z-Score 및 펄스 점수를 계산하는 엔진 클래스입니다.
+  """
 
-    def calculate_metrics(self, daily_values):
-        """
-        30일 일별 관심도 데이터를 받아 이상감지 지표를 계산합니다.
+  def __init__(self, df=None):
+    self.df = df
 
-        [0:23]  = 이전 23일 기준 구간
-        [23:30] = 최근 7일 분석 구간
+  def calculate_anomaly(self, values):
+    """주어진 시계열 수치 리스트/배열에서 이상 감지 지표를 계산합니다."""
+    return self.calculate_metrics(values)
 
-        기존 코드와의 호환성을 위해 past_30_avg 키는 유지합니다.
-        실제 의미는 '이전 23일 평균'입니다.
-        """
+  def calculate_metrics(self, values):
+    """기존 코드(mock_data.py 또는 total.py)에서 호출하는
 
-        try:
-            arr = np.asarray(daily_values, dtype=float)
-        except (TypeError, ValueError):
-            return {}
+    메서드 이름 호환을 위한 함수입니다.
+    """
+    if len(values) < 2:
+      return {
+          "base_avg": 0,
+          "recent_avg": 0,
+          "change_rate": 0,
+          "z_score": 0,
+          "pulse_score": 50,
+          "grade": "LOW",
+      }
 
-        # 최소 30일 데이터가 필요함
-        if len(arr) < 30:
-            return {}
+    values = np.array(values, dtype=float)
+    baseline = values[:-7] if len(values) >= 30 else values[: max(1, len(values) - 7)]
+    recent = values[-7:]
 
-        # 정확히 30일까지만 사용
-        arr = arr[:30]
+    base_mean = np.mean(baseline) if len(baseline) > 0 else np.mean(values)
+    base_std = np.std(baseline) if len(baseline) > 1 else 1.0
+    if base_std == 0:
+      base_std = 1.0
 
-        # NaN, inf 등 잘못된 값 검사
-        if not np.all(np.isfinite(arr)):
-            return {}
+    recent_mean = np.mean(recent)
+    z_score = (recent_mean - base_mean) / base_std
+    change_rate = (
+        ((recent_mean - base_mean) / base_mean) * 100 if base_mean > 0 else 0
+    )
 
-        baseline = arr[:23]
-        recent = arr[23:30]
+    pulse_score = min(100, max(10, int(50 + z_score * 10)))
 
-        baseline_avg = float(np.mean(baseline))
-        recent_7_avg = float(np.mean(recent))
+    if z_score >= 2.5 or change_rate >= 100:
+      grade = "HIGH"
+    elif z_score >= 1.5 or change_rate >= 50:
+      grade = "MEDIUM"
+    else:
+      grade = "LOW"
 
-        baseline_std = float(np.std(baseline))
-
-        # 표준편차가 0이면 Z-score 계산 오류 방지
-        if baseline_std <= 0:
-            baseline_std = 1.0
-
-        # ---------------------------------------
-        # 1. 최근 7일 관심도 변화율
-        # ---------------------------------------
-        increase_rate = (
-            ((recent_7_avg - baseline_avg) / baseline_avg) * 100
-            if baseline_avg > 0
-            else 0.0
-        )
-
-        # ---------------------------------------
-        # 2. Z-score
-        # ---------------------------------------
-        z_score = (recent_7_avg - baseline_avg) / baseline_std
-
-        # ---------------------------------------
-        # 3. 트렌드 종합 점수
-        # 10 ~ 99 범위
-        # ---------------------------------------
-        raw_score = 50 + (increase_rate / 5) + (z_score * 5)
-
-        trend_score = int(
-            round(
-                min(
-                    max(raw_score, 10),
-                    99
-                )
-            )
-        )
-
-        # ---------------------------------------
-        # 4. 이상징후 등급
-        # ---------------------------------------
-        if increase_rate >= self.high_threshold or z_score >= 2.5:
-            signal = "HIGH"
-
-        elif increase_rate >= self.medium_threshold or z_score >= 1.5:
-            signal = "MEDIUM"
-
-        else:
-            signal = "LOW"
-
-        signal_label = {
-            "HIGH": "급상승",
-            "MEDIUM": "주의",
-            "LOW": "정상/유지",
-        }[signal]
-
-        # 왜 해당 신호가 나왔는지 설명
-        signal_reason = self._build_signal_reason(
-            signal=signal,
-            increase_rate=increase_rate,
-            z_score=z_score,
-        )
-
-        return {
-            # 기존 코드와 연결을 유지하기 위한 값
-            "past_30_avg": round(baseline_avg, 1),
-            "recent_7_avg": round(recent_7_avg, 1),
-            "increase_rate": round(increase_rate, 1),
-            "z_score": round(z_score, 2),
-            "trend_score": trend_score,
-            "signal": signal,
-
-            # 상세 페이지 설명용 추가 데이터
-            "baseline_avg": round(baseline_avg, 1),
-            "signal_label": signal_label,
-            "signal_reason": signal_reason,
-        }
-
-    def _build_signal_reason(
-        self,
-        signal,
-        increase_rate,
-        z_score
-    ):
-        """
-        HIGH / MEDIUM / LOW 판정 이유를
-        사용자가 이해하기 쉬운 문장으로 생성합니다.
-        """
-
-        if signal == "HIGH":
-
-            if (
-                increase_rate >= self.high_threshold
-                and z_score >= 2.5
-            ):
-                basis = (
-                    "증가율과 Z-score가 모두 "
-                    "HIGH 기준을 충족"
-                )
-
-            elif increase_rate >= self.high_threshold:
-                basis = (
-                    f"증가율이 HIGH 기준 "
-                    f"(+{self.high_threshold}% 이상)을 충족"
-                )
-
-            else:
-                basis = (
-                    "Z-score가 HIGH 기준 "
-                    "(2.5 이상)을 충족"
-                )
-
-        elif signal == "MEDIUM":
-
-            if increase_rate >= self.medium_threshold:
-                basis = (
-                    f"증가율이 MEDIUM 기준 "
-                    f"(+{self.medium_threshold}% 이상)을 충족"
-                )
-
-            else:
-                basis = (
-                    "Z-score가 MEDIUM 기준 "
-                    "(1.5 이상)을 충족"
-                )
-
-        else:
-            basis = (
-                "증가율과 Z-score가 "
-                "급상승 기준 미만"
-            )
-
-        return (
-            f"최근 7일 평균 변화율 {increase_rate:+.1f}%, "
-            f"Z-score {z_score:.2f}로 "
-            f"{basis}했습니다."
-        )
+    return {
+        "base_avg": round(float(base_mean), 1),
+        "recent_avg": round(float(recent_mean), 1),
+        "change_rate": round(float(change_rate), 1),
+        "z_score": round(float(z_score), 2),
+        "pulse_score": pulse_score,
+        "grade": grade,
+    }

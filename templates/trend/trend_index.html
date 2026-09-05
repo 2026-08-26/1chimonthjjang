@@ -1,193 +1,61 @@
 {% extends "trend/trend_base.html" %}
-
 {% block content %}
-
-<!-- Main Hero Block (Image Header Style) -->
-<div class="bg-white border border-neutral-300 rounded-2xl p-6 md:p-10 shadow-sm mb-8">
-
-    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
-
-        <!-- Left Column: Big Editorial Title -->
-        <div class="lg:col-span-8 flex flex-col justify-between">
-            <div>
-                <div class="inline-block px-2.5 py-1 bg-neutral-100 border border-neutral-300 text-neutral-800 font-mono text-[11px] font-bold tracking-wider mb-4 uppercase">
-                    DATA-DRIVEN NEWSROOM
+<div class="max-w-7xl w-full mx-auto p-8 grid grid-cols-1 lg:grid-cols-3 gap-8">
+    <!-- 좌측: TOP 10 취재 시그널 랭킹 보드 -->
+    <div class="lg:col-span-2 space-y-6">
+        <div class="bg-white border border-neutral-300 p-8 rounded-xl shadow-sm">
+            <div class="flex justify-between items-baseline mb-6">
+                <div>
+                    <span class="text-xs font-mono text-rose-600 font-bold uppercase tracking-widest">REALTIME ANOMALY RANKING</span>
+                    <h2 class="text-2xl font-bold mt-1">이번 주 주목해야 할 취재 시그널 TOP 10</h2>
                 </div>
-
-                <h1 class="text-3xl md:text-5xl font-black text-neutral-900 tracking-tight leading-tight font-serif">
-                    {% if category_name %}
-                        {{ category_name }} <br/><span class="text-neutral-900">취재 시그널 모니터</span>
-                    {% else %}
-                        숫자가 발견한<br/>오늘의 취재 시그널
-                    {% endif %}
-                </h1>
-
-                <p class="text-xs md:text-sm text-neutral-600 mt-6 leading-relaxed max-w-xl font-sans">
-                    데이터 속 평소와 다른 움직임을 통계적으로 탐지하고, 기자가 확인할 가치가 있는 시그널 후보를 취재 우선순위와 함께 제공합니다.
-                </p>
+                <span class="text-xs font-mono text-neutral-400">AUTO-SYNCED: LIVE RADAR</span>
             </div>
 
-            <div class="mt-8 pt-4 border-t border-neutral-200 flex items-center justify-between">
-                <div class="flex items-center space-x-2 text-xs font-mono text-neutral-500">
-                    <span class="w-2 h-2 rounded-full bg-neutral-900 animate-pulse"></span>
-                    <span>AUTO-SYNCED: LIVE RADAR</span>
-                </div>
+            <!-- 랭킹 리스트 -->
+            <div class="divide-y divide-neutral-200">
+                {% if signals %}
+                    {% for sig in signals %}
+                    <div class="py-4 flex items-center justify-between hover:bg-neutral-50 px-4 rounded transition cursor-pointer" onclick="location.href='/detail/{{ sig.id }}'">
+                        <div class="flex items-center space-x-4">
+                            <span class="font-mono text-lg font-bold text-neutral-400 w-6">0{{ loop.index }}</span>
+                            <div>
+                                <div class="flex items-center space-x-2">
+                                    <span class="text-xs font-mono bg-neutral-200 text-neutral-700 px-2 py-0.5 rounded">{{ sig.category }}</span>
+                                    <span class="text-xs font-mono bg-rose-100 text-rose-600 font-bold px-2 py-0.5 rounded">{{ sig.grade }}</span>
+                                </div>
+                                <h4 class="font-bold text-lg mt-1">{{ sig.title }}</h4>
+                                <p class="text-xs text-neutral-500 mt-0.5">{{ sig.status_desc }}</p>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <div class="font-mono font-bold text-rose-600 text-lg">+{{ sig.change_rate }}%</div>
+                            <div class="text-xs font-mono text-neutral-400">PULSE: <strong class="text-neutral-800">{{ sig.pulse_score }}</strong></div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="py-12 text-center text-neutral-400 text-sm font-mono">연결된 시그널 데이터가 없습니다.</div>
+                {% endif %}
             </div>
         </div>
-
-        <!-- Right Column: Vertical Stat Stack (Divided Style) -->
-        <div class="lg:col-span-4 border-t lg:border-t-0 lg:border-l border-neutral-200 lg:pl-8 pt-6 lg:pt-0 flex flex-col justify-between space-y-6">
-
-            <!-- Stat 1: Total -->
-            <div class="pb-4 border-b border-neutral-200">
-                <div class="text-3xl sm:text-4xl font-black font-serif text-neutral-900 tracking-tight">
-                    {{ stats.total if stats else items|length }}
-                </div>
-                <div class="text-xs font-mono text-neutral-500 font-semibold mt-1 uppercase">
-                    전체 시그널 후보
-                </div>
-            </div>
-
-            <!-- Stat 2: High Signal -->
-            <div class="pb-4 border-b border-neutral-200">
-                <div class="text-3xl sm:text-4xl font-black font-serif text-rose-600 tracking-tight flex items-baseline justify-between">
-                    <span>{{ stats.high if stats else 0 }}</span>
-                    <span class="text-xs font-mono font-bold text-rose-600 bg-rose-50 px-2 py-0.5 border border-rose-200 rounded">HIGH</span>
-                </div>
-                <div class="text-xs font-mono text-neutral-500 font-semibold mt-1 uppercase">
-                    높은 우선순위 후보
-                </div>
-            </div>
-
-            <!-- Stat 3: Medium / Low Signal -->
-            <div class="grid grid-cols-2 gap-4">
-                <div>
-                    <div class="text-2xl font-bold font-serif text-amber-600">
-                        {{ stats.medium if stats else 0 }}
-                    </div>
-                    <div class="text-[11px] font-mono text-neutral-500 mt-0.5">보통 시그널</div>
-                </div>
-                <div>
-                    <div class="text-2xl font-bold font-serif text-emerald-600">
-                        {{ stats.low if stats else 0 }}
-                    </div>
-                    <div class="text-[11px] font-mono text-neutral-500 mt-0.5">일반 시그널</div>
-                </div>
-            </div>
-
-        </div>
-
     </div>
 
-</div>
-
-
-<!-- Category Navigation Buttons -->
-<div class="flex space-x-2 mb-6 overflow-x-auto pb-2 font-mono text-xs">
-
-    <a href="/" class="px-4 py-2 rounded-lg font-bold transition whitespace-nowrap {% if not category_type %} bg-black text-white shadow-md {% else %} bg-white text-neutral-700 border border-neutral-300 hover:bg-neutral-100 {% endif %}">
-        ALL CATEGORIES
-    </a>
-
-    <a href="/content/music" class="px-4 py-2 rounded-lg font-bold transition whitespace-nowrap {% if category_type == 'music' %} bg-black text-white shadow-md {% else %} bg-white text-neutral-700 border border-neutral-300 hover:bg-neutral-100 {% endif %}">
-        🎵 MUSIC
-    </a>
-
-    <a href="/content/drama" class="px-4 py-2 rounded-lg font-bold transition whitespace-nowrap {% if category_type == 'drama' %} bg-black text-white shadow-md {% else %} bg-white text-neutral-700 border border-neutral-300 hover:bg-neutral-100 {% endif %}">
-        🎬 DRAMA
-    </a>
-
-    <a href="/content/webtoon" class="px-4 py-2 rounded-lg font-bold transition whitespace-nowrap {% if category_type == 'webtoon' %} bg-black text-white shadow-md {% else %} bg-white text-neutral-700 border border-neutral-300 hover:bg-neutral-100 {% endif %}">
-        📱 WEBTOON
-    </a>
-
-</div>
-
-
-<!-- Trend Items List (High-Contrast Editorial Rows) -->
-<div class="space-y-3">
-
-    {% for item in items %}
-
-    <a href="/detail/{{ item.id }}" class="group block bg-white border border-neutral-300 p-5 rounded-xl editorial-card transition duration-150">
-
-        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
-
-            <!-- Left: Rank Number + Info -->
-            <div class="flex items-start space-x-4">
-
-                <div class="w-8 h-8 rounded-lg bg-neutral-100 border border-neutral-300 font-mono font-bold flex items-center justify-center text-xs text-neutral-800 group-hover:bg-black group-hover:text-white group-hover:border-black transition">
-                    {{ loop.index }}
-                </div>
-
-                <div>
-                    <div class="flex items-center space-x-2">
-                        <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-neutral-100 text-neutral-700 border border-neutral-300 font-semibold">
-                            {{ item.category_name }}
-                        </span>
-
-                        {% if item.signal == 'HIGH' %}
-                            <span class="text-[10px] font-mono font-extrabold px-2 py-0.5 rounded bg-rose-50 text-rose-600 border border-rose-200 flex items-center">
-                                <span class="w-1.5 h-1.5 rounded-full bg-rose-500 mr-1.5 animate-pulse"></span> HIGH
-                            </span>
-                        {% elif item.signal == 'MEDIUM' %}
-                            <span class="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-amber-50 text-amber-700 border border-amber-200">
-                                MEDIUM
-                            </span>
-                        {% else %}
-                            <span class="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-emerald-50 text-emerald-700 border border-emerald-200">
-                                LOW
-                            </span>
-                        {% endif %}
-                    </div>
-
-                    <h3 class="text-base md:text-lg font-bold text-neutral-900 mt-2 group-hover:underline">
-                        {{ item.title }}
-                    </h3>
-
-                    <p class="text-xs text-neutral-500 mt-1 font-mono">
-                        {{ item.sub_info }}
-                    </p>
-                </div>
-
+    <!-- 우측: AI 취재 에이전트 안내 패널 -->
+    <div class="bg-neutral-900 text-white p-6 rounded-xl flex flex-col justify-between shadow-xl">
+        <div>
+            <div class="flex justify-between items-center mb-4">
+                <span class="text-xs font-mono text-neutral-400">AI 취재 에이전트</span>
+                <span class="inline-flex items-center text-xs font-mono text-emerald-400">
+                    <span class="w-2 h-2 bg-emerald-400 rounded-full animate-pulse mr-1.5"></span> 준비 완료
+                </span>
             </div>
-
-
-            <!-- Right: Change Rate & Score Metrics -->
-            <div class="flex items-center justify-between md:justify-end space-x-8 pt-3 md:pt-0 border-t md:border-t-0 border-neutral-100">
-
-                <div class="text-right">
-                    <div class="text-[10px] font-mono text-neutral-400 font-bold uppercase">CHANGE RATE</div>
-                    <div class="text-base font-extrabold font-mono mt-0.5 {% if item.increase_rate >= 0 %} text-rose-600 {% else %} text-neutral-900 {% endif %}">
-                        {{ "%+.1f"|format(item.increase_rate) }}%
-                    </div>
-                </div>
-
-                <div class="text-right pl-6 border-l border-neutral-200">
-                    <div class="text-[10px] font-mono text-neutral-400 font-bold uppercase">PULSE SCORE</div>
-                    <div class="text-lg font-black text-neutral-900 font-mono mt-0.5">
-                        {{ item.trend_score }}<span class="text-xs text-neutral-400 font-normal">/100</span>
-                    </div>
-                </div>
-
-                <div class="w-8 h-8 rounded-lg bg-neutral-100 border border-neutral-300 flex items-center justify-center text-neutral-600 group-hover:bg-black group-hover:text-white group-hover:border-black transition">
-                    <i class="fa-solid fa-arrow-right text-xs"></i>
-                </div>
-
-            </div>
-
+            <h3 class="text-xl font-bold mb-2">데이터 다음의 질문을 찾습니다.</h3>
+            <p class="text-xs text-neutral-400 leading-relaxed mb-6">시그널을 선택하면 탐지 결과를 바탕으로 기사 아이디어와 후속 취재 질문을 제안합니다.</p>
         </div>
-
-    </a>
-
-    {% else %}
-
-    <div class="bg-white border border-neutral-300 p-12 rounded-xl text-center text-neutral-400 font-mono text-sm">
-        NO ANOMALY DETECTED IN THIS CATEGORY.
+        <div class="bg-neutral-800 p-4 rounded text-xs text-neutral-300 font-mono">
+            💡 좌측 리스트에서 항목을 클릭하면 상세 취재 리포트가 열립니다.
+        </div>
     </div>
-
-    {% endfor %}
-
 </div>
-
 {% endblock %}

@@ -4,7 +4,8 @@ from web.home_routes import load_dashboard_data
 
 from analysis.drama.mock_data import load_all_contents
 
-
+import os
+import pandas as pd
 # =========================================================
 # BLUEPRINT
 # =========================================================
@@ -205,8 +206,207 @@ def load_kcontent_home_signals(limit=5):
 
 
     return result
+def load_stock_home_signals(limit=5):
+    try:
+        base_dir = os.path.dirname(
+            os.path.dirname(os.path.abspath(__file__))
+        )
 
+        stock_path = os.path.join(
+            base_dir,
+            "result",
+            "stock",
+            "all_stock_signals.csv"
+        )
 
+        df = pd.read_csv(stock_path)
+
+        # 점수가 높은 종목부터
+        df = df.sort_values(
+            "score",
+            ascending=False
+        ).head(limit)
+
+        result = []
+
+        for rank, (_, row) in enumerate(df.iterrows(), start=1):
+
+            # 어떤 시그널이 발생했는지 한글로 표시
+            signals = []
+
+            if row["volume_signal"]:
+                signals.append("거래량 급증")
+
+            if row["price_signal"]:
+                signals.append("가격 이상")
+
+            if row["concentration_signal"]:
+                signals.append("수급 집중")
+
+            signal_name = " + ".join(signals)
+
+            # 등급
+            score = float(row["score"])
+
+            if score >= 4:
+                severity = "HIGH"
+            elif score >= 2:
+                severity = "MEDIUM"
+            else:
+                severity = "LOW"
+
+            result.append({
+                "category": "주식",
+                "region": row["market"],
+                "signal_name": f"{row['name']} · {signal_name}",
+                "score": round(score, 2),
+                "severity": severity,
+                "signal_type": "stock",
+                "detail_url": f"/stock/detail/{row['code']}",
+                "category_rank": rank,
+                "code": row["code"],
+                "name": row["name"]
+            })
+
+        return result
+
+    except Exception as e:
+        print("[HOME ERROR] 주식 시그널 로딩 실패:", e)
+        return []
+def load_baseball_home_signals(limit=5):
+    try:
+        base_dir = os.path.dirname(
+            os.path.dirname(os.path.abspath(__file__))
+        )
+
+        processed_dir = os.path.join(
+            base_dir,
+            "data",
+            "processed"
+        )
+
+        # ==========================================
+        # 야구 이상신호 CSV
+        # ==========================================
+
+        temp = pd.read_csv(
+            os.path.join(processed_dir, "temp_signal.csv")
+        )
+
+        humidity = pd.read_csv(
+            os.path.join(processed_dir, "humidity_signal.csv")
+        )
+
+        rain = pd.read_csv(
+            os.path.join(processed_dir, "rain_signal.csv")
+        )
+
+        # ==========================================
+        # 각 데이터가 어떤 날씨 신호인지 표시
+        # ==========================================
+
+        temp["weather_type"] = "기온"
+        temp["condition"] = temp["temp_group"]
+
+        humidity["weather_type"] = "습도"
+        humidity["condition"] = humidity["humidity_group"]
+
+        rain["weather_type"] = "강수"
+        rain["condition"] = rain["rain_group"]
+
+        # ==========================================
+        # 세 종류 이상신호 합치기
+        # ==========================================
+
+        baseball = pd.concat(
+            [temp, humidity, rain],
+            ignore_index=True
+        )
+
+        # 이상신호 강도 기준 TOP
+        baseball = baseball.sort_values(
+            "signal_strength",
+            ascending=False
+        )
+
+        # 같은 선수가 여러 번 TOP에 나오는 것을 방지
+        baseball = baseball.drop_duplicates(
+            subset=["player_name"],
+            keep="first"
+        )
+
+        baseball = baseball.head(limit)
+
+        result = []
+
+        # ==========================================
+        # 홈 화면 형식으로 변환
+        # ==========================================
+
+        for rank, (_, row) in enumerate(
+            baseball.iterrows(),
+            start=1
+        ):
+
+            strength = float(row["signal_strength"])
+            diff = float(row["weather_diff"])
+
+            # 성적 상승 / 하락
+            if diff > 0:
+                direction = "성적 상승"
+            else:
+                direction = "성적 하락"
+
+            # 이상신호 등급
+            if strength >= 1.0:
+                severity = "HIGH"
+            elif strength >= 0.5:
+                severity = "MEDIUM"
+            else:
+                severity = "LOW"
+
+            signal_name = (
+                f"{row['player_name']} · "
+                f"{row['weather_type']} {row['condition']}에서 "
+                f"{direction}"
+            )
+
+            result.append({
+                "category": "야구",
+
+                # 화면의 '구분' 부분
+                "region": row["weather_type"],
+
+                # 취재 시그널
+                "signal_name": signal_name,
+
+                # 이상신호 강도
+                "score": round(strength, 2),
+
+                "severity": severity,
+
+                "signal_type": "baseball",
+
+                # 일단 기존 야구 페이지로 연결
+                "detail_url": "/baseball",
+
+                "category_rank": rank,
+
+                # 추가 데이터
+                "player_name": row["player_name"],
+                "weather_type": row["weather_type"],
+                "condition": str(row["condition"]),
+                "weather_diff": round(diff, 3)
+            })
+
+        return result
+
+    except Exception as e:
+        print(
+            "[HOME ERROR] 야구 시그널 로딩 실패:",
+            e
+        )
+        return []
 # =========================================================
 # HOME V2 NAV
 # =========================================================
@@ -277,7 +477,12 @@ def home_v2_nav():
         )
     )
 
-
+    stock_signals = (
+        load_stock_home_signals(
+            limit=5
+    )
+)
+    baseball_signals = load_baseball_home_signals(limit=5)
     # =====================================================
     # 기존 사회/경제는 유지
     # 실제 K콘텐츠만 뒤에 추가
@@ -287,7 +492,10 @@ def home_v2_nav():
         kcontent_signals
     )
 
-
+    top_signals.extend(
+    stock_signals
+    )
+    top_signals.extend(baseball_signals)
     # =====================================================
     # 터미널 확인
     # =====================================================
@@ -310,8 +518,11 @@ def home_v2_nav():
         "K콘텐츠:",
         len(kcontent_signals)
     )
-
-
+    print(
+        "주식:",
+        len(stock_signals)
+    )   
+    print("야구:", len(baseball_signals))
     for item in kcontent_signals:
 
         print(

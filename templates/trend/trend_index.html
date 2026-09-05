@@ -6,159 +6,44 @@
 <style>
 
     /* =========================================
-       전체
-    ========================================= */
-
-    .trend-page {
-
-        width:
-            100%;
-    }
-
-
-    /* =========================================
        HERO
-       메인페이지의 신문형 대형 영역과 동일한 분위기
     ========================================= */
 
-    .trend-hero {
-
-        min-height:
-            310px;
-
-        background:
-            white;
-
-        border:
-            1px solid
-            var(--gray-3);
+    .hero {
 
         display:
             grid;
 
         grid-template-columns:
             minmax(0, 1fr)
-            440px;
-    }
+            470px;
 
+        background:
+            white;
 
-    .trend-hero-copy {
-
-        padding:
-            48px 52px;
-
-        display:
-            flex;
-
-        flex-direction:
-            column;
-
-        justify-content:
-            center;
-    }
-
-
-    .trend-kicker {
-
-        margin-bottom:
-            15px;
-
-        color:
-            var(--gray-2);
-
-        font-size:
-            9px;
-
-        font-weight:
-            900;
-
-        letter-spacing:
-            2px;
-    }
-
-
-    .trend-title {
-
-        margin:
-            0;
-
-        font-family:
-            Georgia,
-            "Batang",
-            "바탕",
-            serif;
-
-        font-size:
-            clamp(
-                42px,
-                5vw,
-                72px
-            );
-
-        line-height:
-            1.02;
-
-        font-weight:
-            900;
-
-        letter-spacing:
-            -3px;
-
-        word-break:
-            keep-all;
-    }
-
-
-    .trend-description {
-
-        max-width:
-            720px;
-
-        margin:
-            28px 0 0;
-
-        color:
-            var(--gray-1);
-
-        font-size:
-            12px;
-
-        line-height:
-            1.9;
-
-        word-break:
-            keep-all;
-    }
-
-
-    /* =========================================
-       통계
-    ========================================= */
-
-    .trend-stats {
-
-        padding:
-            38px 42px;
-
-        border-left:
+        border:
             1px solid
-            var(--gray-3);
+            var(--border);
 
-        display:
-            grid;
+        border-radius:
+            18px;
 
-        grid-template-columns:
-            1fr 1fr;
+        overflow:
+            hidden;
+
+        box-shadow:
+            0 4px 24px
+            rgba(0, 0, 0, .035);
     }
 
 
-    .stat-box {
+    .hero-left {
 
         min-height:
-            112px;
+            330px;
 
         padding:
-            20px 18px;
+            52px 56px;
 
         display:
             flex;
@@ -168,33 +53,25 @@
 
         justify-content:
             center;
-
-        border-bottom:
-            1px solid
-            var(--gray-4);
     }
 
 
-    .stat-box:nth-child(odd) {
+    .hero-eyebrow {
 
-        border-right:
-            1px solid
-            var(--gray-4);
-    }
+        margin-bottom:
+            18px;
 
+        display:
+            flex;
 
-    .stat-box:nth-child(3),
-    .stat-box:nth-child(4) {
+        align-items:
+            center;
 
-        border-bottom:
-            0;
-    }
-
-
-    .stat-label {
+        gap:
+            9px;
 
         color:
-            var(--gray-2);
+            #888;
 
         font-size:
             9px;
@@ -203,22 +80,204 @@
             800;
 
         letter-spacing:
-            .3px;
+            1.6px;
     }
 
 
-    .stat-value {
+    .hero-eyebrow-dot {
 
-        margin-top:
+        width:
             7px;
 
-        font-family:
-            Georgia,
-            "Times New Roman",
-            serif;
+        height:
+            7px;
+
+        background:
+            #111;
+
+        border-radius:
+            50%;
+    }
+
+
+    .hero-title {
+
+        max-width:
+            750px;
+
+        margin:
+            0;
 
         font-size:
-            34px;
+            clamp(
+                42px,
+                4.6vw,
+                67px
+            );
+
+        line-height:
+            1.12;
+
+        font-weight:
+            900;
+
+        letter-spacing:
+            -3.6px;
+
+        word-break:
+            keep-all;
+    }
+
+
+    .hero-description {
+
+        max-width:
+            690px;
+
+        margin:
+            25px 0 0;
+
+        color:
+            var(--text-secondary);
+
+        font-size:
+            12px;
+
+        line-height:
+            1.85;
+
+        word-break:
+            keep-all;
+    }
+
+
+    .hero-meta {
+
+        margin-top:
+            30px;
+
+        display:
+            flex;
+
+        align-items:
+            center;
+
+        gap:
+            10px;
+
+        color:
+            #999;
+
+        font-size:
+            9px;
+
+        font-weight:
+            600;
+    }
+
+
+    .hero-meta strong {
+
+        color:
+            #111;
+
+        font-weight:
+            800;
+    }
+
+
+    /* =========================================
+       STATS
+    ========================================= */
+
+    .hero-right {
+
+        padding:
+            22px;
+
+        background:
+            #f8f8f8;
+
+        border-left:
+            1px solid
+            var(--border);
+
+        display:
+            grid;
+
+        grid-template-columns:
+            repeat(2, 1fr);
+
+        gap:
+            12px;
+    }
+
+
+    .stat-card {
+
+        min-height:
+            136px;
+
+        padding:
+            21px;
+
+        background:
+            white;
+
+        border:
+            1px solid
+            var(--border-light);
+
+        border-radius:
+            13px;
+
+        display:
+            flex;
+
+        flex-direction:
+            column;
+
+        justify-content:
+            space-between;
+
+        transition:
+            transform .18s ease,
+            box-shadow .18s ease,
+            border-color .18s ease;
+    }
+
+
+    .stat-card:hover {
+
+        transform:
+            translateY(-2px);
+
+        border-color:
+            #c8c8c8;
+
+        box-shadow:
+            0 8px 22px
+            rgba(0, 0, 0, .05);
+    }
+
+
+    .stat-label {
+
+        color:
+            #888;
+
+        font-size:
+            9px;
+
+        font-weight:
+            700;
+    }
+
+
+    .stat-number {
+
+        font-size:
+            37px;
 
         line-height:
             1;
@@ -227,7 +286,7 @@
             900;
 
         letter-spacing:
-            -1px;
+            -2px;
     }
 
 
@@ -237,85 +296,83 @@
             4px;
 
         color:
-            var(--gray-2);
-
-        font-family:
-            Pretendard,
-            "Noto Sans KR",
-            sans-serif;
+            #aaa;
 
         font-size:
             9px;
 
         font-weight:
             500;
+
+        letter-spacing:
+            0;
     }
 
 
-    .stat-box.high
-    .stat-value {
+    .stat-indicator {
 
-        color:
-            #a72f2f;
+        width:
+            24px;
+
+        height:
+            3px;
+
+        margin-bottom:
+            8px;
+
+        border-radius:
+            10px;
+
+        background:
+            #111;
     }
 
 
-    .stat-box.medium
-    .stat-value {
+    .stat-card.high
+    .stat-indicator {
 
-        color:
-            #8a6422;
+        background:
+            var(--high);
     }
 
 
-    .stat-box.low
-    .stat-value {
+    .stat-card.medium
+    .stat-indicator {
 
-        color:
-            #41624a;
+        background:
+            var(--medium);
+    }
+
+
+    .stat-card.low
+    .stat-indicator {
+
+        background:
+            var(--low);
     }
 
 
     /* =========================================
-       카테고리 바
+       CATEGORY
     ========================================= */
 
-    .category-strip {
+    .category-nav {
 
         margin-top:
             20px;
 
-        min-height:
-            58px;
+        padding:
+            8px;
 
         background:
-            var(--black);
-
-        color:
             white;
 
         border:
             1px solid
-            var(--black);
+            var(--border);
 
-        display:
-            flex;
-
-        align-items:
-            stretch;
-    }
-
-
-    .category-strip-label {
-
-        width:
-            150px;
-
-        padding:
-            0 20px;
-
-        border-right:
-            1px solid #444;
+        border-radius:
+            13px;
 
         display:
             flex;
@@ -323,46 +380,40 @@
         align-items:
             center;
 
+        gap:
+            6px;
+    }
+
+
+    .category-title {
+
+        padding:
+            0 18px;
+
+        color:
+            #888;
+
         font-size:
-            10px;
+            9px;
 
         font-weight:
-            900;
+            800;
 
         letter-spacing:
             .8px;
     }
 
 
-    .category-tabs {
-
-        flex:
-            1;
-
-        display:
-            flex;
-
-        align-items:
-            stretch;
-
-        overflow-x:
-            auto;
-    }
-
-
-    .category-tab {
+    .category-link {
 
         min-width:
-            118px;
+            105px;
 
         padding:
-            0 24px;
+            11px 18px;
 
-        border-right:
-            1px solid #3d3d3d;
-
-        color:
-            #a9a9a9;
+        border-radius:
+            8px;
 
         display:
             flex;
@@ -373,46 +424,45 @@
         justify-content:
             center;
 
+        color:
+            #777;
+
         font-size:
             10px;
 
         font-weight:
-            800;
-
-        white-space:
-            nowrap;
+            700;
 
         transition:
-            background .18s ease,
-            color .18s ease;
+            all .18s ease;
     }
 
 
-    .category-tab:hover {
+    .category-link:hover {
 
         background:
-            #202020;
-
-        color:
-            white;
-    }
-
-
-    .category-tab.active {
-
-        background:
-            white;
+            #f3f3f3;
 
         color:
             #111;
     }
 
 
+    .category-link.active {
+
+        background:
+            #111;
+
+        color:
+            white;
+    }
+
+
     /* =========================================
-       순위 영역
+       RANKING PANEL
     ========================================= */
 
-    .ranking-section {
+    .ranking-panel {
 
         margin-top:
             20px;
@@ -422,86 +472,88 @@
 
         border:
             1px solid
-            var(--gray-3);
+            var(--border);
+
+        border-radius:
+            18px;
+
+        overflow:
+            hidden;
+
+        box-shadow:
+            0 4px 24px
+            rgba(0,0,0,.025);
     }
 
 
-    .ranking-head {
+    .ranking-header {
 
         min-height:
-            116px;
+            118px;
 
         padding:
-            24px 30px;
-
-        border-bottom:
-            1px solid
-            var(--gray-3);
+            30px 32px;
 
         display:
             flex;
 
         align-items:
-            flex-end;
+            center;
 
         justify-content:
             space-between;
 
         gap:
-            28px;
+            30px;
+
+        border-bottom:
+            1px solid
+            var(--border-light);
     }
 
 
-    .ranking-index {
+    .ranking-small {
+
+        margin-bottom:
+            7px;
 
         color:
-            var(--gray-2);
-
-        font-family:
-            Georgia,
-            "Times New Roman",
-            serif;
+            #999;
 
         font-size:
-            10px;
+            9px;
+
+        font-weight:
+            700;
+
+        letter-spacing:
+            1px;
     }
 
 
     .ranking-title {
 
-        margin-top:
-            5px;
-
-        font-family:
-            Georgia,
-            "Batang",
-            "바탕",
-            serif;
-
         font-size:
-            29px;
-
-        line-height:
-            1.15;
+            28px;
 
         font-weight:
             900;
 
         letter-spacing:
-            -1.2px;
+            -1.4px;
     }
 
 
     .ranking-desc {
 
         max-width:
-            430px;
-
-        color:
-            var(--gray-2);
+            450px;
 
         text-align:
             right;
+
+        color:
+            #888;
 
         font-size:
             9px;
@@ -511,137 +563,180 @@
     }
 
 
+    .ranking-desc strong {
+
+        display:
+            block;
+
+        margin-bottom:
+            3px;
+
+        color:
+            #333;
+
+        font-size:
+            9px;
+
+        font-weight:
+            800;
+    }
+
+
     /* =========================================
-       테이블 머리
+       COLUMN LABEL
     ========================================= */
 
-    .list-labels {
+    .column-row {
 
         min-height:
             42px;
 
         padding:
-            0 24px;
+            0 28px;
+
+        background:
+            #fafafa;
 
         border-bottom:
             1px solid
-            var(--gray-3);
+            var(--border-light);
 
         display:
             grid;
 
         grid-template-columns:
-            74px
-            minmax(250px, 1fr)
+            68px
+            minmax(260px, 1fr)
             150px
-            112px
+            110px
             125px
-            36px;
+            30px;
+
+        gap:
+            20px;
 
         align-items:
             center;
 
-        gap:
-            18px;
-
         color:
-            var(--gray-2);
+            #aaa;
 
         font-size:
             8px;
 
         font-weight:
-            900;
-
-        letter-spacing:
-            .4px;
+            700;
     }
 
 
-    .list-labels
-    .right {
-
+    .text-right {
         text-align:
             right;
     }
 
 
     /* =========================================
-       리스트 한 줄
+       ITEM
     ========================================= */
 
-    .trend-row {
+    .ranking-row {
 
         min-height:
-            92px;
+            94px;
 
         padding:
-            0 24px;
-
-        border-bottom:
-            1px solid
-            var(--gray-4);
+            0 28px;
 
         display:
             grid;
 
         grid-template-columns:
-            74px
-            minmax(250px, 1fr)
+            68px
+            minmax(260px, 1fr)
             150px
-            112px
+            110px
             125px
-            36px;
+            30px;
+
+        gap:
+            20px;
 
         align-items:
             center;
 
-        gap:
-            18px;
+        border-bottom:
+            1px solid
+            var(--border-light);
 
         transition:
-            background .18s ease,
-            padding-left .18s ease;
+            background .18s ease;
     }
 
 
-    .trend-row:last-child {
+    .ranking-row:last-child {
 
         border-bottom:
             0;
     }
 
 
-    .trend-row:hover {
+    .ranking-row:hover {
 
         background:
-            #f5f5f1;
-
-        padding-left:
-            29px;
+            #fafafa;
     }
 
 
     /* 순위 */
 
-    .rank-number {
+    .rank {
 
-        font-family:
-            Georgia,
-            "Times New Roman",
-            serif;
+        width:
+            42px;
+
+        height:
+            42px;
+
+        border-radius:
+            50%;
+
+        background:
+            #f2f2f2;
+
+        display:
+            grid;
+
+        place-items:
+            center;
+
+        color:
+            #333;
 
         font-size:
-            19px;
+            12px;
 
         font-weight:
-            900;
+            800;
+
+        transition:
+            all .18s ease;
+    }
+
+
+    .ranking-row:hover
+    .rank {
+
+        background:
+            #111;
+
+        color:
+            white;
     }
 
 
     /* 콘텐츠 */
 
-    .item-title-line {
+    .content-title-line {
 
         display:
             flex;
@@ -650,20 +745,26 @@
             center;
 
         gap:
-            10px;
+            8px;
 
         min-width:
             0;
     }
 
 
-    .item-title {
+    .content-title {
 
         min-width:
             0;
 
         overflow:
             hidden;
+
+        text-overflow:
+            ellipsis;
+
+        white-space:
+            nowrap;
 
         color:
             #111;
@@ -672,17 +773,14 @@
             14px;
 
         font-weight:
-            900;
+            800;
 
-        text-overflow:
-            ellipsis;
-
-        white-space:
-            nowrap;
+        letter-spacing:
+            -.4px;
     }
 
 
-    .item-category {
+    .content-tag {
 
         padding:
             4px 7px;
@@ -690,51 +788,48 @@
         flex:
             0 0 auto;
 
-        background:
-            #f0f0ed;
+        border-radius:
+            5px;
 
-        border:
-            1px solid
-            #e3e3df;
+        background:
+            #f1f1f1;
 
         color:
-            #666;
+            #777;
 
         font-size:
             8px;
 
         font-weight:
-            800;
+            700;
     }
 
 
-    .item-sub {
+    .content-sub {
 
         margin-top:
             6px;
 
         color:
-            var(--gray-2);
+            #999;
 
         font-size:
             9px;
-
-        white-space:
-            nowrap;
 
         overflow:
             hidden;
 
         text-overflow:
             ellipsis;
+
+        white-space:
+            nowrap;
     }
 
 
-    /* =========================================
-       관심도
-    ========================================= */
+    /* 지표 */
 
-    .metric-block {
+    .metric {
 
         text-align:
             right;
@@ -744,49 +839,36 @@
     .metric-label {
 
         color:
-            var(--gray-2);
+            #aaa;
 
         font-size:
             8px;
-
-        line-height:
-            1.2;
     }
 
 
     .metric-value {
 
         margin-top:
-            5px;
-
-        font-family:
-            Georgia,
-            "Times New Roman",
-            serif;
+            4px;
 
         font-size:
-            18px;
-
-        line-height:
-            1;
+            16px;
 
         font-weight:
-            900;
+            800;
     }
 
 
-    .metric-value.up {
+    .metric-value.positive {
 
         color:
-            #a72f2f;
+            var(--high);
     }
 
 
-    /* =========================================
-       등급
-    ========================================= */
+    /* 신호 */
 
-    .signal-cell {
+    .signal-wrap {
 
         display:
             flex;
@@ -796,16 +878,16 @@
     }
 
 
-    .signal-badge {
+    .signal {
 
         min-width:
-            74px;
+            72px;
 
         padding:
-            7px 9px;
+            6px 10px;
 
-        border:
-            1px solid;
+        border-radius:
+            999px;
 
         text-align:
             center;
@@ -814,57 +896,55 @@
             8px;
 
         font-weight:
-            900;
-
-        letter-spacing:
-            .4px;
+            800;
     }
 
 
-    .signal-badge.high {
-
-        border-color:
-            #b35a55;
+    .signal.high {
 
         color:
-            #8d2e29;
+            var(--high);
 
         background:
-            #fbf1f0;
+            var(--high-bg);
+
+        border:
+            1px solid
+            #ffd9dd;
     }
 
 
-    .signal-badge.medium {
-
-        border-color:
-            #aa894a;
+    .signal.medium {
 
         color:
-            #7f601f;
+            var(--medium);
 
         background:
-            #faf6ec;
+            var(--medium-bg);
+
+        border:
+            1px solid
+            #f3dfad;
     }
 
 
-    .signal-badge.low {
-
-        border-color:
-            #6f8d77;
+    .signal.low {
 
         color:
-            #46634e;
+            var(--low);
 
         background:
-            #f1f6f2;
+            var(--low-bg);
+
+        border:
+            1px solid
+            #ccebdc;
     }
 
 
-    /* =========================================
-       트렌드 점수
-    ========================================= */
+    /* 점수 */
 
-    .score-wrap {
+    .score {
 
         text-align:
             right;
@@ -874,7 +954,7 @@
     .score-label {
 
         color:
-            var(--gray-2);
+            #aaa;
 
         font-size:
             8px;
@@ -884,69 +964,60 @@
     .score-value {
 
         margin-top:
-            4px;
-
-        font-family:
-            Georgia,
-            "Times New Roman",
-            serif;
-
-        font-size:
-            22px;
-
-        font-weight:
-            900;
-    }
-
-
-    .score-outof {
-
-        margin-left:
             3px;
 
         color:
-            var(--gray-2);
+            #111;
 
-        font-family:
-            Pretendard,
-            "Noto Sans KR",
-            sans-serif;
+        font-size:
+            20px;
+
+        font-weight:
+            900;
+
+        letter-spacing:
+            -1px;
+    }
+
+
+    .score-value span {
+
+        margin-left:
+            2px;
+
+        color:
+            #aaa;
 
         font-size:
             8px;
 
         font-weight:
             500;
+
+        letter-spacing:
+            0;
     }
 
 
-    /* =========================================
-       화살표
-    ========================================= */
+    /* 화살표 */
 
     .row-arrow {
 
         color:
-            #aaa;
-
-        font-family:
-            Georgia,
-            "Times New Roman",
-            serif;
-
-        font-size:
-            24px;
+            #bbb;
 
         text-align:
-            right;
+            center;
+
+        font-size:
+            12px;
 
         transition:
-            color .18s ease,
-            transform .18s ease;
+            all .18s ease;
     }
 
 
-    .trend-row:hover
+    .ranking-row:hover
     .row-arrow {
 
         color:
@@ -957,20 +1028,16 @@
     }
 
 
-    /* =========================================
-       데이터 없음
-    ========================================= */
-
-    .empty-state {
+    .empty {
 
         padding:
-            70px 30px;
+            70px;
 
         text-align:
             center;
 
         color:
-            var(--gray-2);
+            #999;
 
         font-size:
             11px;
@@ -978,7 +1045,7 @@
 
 
     /* =========================================
-       반응형
+       RESPONSIVE
     ========================================= */
 
     @media (
@@ -986,40 +1053,40 @@
         1100px
     ) {
 
-        .trend-hero {
+        .hero {
 
             grid-template-columns:
                 1fr;
         }
 
 
-        .trend-stats {
+        .hero-right {
 
             border-left:
                 0;
 
             border-top:
                 1px solid
-                var(--gray-3);
+                var(--border);
         }
 
 
-        .list-labels {
+        .column-row {
 
             display:
                 none;
         }
 
 
-        .trend-row {
+        .ranking-row {
 
             grid-template-columns:
-                58px
+                55px
                 minmax(0, 1fr)
                 130px
-                92px
-                110px
-                28px;
+                90px
+                105px
+                24px;
         }
     }
 
@@ -1029,78 +1096,72 @@
         760px
     ) {
 
-        .trend-hero-copy {
+        .hero-left {
+
+            min-height:
+                auto;
 
             padding:
                 34px 24px;
         }
 
 
-        .trend-title {
+        .hero-title {
 
             font-size:
-                40px;
+                38px;
 
             letter-spacing:
                 -2px;
         }
 
 
-        .trend-description {
-
-            margin-top:
-                18px;
-        }
-
-
-        .trend-stats {
+        .hero-right {
 
             padding:
-                18px;
+                12px;
         }
 
 
-        .category-strip {
+        .stat-card {
+
+            min-height:
+                110px;
+
+            padding:
+                17px;
+        }
+
+
+        .stat-number {
+
+            font-size:
+                30px;
+        }
+
+
+        .category-nav {
+
+            overflow-x:
+                auto;
+        }
+
+
+        .category-title {
 
             display:
-                block;
+                none;
         }
 
 
-        .category-strip-label {
-
-            width:
-                100%;
-
-            height:
-                42px;
-
-            border-right:
-                0;
-
-            border-bottom:
-                1px solid
-                #444;
-        }
-
-
-        .category-tab {
+        .category-link {
 
             min-width:
-                104px;
-
-            min-height:
-                48px;
-
-            padding:
-                0 16px;
+                88px;
         }
 
 
-        .ranking-head {
-
-            min-height:
-                auto;
+        .ranking-header {
 
             align-items:
                 flex-start;
@@ -1117,55 +1178,33 @@
         }
 
 
-        .trend-row {
+        .ranking-row {
 
             padding:
                 18px;
 
             grid-template-columns:
-                42px
+                45px
                 minmax(0, 1fr)
-                24px;
+                22px;
 
             gap:
                 12px;
         }
 
 
-        .trend-row:hover {
-
-            padding-left:
-                18px;
-        }
-
-
-        .metric-block,
-        .signal-cell,
-        .score-wrap {
+        .metric,
+        .signal-wrap,
+        .score {
 
             grid-column:
-                2 / 3;
+                2;
 
             text-align:
                 left;
 
             justify-content:
                 flex-start;
-        }
-
-
-        .metric-block {
-
-            margin-top:
-                4px;
-        }
-
-
-        .signal-cell,
-        .score-wrap {
-
-            margin-top:
-                -4px;
         }
 
 
@@ -1191,619 +1230,530 @@
 {% block content %}
 
 
-<div class="trend-page">
+<!-- =========================================
+     HERO
+========================================= -->
+
+<section class="hero">
 
 
-    <!-- =========================================
-         HERO
-    ========================================= -->
-
-    <section class="trend-hero">
+    <div class="hero-left">
 
 
-        <div class="trend-hero-copy">
+        <div class="hero-eyebrow">
 
+            <span class="hero-eyebrow-dot"></span>
 
-            <div class="trend-kicker">
-                K-CONTENTS / TREND SIGNAL
-            </div>
-
-
-            <h1 class="trend-title">
-
-                {% if category_name %}
-
-                    {{ category_name }}
-                    트렌드 신호
-
-                {% else %}
-
-                    오늘의 TOP
-                    트렌드 이상감지
-
-                {% endif %}
-
-            </h1>
-
-
-            <p class="trend-description">
-
-                이전 23일 평균과 최근 7일 평균을 비교해
-                검색 관심도 및 미디어 반응 변화를 분석합니다.
-
-            </p>
-
+            K-CONTENTS SIGNAL MONITOR
 
         </div>
 
 
+        <h1 class="hero-title">
 
-        <!-- =========================================
-             통계
-        ========================================= -->
+            {% if category_name %}
 
-        <div class="trend-stats">
-
-
-            <!-- 전체 -->
-
-            <div class="stat-box">
-
-                <div class="stat-label">
-
-                    전체 감지 신호
-
-                </div>
-
-
-                <div class="stat-value">
-
-                    {{
-                        stats.total
-                        if stats
-                        else items|length
-                    }}
-
-                    <span class="stat-unit">
-                        건
-                    </span>
-
-                </div>
-
-            </div>
-
-
-
-            <!-- HIGH -->
-
-            <div
-                class="
-                    stat-box
-                    high
-                "
-            >
-
-                <div class="stat-label">
-
-                    HIGH
-                    (고위험/급상승)
-
-                </div>
-
-
-                <div class="stat-value">
-
-                    {{
-                        stats.high
-                        if stats
-                        else 0
-                    }}
-
-                    <span class="stat-unit">
-                        건
-                    </span>
-
-                </div>
-
-            </div>
-
-
-
-            <!-- MEDIUM -->
-
-            <div
-                class="
-                    stat-box
-                    medium
-                "
-            >
-
-                <div class="stat-label">
-
-                    MEDIUM
-                    (주의)
-
-                </div>
-
-
-                <div class="stat-value">
-
-                    {{
-                        stats.medium
-                        if stats
-                        else 0
-                    }}
-
-                    <span class="stat-unit">
-                        건
-                    </span>
-
-                </div>
-
-            </div>
-
-
-
-            <!-- LOW -->
-
-            <div
-                class="
-                    stat-box
-                    low
-                "
-            >
-
-                <div class="stat-label">
-
-                    LOW
-                    (정상/유지)
-
-                </div>
-
-
-                <div class="stat-value">
-
-                    {{
-                        stats.low
-                        if stats
-                        else 0
-                    }}
-
-                    <span class="stat-unit">
-                        건
-                    </span>
-
-                </div>
-
-            </div>
-
-
-        </div>
-
-
-    </section>
-
-
-
-    <!-- =========================================
-         CATEGORY
-    ========================================= -->
-
-    <nav
-        class="category-strip"
-        aria-label="K콘텐츠 카테고리"
-    >
-
-
-        <div
-            class="category-strip-label"
-        >
-
-            K-CONTENTS
-
-        </div>
-
-
-
-        <div class="category-tabs">
-
-
-            <!-- 전체 -->
-
-            <a
-                href="/trend"
-
-                class="
-                    category-tab
-
-                    {% if not category_type %}
-                        active
-                    {% endif %}
-                "
-            >
-
-                전체
-
-            </a>
-
-
-
-            <!-- 노래 -->
-
-            <a
-                href="/content/music"
-
-                class="
-                    category-tab
-
-                    {% if category_type == 'music' %}
-                        active
-                    {% endif %}
-                "
-            >
-
-                ♫ 노래
-
-            </a>
-
-
-
-            <!-- 드라마 -->
-
-            <a
-                href="/content/drama"
-
-                class="
-                    category-tab
-
-                    {% if category_type == 'drama' %}
-                        active
-                    {% endif %}
-                "
-            >
-
-                ▣ 드라마
-
-            </a>
-
-
-
-            <!-- 웹툰 -->
-
-            <a
-                href="/content/webtoon"
-
-                class="
-                    category-tab
-
-                    {% if category_type == 'webtoon' %}
-                        active
-                    {% endif %}
-                "
-            >
-
-                ▤ 웹툰
-
-            </a>
-
-
-        </div>
-
-
-    </nav>
-
-
-
-    <!-- =========================================
-         TREND RANKING
-    ========================================= -->
-
-    <section class="ranking-section">
-
-
-        <!-- 제목 -->
-
-        <div class="ranking-head">
-
-
-            <div>
-
-
-                <div class="ranking-index">
-
-                    01
-
-                </div>
-
-
-                <div class="ranking-title">
-
-                    트렌드 순위 리스트
-
-                </div>
-
-
-            </div>
-
-
-
-            <div class="ranking-desc">
-
-                트렌드 점수 높은 순
-
-            </div>
-
-
-        </div>
-
-
-
-        <!-- =========================================
-             컬럼
-        ========================================= -->
-
-        <div class="list-labels">
-
-
-            <div>
-                순위
-            </div>
-
-
-            <div>
-                콘텐츠
-            </div>
-
-
-            <div class="right">
-                검색 관심도
-            </div>
-
-
-            <div class="right">
-                등급
-            </div>
-
-
-            <div class="right">
-                트렌드 점수
-            </div>
-
-
-            <div>
-            </div>
-
-
-        </div>
-
-
-
-        <!-- =========================================
-             TOP 10
-        ========================================= -->
-
-        <div class="ranking-list">
-
-
-            {% for item in items %}
-
-
-                <a
-                    href="/detail/{{ item.id }}"
-                    class="trend-row"
-                >
-
-
-                    <!-- 순위 -->
-
-                    <div class="rank-number">
-
-                        {{
-                            "%02d"
-                            |format(
-                                loop.index
-                            )
-                        }}
-
-                    </div>
-
-
-
-                    <!-- 콘텐츠 -->
-
-                    <div class="item-info">
-
-
-                        <div class="item-title-line">
-
-
-                            <div class="item-title">
-
-                                {{ item.title }}
-
-                            </div>
-
-
-                            <span class="item-category">
-
-                                {{
-                                    item.category_name
-                                }}
-
-                            </span>
-
-
-                        </div>
-
-
-
-                        <div class="item-sub">
-
-                            {{
-                                item.sub_info
-                            }}
-
-                        </div>
-
-
-                    </div>
-
-
-
-                    <!-- 관심도 -->
-
-                    <div class="metric-block">
-
-
-                        <div class="metric-label">
-
-                            검색 관심도
-
-                        </div>
-
-
-                        <div
-                            class="
-                                metric-value
-                                up
-                            "
-                        >
-
-                            {{
-                                "%+.1f"
-                                |format(
-                                    item.increase_rate
-                                )
-                            }}%
-
-                        </div>
-
-
-                    </div>
-
-
-
-                    <!-- 등급 -->
-
-                    <div class="signal-cell">
-
-
-                        {% if item.signal == 'HIGH' %}
-
-
-                            <span
-                                class="
-                                    signal-badge
-                                    high
-                                "
-                            >
-
-                                HIGH
-
-                            </span>
-
-
-                        {% elif item.signal == 'MEDIUM' %}
-
-
-                            <span
-                                class="
-                                    signal-badge
-                                    medium
-                                "
-                            >
-
-                                MEDIUM
-
-                            </span>
-
-
-                        {% else %}
-
-
-                            <span
-                                class="
-                                    signal-badge
-                                    low
-                                "
-                            >
-
-                                LOW
-
-                            </span>
-
-
-                        {% endif %}
-
-
-                    </div>
-
-
-
-                    <!-- 트렌드 점수 -->
-
-                    <div class="score-wrap">
-
-
-                        <div class="score-label">
-
-                            트렌드 점수
-
-                        </div>
-
-
-                        <div class="score-value">
-
-                            {{
-                                item.trend_score
-                            }}
-
-                            <span class="score-outof">
-
-                                /100
-
-                            </span>
-
-
-                        </div>
-
-
-                    </div>
-
-
-
-                    <!-- 화살표 -->
-
-                    <div class="row-arrow">
-
-                        ›
-
-                    </div>
-
-
-                </a>
-
+                {{ category_name }}에서 발견한<br>
+                오늘의 취재 시그널
 
             {% else %}
 
+                데이터가 발견한<br>
+                오늘의 K콘텐츠 시그널
 
-                <div class="empty-state">
+            {% endif %}
 
-                    감지된 트렌드 데이터가 없습니다.
-
-                </div>
+        </h1>
 
 
-            {% endfor %}
+        <p class="hero-description">
 
+            이전 23일 평균과 최근 7일 평균을 비교해
+            검색 관심도 및 미디어 반응 변화를 분석합니다.
+            평소와 다른 움직임을 탐지해 기자가 먼저 확인할
+            취재 후보를 제공합니다.
+
+        </p>
+
+
+        <div class="hero-meta">
+
+            <strong>
+                TOP 10
+            </strong>
+
+            <span>
+                ·
+            </span>
+
+            이상감지 기반 취재 우선순위
 
         </div>
 
 
-    </section>
+    </div>
 
 
-</div>
+
+    <!-- STATS -->
+
+    <div class="hero-right">
+
+
+        <div class="stat-card">
+
+            <div>
+
+                <div class="stat-indicator"></div>
+
+                <div class="stat-label">
+                    전체 감지 신호
+                </div>
+
+            </div>
+
+
+            <div class="stat-number">
+
+                {{
+                    stats.total
+                    if stats
+                    else items|length
+                }}
+
+                <span class="stat-unit">
+                    건
+                </span>
+
+            </div>
+
+        </div>
+
+
+
+        <div class="stat-card high">
+
+            <div>
+
+                <div class="stat-indicator"></div>
+
+                <div class="stat-label">
+                    HIGH / 급상승
+                </div>
+
+            </div>
+
+
+            <div class="stat-number">
+
+                {{
+                    stats.high
+                    if stats
+                    else 0
+                }}
+
+                <span class="stat-unit">
+                    건
+                </span>
+
+            </div>
+
+        </div>
+
+
+
+        <div class="stat-card medium">
+
+            <div>
+
+                <div class="stat-indicator"></div>
+
+                <div class="stat-label">
+                    MEDIUM / 주의
+                </div>
+
+            </div>
+
+
+            <div class="stat-number">
+
+                {{
+                    stats.medium
+                    if stats
+                    else 0
+                }}
+
+                <span class="stat-unit">
+                    건
+                </span>
+
+            </div>
+
+        </div>
+
+
+
+        <div class="stat-card low">
+
+            <div>
+
+                <div class="stat-indicator"></div>
+
+                <div class="stat-label">
+                    LOW / 정상·유지
+                </div>
+
+            </div>
+
+
+            <div class="stat-number">
+
+                {{
+                    stats.low
+                    if stats
+                    else 0
+                }}
+
+                <span class="stat-unit">
+                    건
+                </span>
+
+            </div>
+
+        </div>
+
+
+    </div>
+
+
+</section>
+
+
+
+<!-- =========================================
+     CATEGORY
+========================================= -->
+
+<nav class="category-nav">
+
+
+    <div class="category-title">
+
+        K-CONTENTS
+
+    </div>
+
+
+    <a
+        href="/trend"
+        class="
+            category-link
+            {% if not category_type %}
+                active
+            {% endif %}
+        "
+    >
+        전체
+    </a>
+
+
+    <a
+        href="/content/music"
+        class="
+            category-link
+            {% if category_type == 'music' %}
+                active
+            {% endif %}
+        "
+    >
+        ♫ 노래
+    </a>
+
+
+    <a
+        href="/content/drama"
+        class="
+            category-link
+            {% if category_type == 'drama' %}
+                active
+            {% endif %}
+        "
+    >
+        ▣ 드라마
+    </a>
+
+
+    <a
+        href="/content/webtoon"
+        class="
+            category-link
+            {% if category_type == 'webtoon' %}
+                active
+            {% endif %}
+        "
+    >
+        ▦ 웹툰
+    </a>
+
+
+</nav>
+
+
+
+<!-- =========================================
+     RANKING
+========================================= -->
+
+<section class="ranking-panel">
+
+
+    <div class="ranking-header">
+
+
+        <div>
+
+            <div class="ranking-small">
+
+                TREND RANKING
+
+            </div>
+
+
+            <div class="ranking-title">
+
+                취재 우선순위 TOP 10
+
+            </div>
+
+        </div>
+
+
+
+        <div class="ranking-desc">
+
+            <strong>
+                이상감지 점수 높은 순
+            </strong>
+
+            관심도 변화율과 Z-score를 기반으로
+            평소와 다른 움직임이 큰 콘텐츠부터 정렬합니다.
+
+        </div>
+
+
+    </div>
+
+
+
+    <!-- COLUMN -->
+
+    <div class="column-row">
+
+        <div>
+            순위
+        </div>
+
+        <div>
+            콘텐츠
+        </div>
+
+        <div class="text-right">
+            관심도 변화
+        </div>
+
+        <div class="text-right">
+            신호
+        </div>
+
+        <div class="text-right">
+            탐지 점수
+        </div>
+
+        <div></div>
+
+    </div>
+
+
+
+    <!-- ITEMS -->
+
+    <div>
+
+
+        {% for item in items %}
+
+
+        <a
+            href="/detail/{{ item.id }}"
+            class="ranking-row"
+        >
+
+
+            <!-- 순위 -->
+
+            <div class="rank">
+
+                {{ loop.index }}
+
+            </div>
+
+
+
+            <!-- 콘텐츠 -->
+
+            <div>
+
+
+                <div class="content-title-line">
+
+
+                    <div class="content-title">
+
+                        {{ item.title }}
+
+                    </div>
+
+
+                    <span class="content-tag">
+
+                        {{ item.category_name }}
+
+                    </span>
+
+
+                </div>
+
+
+                <div class="content-sub">
+
+                    {{ item.sub_info }}
+
+                </div>
+
+
+            </div>
+
+
+
+            <!-- 관심도 -->
+
+            <div class="metric">
+
+                <div class="metric-label">
+
+                    검색 관심도
+
+                </div>
+
+
+                <div class="metric-value positive">
+
+                    {{
+                        "%+.1f"
+                        |format(
+                            item.increase_rate
+                        )
+                    }}%
+
+                </div>
+
+            </div>
+
+
+
+            <!-- 신호 -->
+
+            <div class="signal-wrap">
+
+
+                {% if item.signal == "HIGH" %}
+
+                    <span class="signal high">
+                        HIGH
+                    </span>
+
+
+                {% elif item.signal == "MEDIUM" %}
+
+                    <span class="signal medium">
+                        MEDIUM
+                    </span>
+
+
+                {% else %}
+
+                    <span class="signal low">
+                        LOW
+                    </span>
+
+                {% endif %}
+
+
+            </div>
+
+
+
+            <!-- 점수 -->
+
+            <div class="score">
+
+
+                <div class="score-label">
+
+                    트렌드 점수
+
+                </div>
+
+
+                <div class="score-value">
+
+                    {{ item.trend_score }}
+
+                    <span>
+                        /100
+                    </span>
+
+                </div>
+
+
+            </div>
+
+
+
+            <!-- 화살표 -->
+
+            <div class="row-arrow">
+
+                <i
+                    class="
+                        fa-solid
+                        fa-chevron-right
+                    "
+                ></i>
+
+            </div>
+
+
+        </a>
+
+
+        {% else %}
+
+
+        <div class="empty">
+
+            감지된 트렌드 데이터가 없습니다.
+
+        </div>
+
+
+        {% endfor %}
+
+
+    </div>
+
+
+</section>
 
 
 {% endblock %}

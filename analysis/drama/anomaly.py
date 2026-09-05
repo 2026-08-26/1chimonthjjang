@@ -5,52 +5,70 @@ class TrendAnomalyEngine:
 
     def __init__(
         self,
-        high_threshold=150,
-        medium_threshold=50,
-        z_threshold=1.96
+        high_threshold=90,
+        medium_threshold=30,
+        z_threshold=1.5,
+        high_z_threshold=3.5
     ):
         self.high_threshold = high_threshold
         self.medium_threshold = medium_threshold
         self.z_threshold = z_threshold
+        self.high_z_threshold = high_z_threshold
 
 
     def calculate_metrics(self, daily_values):
         """
         30일 관심도 데이터를 분석합니다.
 
-        앞 23일  : 기준 구간
-        뒤 7일   : 최근 구간
+        앞 23일 : 기준 구간
+        뒤 7일  : 최근 관찰 구간
+
+        반환값
+        ------------------
+        baseline_avg
+        past_30_avg
+        recent_7_avg
+        increase_rate
+        interest_ratio
+        z_score
+        trend_score
+        signal
+        signal_label
+        signal_reason
         """
 
         try:
+
             arr = np.asarray(
                 daily_values,
                 dtype=float
             )
 
         except (TypeError, ValueError):
+
             return {}
 
 
         # 최소 30개 데이터 필요
         if len(arr) < 30:
+
             return {}
 
 
-        # 처음 30개만 사용
         arr = arr[:30]
 
 
-        # NaN / 무한대 체크
+        # NaN / 무한대 방지
         if not np.all(
             np.isfinite(arr)
         ):
+
             return {}
 
 
-        # ==========================================
+        # ==================================================
         # 기준 23일 / 최근 7일
-        # ==========================================
+        # ==================================================
 
         baseline = arr[:23]
 
@@ -60,6 +78,7 @@ class TrendAnomalyEngine:
         baseline_avg = float(
             np.mean(baseline)
         )
+
 
         recent_7_avg = float(
             np.mean(recent)
@@ -72,174 +91,365 @@ class TrendAnomalyEngine:
 
 
         if baseline_std <= 0:
+
             baseline_std = 1.0
 
 
-        # ==========================================
+        # ==================================================
         # 1. 관심도 변화율
-        # ==========================================
+        # ==================================================
 
-        if baseline_avg > 0:
+        increase_rate = (
 
-            increase_rate = (
+            (
                 (
                     recent_7_avg
                     - baseline_avg
                 )
+
                 / baseline_avg
-                * 100
             )
 
-        else:
+            * 100
 
-            increase_rate = 0.0
+            if baseline_avg > 0
+
+            else 0.0
+        )
 
 
-        # ==========================================
-        # 2. Z-score
-        # ==========================================
+        # ==================================================
+        # 2. 평소 대비 몇 배 수준인가
+        # ==================================================
+
+        interest_ratio = (
+
+            recent_7_avg
+            / baseline_avg
+
+            if baseline_avg > 0
+
+            else 1.0
+        )
+
+
+        # ==================================================
+        # 3. Z-score
+        #
+        # 기준 구간의 표준편차를 기준으로
+        # 최근 평균이 얼마나 멀리 벗어났는지 계산
+        # ==================================================
 
         z_score = (
+
             recent_7_avg
             - baseline_avg
+
         ) / baseline_std
 
 
-        # ==========================================
-        # 3. 신호 분류
-        # ==========================================
+        # ==================================================
+        # 4. 이상신호 등급
+        # ==================================================
 
         if (
-            increase_rate >= self.high_threshold
-            or z_score >= 4.5
+
+            increase_rate
+            >= self.high_threshold
+
+            or
+
+            z_score
+            >= self.high_z_threshold
         ):
+
             signal = "HIGH"
 
+
         elif (
-            increase_rate >= self.medium_threshold
-            or z_score >= 1.5
+
+            increase_rate
+            >= self.medium_threshold
+
+            or
+
+            z_score
+            >= self.z_threshold
         ):
+
             signal = "MEDIUM"
 
+
         else:
+
             signal = "LOW"
 
 
-        # ==========================================
-        # 4. 트렌드 점수
+        # ==================================================
+        # 5. 탐지 점수
         #
-        # 기존 방식은 강한 신호가 전부 99점에
-        # 몰리는 문제가 있었음.
+        # 증가율 + Z-score를 결합
         #
-        # 증가율 + Z-score를 0~99 범위로
-        # 조금 더 자연스럽게 분산합니다.
-        # ==========================================
+        # 기존처럼 HIGH가 전부 99점에 몰리지 않도록
+        # 점수를 자연스럽게 분산
+        # ==================================================
 
         positive_increase = max(
             increase_rate,
-            0
+            0.0
         )
+
 
         positive_z = max(
             z_score,
-            0
+            0.0
         )
 
 
-        increase_component = min(
-            positive_increase,
-            220
-        ) / 220 * 60
+        increase_component = (
+
+            min(
+                positive_increase,
+                150.0
+            )
+
+            / 150.0
+
+            * 55.0
+        )
 
 
-        z_component = min(
-            positive_z,
-            7
-        ) / 7 * 34
+        z_component = (
+
+            min(
+                positive_z,
+                6.0
+            )
+
+            / 6.0
+
+            * 35.0
+        )
 
 
         raw_score = (
-            5
+
+            10.0
+
             + increase_component
+
             + z_component
         )
 
 
         trend_score = int(
+
             round(
+
                 min(
+
                     max(
                         raw_score,
-                        5
+                        10.0
                     ),
-                    99
+
+                    99.0
                 )
             )
         )
 
 
-        # ==========================================
-        # 기자에게 보여줄 이상감지 설명
-        # ==========================================
+        # ==================================================
+        # 등급과 점수가 너무 어색하지 않도록 보정
+        # ==================================================
 
         if signal == "HIGH":
 
-            signal_reason = (
-                "기준 구간과 비교해 매우 큰 관심도 변화가 "
-                "탐지되어 우선 취재가 필요한 후보입니다."
+            trend_score = max(
+                trend_score,
+                70
             )
+
 
         elif signal == "MEDIUM":
 
-            signal_reason = (
-                "평소보다 의미 있는 관심도 변화가 감지되어 "
-                "추가 모니터링과 취재 확인이 필요한 후보입니다."
+            trend_score = min(
+
+                max(
+                    trend_score,
+                    40
+                ),
+
+                69
             )
+
 
         else:
 
-            signal_reason = (
-                "현재 변화폭은 비교적 안정적인 범위이지만 "
-                "추가 변화 여부를 지속적으로 확인할 수 있습니다."
+            trend_score = min(
+                trend_score,
+                39
             )
 
 
-        # ==========================================
+        # ==================================================
+        # 화면 표시용 이름
+        # ==================================================
+
+        signal_label = {
+
+            "HIGH":
+                "급상승",
+
+            "MEDIUM":
+                "주의",
+
+            "LOW":
+                "정상/유지",
+
+        }[signal]
+
+
+        # ==================================================
+        # 왜 포착됐는지 설명
+        # ==================================================
+
+        signal_reason = (
+            self._build_signal_reason(
+
+                signal=signal,
+
+                increase_rate=
+                    increase_rate,
+
+                interest_ratio=
+                    interest_ratio,
+
+                z_score=
+                    z_score
+            )
+        )
+
+
+        # ==================================================
         # 결과
-        # ==========================================
+        # ==================================================
 
         return {
 
-            # 기존 코드 호환성 때문에 이름 유지
-            "past_30_avg": round(
-                baseline_avg,
-                1
-            ),
+            # 기존 코드 호환
+            "past_30_avg":
+                round(
+                    baseline_avg,
+                    1
+                ),
 
-            # 의미를 더 명확하게 쓰고 싶을 때 사용
-            "baseline_avg": round(
-                baseline_avg,
-                1
-            ),
+            # 의미가 명확한 이름
+            "baseline_avg":
+                round(
+                    baseline_avg,
+                    1
+                ),
 
-            "recent_7_avg": round(
-                recent_7_avg,
-                1
-            ),
+            "recent_7_avg":
+                round(
+                    recent_7_avg,
+                    1
+                ),
 
-            "increase_rate": round(
-                increase_rate,
-                1
-            ),
+            "increase_rate":
+                round(
+                    increase_rate,
+                    1
+                ),
 
-            "z_score": round(
-                z_score,
-                2
-            ),
+            "interest_ratio":
+                round(
+                    interest_ratio,
+                    2
+                ),
 
-            "trend_score": trend_score,
+            "z_score":
+                round(
+                    z_score,
+                    2
+                ),
 
-            "signal": signal,
+            "trend_score":
+                trend_score,
 
-            "signal_reason": signal_reason,
+            "signal":
+                signal,
+
+            "signal_label":
+                signal_label,
+
+            "signal_reason":
+                signal_reason,
         }
+
+
+    # ======================================================
+    # 이상감지 이유 자동 설명
+    # ======================================================
+
+    def _build_signal_reason(
+        self,
+        signal,
+        increase_rate,
+        interest_ratio,
+        z_score
+    ):
+
+        if signal == "HIGH":
+
+            return (
+
+                f"최근 7일 평균 관심도가 "
+                f"기준 구간의 "
+                f"{interest_ratio:.2f}배 수준으로 변했고 "
+
+                f"변화율 "
+                f"{increase_rate:+.1f}%, "
+
+                f"Z-score "
+                f"{z_score:.2f}가 나타났습니다. "
+
+                "평소 패턴에서 크게 벗어난 움직임으로 "
+                "우선 취재 확인이 필요한 후보입니다."
+            )
+
+
+        if signal == "MEDIUM":
+
+            return (
+
+                f"최근 7일 평균 관심도가 "
+                f"기준 구간의 "
+                f"{interest_ratio:.2f}배 수준이며 "
+
+                f"변화율 "
+                f"{increase_rate:+.1f}%, "
+
+                f"Z-score "
+                f"{z_score:.2f}가 나타났습니다. "
+
+                "평소보다 의미 있는 변화가 감지되어 "
+                "추가 관찰이 필요한 후보입니다."
+            )
+
+
+        return (
+
+            f"최근 7일 평균 관심도는 "
+            f"기준 구간의 "
+            f"{interest_ratio:.2f}배 수준이며 "
+
+            f"변화율 "
+            f"{increase_rate:+.1f}%, "
+
+            f"Z-score "
+            f"{z_score:.2f}입니다. "
+
+            "현재는 일반적인 변동 범위로 분류됩니다."
+        )

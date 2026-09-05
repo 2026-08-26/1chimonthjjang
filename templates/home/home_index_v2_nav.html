@@ -1,4131 +1,5054 @@
 <!DOCTYPE html>
+
 <html lang="ko">
 
 <head>
 
     <meta charset="UTF-8">
 
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta
 
-    <title>DATA TIP-OFF | 뉴스룸</title>
+        name="viewport"
 
+        content="width=device-width, initial-scale=1.0"
+
+    >
+
+    <title>
+
+        DATA TIP-OFF
+
+    </title>
 
     <style>
-        * {
-            box-sizing: border-box;
-        }
 
+        * {
+
+            box-sizing: border-box;
+
+        }
 
         :root {
+
+            --bg: #f5f5f3;
+
             --white: #ffffff;
-            --bg: #f4f4f2;
-            --black: #101010;
-            --dark: #191919;
-            --gray1: #555555;
-            --gray2: #888888;
-            --gray3: #cfcfcb;
-            --gray4: #e7e7e3;
-            --gray5: #f7f7f5;
 
-            --high: #b73c35;
-            --medium: #956e2c;
-            --low: #52705a;
+            --black: #111111;
+
+            --gray: #777777;
+
+            --line: #d8d8d4;
+
+            --light: #efefec;
+
+            --red: #d83445;
+
+            --orange: #a66e14;
+
+            --green: #39825e;
+
         }
-
 
         html {
+
             scroll-behavior: smooth;
+
         }
 
-
         body {
+
             margin: 0;
 
             background: var(--bg);
+
             color: var(--black);
 
             font-family:
-                Pretendard,
-                "Noto Sans KR",
-                Arial,
-                sans-serif;
-        }
 
+                Pretendard,
+
+                "Noto Sans KR",
+
+                Arial,
+
+                sans-serif;
+
+        }
 
         a {
-            color: inherit;
-            text-decoration: none;
-        }
 
+            color: inherit;
+
+            text-decoration: none;
+
+        }
 
         button,
-        select {
-            font: inherit;
-        }
 
+        select {
+
+            font: inherit;
+
+        }
 
         button {
+
             cursor: pointer;
+
         }
 
+        /* ==================================================
 
-        /* ===========================
-           전체
-        =========================== */
+           HEADER
 
-        .page {
-            min-height: 100vh;
-        }
-
-
-        /* ===========================
-           상단 헤더
-        =========================== */
+        ================================================== */
 
         .header {
-            height: 72px;
 
-            padding: 0 34px;
+            height: 70px;
 
-            background: var(--black);
+            padding: 0 30px;
+
+            background: #111;
+
             color: white;
 
             display: flex;
+
             align-items: center;
-            justify-content: space-between;
+
+            gap: 24px;
 
             position: sticky;
+
             top: 0;
+
             z-index: 100;
+
         }
 
+        .menu-button {
 
-        .brand-wrap {
-            display: flex;
-            align-items: center;
-            gap: 25px;
+            width: 36px;
+
+            height: 36px;
+
+            border: 1px solid #444;
+
+            background: transparent;
+
+            color: white;
+
         }
-
 
         .brand {
+
             font-family:
+
                 Georgia,
-                "Times New Roman",
+
                 serif;
 
             font-size: 20px;
+
             font-weight: 900;
 
-            letter-spacing: -1px;
         }
 
+        .top-nav {
 
-        .header-line {
-            width: 1px;
-            height: 18px;
+            margin-left: auto;
 
-            background: #555;
-        }
+            height: 100%;
 
-
-        .header-sub {
-            font-size: 10px;
-
-            color: #b9b9b9;
-
-            letter-spacing: 1.2px;
-        }
-
-
-        .header-right {
             display: flex;
+
+            align-items: stretch;
+
+        }
+
+        .top-nav a {
+
+            min-width: 66px;
+
+            padding: 0 13px;
+
+            display: flex;
+
             align-items: center;
-            gap: 24px;
+
+            justify-content: center;
+
+            color: #aaa;
 
             font-size: 10px;
 
-            color: #bbbbbb;
+            font-weight: 800;
+
         }
 
+        .top-nav a:hover {
+
+            color: white;
+
+        }
 
         .live {
+
+            padding: 7px 11px;
+
+            border: 1px solid #444;
+
+            border-radius: 30px;
+
+            color: #aaa;
+
+            font-size: 9px;
+
+        }
+
+        /* ==================================================
+
+           SIDEBAR
+
+        ================================================== */
+
+        .sidebar-overlay {
+
+            position: fixed;
+
+            inset: 0;
+
+            background:
+
+                rgba(
+
+                    0,
+
+                    0,
+
+                    0,
+
+                    .45
+
+                );
+
+            opacity: 0;
+
+            visibility: hidden;
+
+            z-index: 199;
+
+        }
+
+        .sidebar-overlay.open {
+
+            opacity: 1;
+
+            visibility: visible;
+
+        }
+
+        .sidebar {
+
+            position: fixed;
+
+            left: 0;
+
+            top: 0;
+
+            width: 320px;
+
+            max-width: 88vw;
+
+            height: 100vh;
+
+            padding: 50px 26px;
+
+            background: #111;
+
+            color: white;
+
+            transform:
+
+                translateX(
+
+                    -100%
+
+                );
+
+            transition: .2s;
+
+            z-index: 200;
+
+        }
+
+        .sidebar.open {
+
+            transform:
+
+                translateX(
+
+                    0
+
+                );
+
+        }
+
+        .sidebar-close {
+
+            position: absolute;
+
+            top: 16px;
+
+            right: 20px;
+
+            border: 0;
+
+            background: transparent;
+
+            color: #aaa;
+
+            font-size: 25px;
+
+        }
+
+        .sidebar-brand {
+
+            padding-bottom: 24px;
+
+            border-bottom: 1px solid #333;
+
+            font-family:
+
+                Georgia,
+
+                serif;
+
+            font-size: 23px;
+
+            font-weight: 900;
+
+        }
+
+        .sidebar-section {
+
+            padding: 22px 0;
+
+            border-bottom: 1px solid #2d2d2d;
+
+        }
+
+        .sidebar-label {
+
+            margin-bottom: 9px;
+
+            color: #666;
+
+            font-size: 8px;
+
+            font-weight: 900;
+
+        }
+
+        .sidebar-link {
+
+            min-height: 40px;
+
+            padding: 0 9px;
+
             display: flex;
+
             align-items: center;
-            gap: 7px;
+
+            justify-content: space-between;
+
+            color: #bbb;
+
+            font-size: 11px;
+
+            font-weight: 700;
+
         }
 
+        .sidebar-link:hover {
 
-        .live-dot {
-            width: 6px;
-            height: 6px;
+            background: #1c1c1c;
 
-            border-radius: 50%;
+            color: white;
 
-            background: white;
-
-            animation:
-                blink 1.5s ease-in-out infinite;
         }
 
+        /* ==================================================
 
-        @keyframes blink {
+           LAYOUT
 
-            0%,
-            100% {
-                opacity: 1;
-            }
-
-            50% {
-                opacity: .25;
-            }
-        }
-
-
-        .version-link {
-            padding: 8px 11px;
-
-            border: 1px solid #555;
-
-            transition:
-                background .2s ease,
-                color .2s ease;
-        }
-
-
-        .version-link:hover {
-            background: white;
-            color: black;
-        }
-
-
-        /* ===========================
-           화면 구조
-        =========================== */
+        ================================================== */
 
         .workspace {
+
             max-width: 1600px;
 
-            margin: 0 auto;
+            margin: auto;
 
             padding: 28px;
 
             display: grid;
 
             grid-template-columns:
-                minmax(0, 1fr) 370px;
+
+                minmax(
+
+                    0,
+
+                    1fr
+
+                )
+
+                370px;
 
             gap: 20px;
 
             align-items: start;
+
         }
 
+        /* ==================================================
 
-        .newsroom {
-            min-width: 0;
-        }
-
-
-        /* ===========================
            HERO
-        =========================== */
+
+        ================================================== */
 
         .hero {
+
+            padding: 40px;
+
+            min-height: 260px;
+
             background: white;
 
-            border: 1px solid var(--gray3);
-
-            padding: 42px;
+            border: 1px solid var(--line);
 
             display: grid;
 
             grid-template-columns:
-                minmax(0, 1fr) 280px;
 
-            gap: 50px;
+                1fr auto;
+
+            align-items: center;
+
+            gap: 30px;
+
         }
-
 
         .hero-label {
+
+            color: #999;
+
             font-size: 9px;
+
             font-weight: 900;
 
-            letter-spacing: 1.8px;
+            letter-spacing: 1.4px;
 
-            color: var(--gray2);
         }
-
 
         .hero h1 {
-            margin:
-                17px 0 0;
 
-            max-width: 770px;
+            margin: 12px 0 15px;
 
             font-family:
+
                 Georgia,
+
                 "Noto Serif KR",
+
                 serif;
 
-            font-size:
-                clamp(42px, 5vw, 72px);
+            font-size: 51px;
 
-            line-height: 1.02;
+            line-height: 1.05;
 
-            letter-spacing: -3px;
+            letter-spacing: -2px;
+
         }
 
+        .hero p {
 
-        .hero-desc {
-            max-width: 680px;
+            max-width: 650px;
 
-            margin-top: 20px;
+            margin: 0;
 
-            font-size: 12px;
+            color: #666;
+
+            font-size: 11px;
+
             line-height: 1.9;
 
-            color: var(--gray1);
         }
 
+        .hero-stats {
 
-        .hero-numbers {
-            border-left: 1px solid var(--gray3);
+            display: grid;
 
-            padding-left: 30px;
+            grid-template-columns:
 
-            display: flex;
-            flex-direction: column;
-            justify-content: flex-end;
+                repeat(
+
+                    3,
+
+                    115px
+
+                );
+
+            border: 1px solid var(--line);
+
         }
-
 
         .hero-stat {
-            padding: 17px 0;
 
-            border-bottom: 1px solid var(--gray4);
+            padding: 21px 10px;
+
+            text-align: center;
+
+            border-right:
+
+                1px solid var(--line);
+
         }
 
+        .hero-stat:last-child {
 
-        .hero-stat:first-child {
-            border-top: 1px solid var(--gray4);
+            border-right: 0;
+
         }
 
+        .hero-number {
 
-        .hero-stat-value {
             font-family:
+
                 Georgia,
+
                 serif;
 
-            font-size: 32px;
-            font-weight: 900;
-        }
+            font-size: 27px;
 
+            font-weight: 900;
+
+        }
 
         .hero-stat-label {
-            margin-top: 4px;
 
-            font-size: 9px;
+            margin-top: 8px;
 
-            color: var(--gray2);
+            color: #999;
+
+            font-size: 8px;
+
         }
 
+        /* ==================================================
 
-        /* ===========================
-           상단 속보 시그널
-        =========================== */
+           TICKER
+
+           ★ 자동 롤링 복구
+
+        ================================================== */
 
         .ticker {
-            margin-top: 20px;
 
-            height: 53px;
+            margin-top: 14px;
 
-            background: var(--black);
+            height: 48px;
+
+            background: #111;
+
             color: white;
 
             display: grid;
 
             grid-template-columns:
-                145px 1fr;
+
+                155px
+
+                minmax(
+
+                    0,
+
+                    1fr
+
+                );
 
             overflow: hidden;
+
         }
 
+        .ticker-title {
 
-        .ticker-label {
+            position: relative;
+
+            z-index: 3;
+
+            padding: 0 20px;
+
+            background: #111;
+
+            border-right:
+
+                1px solid #333;
+
             display: flex;
+
             align-items: center;
 
-            padding: 0 18px;
+            font-size: 9px;
 
-            border-right: 1px solid #444;
-
-            font-size: 10px;
             font-weight: 900;
 
-            letter-spacing: 1px;
+            white-space: nowrap;
+
         }
 
+        .ticker-window {
 
-        .ticker-content {
-            display: flex;
-            align-items: center;
+            min-width: 0;
 
             overflow: hidden;
 
             position: relative;
+
         }
 
+        .ticker-window::before {
+
+            content: "";
+
+            position: absolute;
+
+            left: 0;
+
+            top: 0;
+
+            bottom: 0;
+
+            width: 18px;
+
+            z-index: 2;
+
+            pointer-events: none;
+
+            background:
+
+                linear-gradient(
+
+                    to right,
+
+                    #111,
+
+                    transparent
+
+                );
+
+        }
+
+        .ticker-window::after {
+
+            content: "";
+
+            position: absolute;
+
+            right: 0;
+
+            top: 0;
+
+            bottom: 0;
+
+            width: 18px;
+
+            z-index: 2;
+
+            pointer-events: none;
+
+            background:
+
+                linear-gradient(
+
+                    to left,
+
+                    #111,
+
+                    transparent
+
+                );
+
+        }
 
         .ticker-track {
+
+            width: max-content;
+
+            height: 48px;
+
             display: flex;
+
+            align-items: center;
+
+            animation:
+
+                tickerMove
+
+                38s
+
+                linear
+
+                infinite;
+
+            will-change:
+
+                transform;
+
+        }
+
+        .ticker-window:hover
+
+        .ticker-track {
+
+            animation-play-state:
+
+                paused;
+
+        }
+
+        .ticker-item {
+
+            min-width: max-content;
+
+            height: 48px;
+
+            padding: 0 27px;
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 7px;
+
+            color: #d4d4d4;
+
+            border-right:
+
+                1px solid #333;
+
+            font-size: 9px;
 
             white-space: nowrap;
 
-            animation:
-                tickerMove 32s linear infinite;
         }
 
+        .ticker-category {
 
-        .ticker-content:hover .ticker-track {
-            animation-play-state: paused;
+            color: #fff;
+
+            font-weight: 900;
+
         }
-
-
-        .ticker-item {
-            padding: 0 32px;
-
-            border-right: 1px solid #444;
-
-            font-size: 10px;
-        }
-
 
         .ticker-region {
-            color: #aaa;
 
-            margin-right: 8px;
+            color: #777;
+
         }
 
+        .ticker-score {
+
+            color: #ddd;
+
+            font-family:
+
+                Georgia,
+
+                serif;
+
+            font-weight: 900;
+
+        }
 
         @keyframes tickerMove {
 
-            from {
-                transform: translateX(0);
+            0% {
+
+                transform:
+
+                    translateX(
+
+                        0
+
+                    );
+
             }
 
-            to {
-                transform: translateX(-50%);
+            100% {
+
+                transform:
+
+                    translateX(
+
+                        -50%
+
+                    );
+
             }
+
         }
 
+        /* ==================================================
 
-        /* ===========================
-           공통 카드
-        =========================== */
+           SECTION
+
+        ================================================== */
 
         .section {
+
             margin-top: 20px;
 
             background: white;
 
-            border: 1px solid var(--gray3);
-        }
+            border:
 
+                1px solid var(--line);
+
+        }
 
         .section-head {
-            padding: 25px 28px;
 
-            border-bottom: 1px solid var(--gray3);
+            padding: 27px 34px;
+
+            min-height: 125px;
+
+            border-bottom:
+
+                1px solid var(--line);
 
             display: flex;
+
+            align-items: center;
+
             justify-content: space-between;
-            align-items: flex-end;
 
             gap: 30px;
-        }
 
+        }
 
         .section-index {
-            font-family:
-                Georgia,
-                serif;
 
-            font-size: 11px;
+            margin-bottom: 10px;
 
-            color: var(--gray2);
+            color: #999;
+
+            font-size: 8px;
+
         }
-
 
         .section-title {
-            margin-top: 6px;
 
             font-family:
+
                 Georgia,
+
                 "Noto Serif KR",
+
                 serif;
 
-            font-size: 25px;
+            font-size: 28px;
+
             font-weight: 900;
 
-            letter-spacing: -1px;
         }
 
+        .section-description {
 
-        .section-desc {
-            max-width: 370px;
+            max-width: 420px;
+
+            color: #999;
 
             text-align: right;
 
-            font-size: 10px;
-            line-height: 1.7;
+            font-size: 9px;
 
-            color: var(--gray2);
+            line-height: 1.8;
+
         }
 
+        /* ==================================================
 
-        /* ===========================
-           주요 시그널
-        =========================== */
+           TABS
+
+        ================================================== */
+
+        .signal-tabs {
+
+            padding: 0 28px;
+
+            display: flex;
+
+            border-bottom:
+
+                1px solid var(--line);
+
+        }
+
+        .signal-tab {
+
+            height: 48px;
+
+            padding: 0 18px;
+
+            border: 0;
+
+            border-bottom:
+
+                2px solid transparent;
+
+            background:
+
+                transparent;
+
+            color: #888;
+
+            font-size: 9px;
+
+            font-weight: 900;
+
+        }
+
+        .signal-tab.active {
+
+            color: #111;
+
+            border-bottom-color:
+
+                #111;
+
+        }
+
+        /* ==================================================
+
+           SIGNAL TABLE
+
+        ================================================== */
 
         .signal-list {
-            padding: 0 28px;
+
+            padding:
+
+                0 28px 12px;
+
         }
 
-
         .signal-head,
+
         .signal-row {
+
             display: grid;
 
             grid-template-columns:
-                45px 70px 100px minmax(0, 1fr) 70px 60px 90px;
 
-            gap: 12px;
+                58px
+
+                90px
+
+                125px
+
+                minmax(
+
+                    260px,
+
+                    1fr
+
+                )
+
+                90px
+
+                80px
+
+                110px;
+
+            gap: 14px;
 
             align-items: center;
-        }
 
+        }
 
         .signal-head {
-            min-height: 43px;
 
-            border-bottom: 1px solid var(--black);
+            min-height: 54px;
 
-            color: var(--gray2);
+            border-bottom:
+
+                1px solid #111;
+
+            color: #888;
 
             font-size: 8px;
-            font-weight: 900;
-        }
 
+            font-weight: 900;
+
+        }
 
         .signal-row {
-            min-height: 68px;
 
-            border-bottom: 1px solid var(--gray4);
+            min-height: 84px;
 
-            transition:
-                background .2s ease,
-                padding .2s ease;
+            border-bottom:
+
+                1px solid #e6e6e2;
+
         }
-
-
-        .signal-row:last-child {
-            border-bottom: 0;
-        }
-
 
         .signal-row:hover {
-            margin:
-                0 -28px;
 
-            padding:
-                0 28px;
+            background: #111;
 
-            background: var(--black);
             color: white;
+
         }
 
-
         .rank {
+
             font-family:
+
                 Georgia,
+
                 serif;
 
             font-size: 19px;
+
             font-weight: 900;
+
         }
 
+        .field {
 
-        .signal-field {
             font-size: 9px;
+
             font-weight: 900;
+
         }
 
+        .region {
 
-        .signal-region {
-            font-size: 10px;
+            color: #666;
 
-            color: var(--gray1);
+            font-size: 9px;
+
         }
 
+        .signal-row:hover
 
-        .signal-row:hover .signal-region {
-            color: #bbb;
+        .region {
+
+            color: #aaa;
+
         }
-
 
         .signal-name {
+
             overflow: hidden;
 
-            text-overflow: ellipsis;
-            white-space: nowrap;
+            text-overflow:
+
+                ellipsis;
+
+            white-space:
+
+                nowrap;
 
             font-size: 11px;
+
             font-weight: 800;
+
         }
 
+        .score {
 
-        .signal-score {
             font-family:
+
                 Georgia,
+
                 serif;
 
-            font-size: 16px;
+            font-size: 17px;
+
             font-weight: 900;
+
         }
 
+        .score-unit {
+
+            margin-left: 3px;
+
+            color: #999;
+
+            font-family:
+
+                Arial,
+
+                sans-serif;
+
+            font-size: 7px;
+
+        }
 
         .badge {
-            width: fit-content;
 
-            padding: 4px 6px;
+            padding: 4px 7px;
 
-            border: 1px solid currentColor;
+            border:
+
+                1px solid currentColor;
 
             font-size: 8px;
-            font-weight: 900;
-        }
 
+            font-weight: 900;
+
+        }
 
         .badge.high {
-            color: var(--high);
-        }
 
+            color: var(--red);
+
+        }
 
         .badge.medium {
-            color: var(--medium);
-        }
 
+            color: var(--orange);
+
+        }
 
         .badge.low {
-            color: var(--low);
+
+            color: var(--green);
+
         }
 
+        .signal-row:hover
 
-        .signal-row:hover .badge {
+        .badge {
+
             color: white;
-        }
 
+        }
 
         .analyse-button {
-            height: 30px;
 
-            border: 1px solid var(--black);
+            height: 34px;
 
-            background: transparent;
-            color: var(--black);
+            width: 100%;
+
+            border:
+
+                1px solid #111;
+
+            background:
+
+                transparent;
 
             font-size: 8px;
+
             font-weight: 900;
 
-            transition:
-                background .15s ease,
-                color .15s ease;
         }
 
+        .signal-row:hover
 
-        .signal-row:hover .analyse-button {
+        .analyse-button {
+
             border-color: white;
+
             color: white;
+
         }
 
+        .empty {
 
-        .analyse-button:hover,
-        .signal-row:hover .analyse-button:hover {
-            background: white;
-            color: black;
+            display: none;
+
+            padding: 50px;
+
+            text-align: center;
+
+            color: #999;
+
+            font-size: 10px;
+
         }
 
+        /* ==================================================
 
-        /* ===========================
-           그래프
-        =========================== */
+           CHART
+
+        ================================================== */
 
         .chart-layout {
+
             display: grid;
 
             grid-template-columns:
-                minmax(0, 1.5fr) minmax(260px, .5fr);
-        }
 
+                1fr
+
+                320px;
+
+        }
 
         .chart-main {
+
             padding: 28px;
 
-            border-right: 1px solid var(--gray3);
-        }
+            border-right:
 
+                1px solid var(--line);
+
+        }
 
         .chart-side {
+
             padding: 28px;
+
         }
 
+        .sub-title {
 
-        .mini-heading {
-            margin-bottom: 25px;
-
-            display: flex;
-            justify-content: space-between;
+            margin-bottom: 18px;
 
             font-size: 9px;
+
             font-weight: 900;
+
         }
-
-
-        .mini-heading span:last-child {
-            font-weight: 400;
-
-            color: var(--gray2);
-        }
-
 
         .chart-wrap {
+
             height: 270px;
 
             position: relative;
-        }
 
+        }
 
         #trend-chart {
+
             width: 100%;
+
             height: 100%;
 
-            overflow: visible;
         }
-
 
         .grid-line {
+
             stroke: #deded9;
 
-            stroke-width: 1;
+            stroke-dasharray:
 
-            stroke-dasharray: 2 6;
+                3 6;
+
         }
 
+        .chart-line {
 
-        .axis-label {
-            font-family: Arial, sans-serif;
-
-            font-size: 9px;
-
-            fill: #999;
-        }
-
-
-        .area {
-            fill: rgba(0, 0, 0, .045);
-        }
-
-
-        .line {
             fill: none;
 
             stroke: #111;
 
             stroke-width: 2;
 
-            stroke-linecap: round;
-            stroke-linejoin: round;
-
-            stroke-dasharray: 2500;
-            stroke-dashoffset: 2500;
-
-            animation:
-                draw 1.8s ease forwards;
         }
 
+        .chart-area {
 
-        @keyframes draw {
+            fill:
 
-            to {
-                stroke-dashoffset: 0;
-            }
+                rgba(
+
+                    0,
+
+                    0,
+
+                    0,
+
+                    .04
+
+                );
+
         }
 
+        .chart-point {
 
-        .point {
             fill: white;
+
             stroke: black;
 
             stroke-width: 2;
 
-            cursor: pointer;
-
-            transition:
-                r .15s ease,
-                fill .15s ease;
         }
 
+        .axis-label {
 
-        .point:hover {
-            fill: black;
+            fill: #999;
+
+            font-size: 8px;
+
         }
 
+        .rule {
 
-        .tooltip {
-            display: none;
+            margin-bottom: 15px;
 
-            position: absolute;
-
-            z-index: 30;
-
-            pointer-events: none;
-
-            padding: 10px 12px;
-
-            background: black;
-            color: white;
-
-            font-size: 9px;
-            line-height: 1.5;
         }
-
-
-        .tooltip strong {
-            display: block;
-
-            margin-top: 3px;
-
-            font-family:
-                Georgia,
-                serif;
-
-            font-size: 17px;
-        }
-
-
-        /* 규칙 분포 */
-
-        .rule-list {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-
-
-        .rule-item {
-            cursor: default;
-        }
-
 
         .rule-top {
-            display: flex;
-            justify-content: space-between;
-            gap: 15px;
 
             margin-bottom: 6px;
 
+            display: flex;
+
+            justify-content:
+
+                space-between;
+
             font-size: 9px;
+
         }
-
-
-        .rule-name {
-            max-width: 200px;
-
-            overflow: hidden;
-            white-space: nowrap;
-            text-overflow: ellipsis;
-        }
-
-
-        .rule-count {
-            font-family:
-                Georgia,
-                serif;
-
-            font-size: 11px;
-            font-weight: 900;
-        }
-
 
         .rule-track {
+
             height: 5px;
 
-            background: #e5e5e1;
-        }
+            background: #e7e7e3;
 
+        }
 
         .rule-bar {
-            width: 0;
+
             height: 100%;
 
-            background: black;
+            background: #111;
 
-            transition:
-                width .8s cubic-bezier(.2, .8, .2, 1);
         }
 
+        /* ==================================================
 
-        .rule-item:hover .rule-bar {
-            opacity: .5;
-        }
+           CATEGORIES
 
-
-        /* ===========================
-           카테고리
-        =========================== */
+        ================================================== */
 
         .categories {
+
             display: grid;
 
             grid-template-columns:
-                repeat(4, 1fr);
-        }
 
+                repeat(
+
+                    5,
+
+                    1fr
+
+                );
+
+        }
 
         .category {
+
             min-height: 220px;
 
-            padding: 26px;
+            padding: 27px;
 
-            border-right: 1px solid var(--gray3);
+            border-right:
 
-            position: relative;
+                1px solid var(--line);
 
-            overflow: hidden;
-
-            transition:
-                background .22s ease,
-                color .22s ease;
         }
-
 
         .category:last-child {
+
             border-right: 0;
+
         }
-
-
-        .category-number {
-            font-family:
-                Georgia,
-                serif;
-
-            font-size: 11px;
-
-            color: var(--gray2);
-        }
-
-
-        .category-name {
-            margin-top: 45px;
-
-            font-family:
-                Georgia,
-                "Noto Serif KR",
-                serif;
-
-            font-size: 27px;
-            font-weight: 900;
-        }
-
-
-        .category-text {
-            max-width: 250px;
-
-            margin-top: 10px;
-
-            font-size: 10px;
-            line-height: 1.75;
-
-            color: var(--gray1);
-        }
-
-
-        .category-extra {
-            position: absolute;
-
-            left: 26px;
-            right: 26px;
-            bottom: -50px;
-
-            display: flex;
-            justify-content: space-between;
-
-            font-size: 9px;
-            font-weight: 900;
-
-            opacity: 0;
-
-            transition:
-                bottom .25s ease,
-                opacity .25s ease;
-        }
-
 
         .category:hover {
-            background: black;
-            color: white;
-        }
 
+            background: #111;
 
-        .category:hover .category-number,
-
-        .category:hover .category-text {
-            color: #bbb;
-        }
-
-
-        .category:hover .category-extra {
-            bottom: 24px;
-
-            opacity: 1;
-        }
-
-
-        /* ===========================
-           오른쪽 AI 패널
-        =========================== */
-
-        .ai-panel {
-            position: sticky;
-            top: 92px;
-
-            background: var(--black);
             color: white;
 
-            border: 1px solid var(--black);
-
-            min-height: calc(100vh - 120px);
         }
 
-
-        .ai-head {
-            padding: 26px;
-
-            border-bottom: 1px solid #3b3b3b;
-        }
-
-
-        .ai-kicker {
-            display: flex;
-            justify-content: space-between;
-
-            font-size: 8px;
-            font-weight: 900;
-
-            letter-spacing: 1px;
-
-            color: #aaa;
-        }
-
-
-        .ai-status {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-
-
-        .ai-status-dot {
-            width: 5px;
-            height: 5px;
-
-            border-radius: 50%;
-
-            background: white;
-        }
-
-
-        .ai-head h2 {
-            margin:
-                18px 0 0;
-
-            font-family:
-                Georgia,
-                "Noto Serif KR",
-                serif;
-
-            font-size: 30px;
-
-            line-height: 1.15;
-
-            letter-spacing: -1px;
-        }
-
-
-        .ai-head p {
-            margin:
-                13px 0 0;
-
-            font-size: 10px;
-            line-height: 1.7;
-
-            color: #aaa;
-        }
-
-
-        .ai-controls {
-            padding: 22px 26px;
-
-            border-bottom: 1px solid #3b3b3b;
-        }
-
-
-        .ai-control-label {
-            display: block;
-
-            margin-bottom: 8px;
-
-            font-size: 8px;
-            font-weight: 900;
-
-            color: #aaa;
-        }
-
-
-        .ai-select {
-            width: 100%;
-            height: 43px;
-
-            padding: 0 10px;
-
-            background: #1c1c1c;
-            color: white;
-
-            border: 1px solid #555;
-
-            outline: none;
-
-            font-size: 10px;
-        }
-
-
-        .ai-button {
-            width: 100%;
-            height: 43px;
-
-            margin-top: 9px;
-
-            background: white;
-            color: black;
-
-            border: 1px solid white;
-
-            font-size: 10px;
-            font-weight: 900;
-
-            transition:
-                background .2s ease,
-                color .2s ease;
-        }
-
-
-        .ai-button:hover {
-            background: black;
-            color: white;
-        }
-
-
-        .ai-button:disabled {
-            opacity: .5;
-
-            cursor: wait;
-        }
-
-
-        .ai-body {
-            padding: 26px;
-        }
-
-
-        .ai-empty {
-            min-height: 300px;
-
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-        }
-
-
-        .ai-empty-icon {
-            width: 50px;
-            height: 50px;
-
-            margin-bottom: 22px;
-
-            border: 1px solid #555;
-            border-radius: 50%;
-
-            display: grid;
-            place-items: center;
-
-            font-family:
-                Georgia,
-                serif;
-
-            font-size: 21px;
-        }
-
-
-        .ai-empty-title {
-            font-family:
-                Georgia,
-                "Noto Serif KR",
-                serif;
-
-            font-size: 20px;
-            font-weight: 900;
-
-            line-height: 1.4;
-        }
-
-
-        .ai-empty-text {
-            margin-top: 10px;
-
-            font-size: 10px;
-            line-height: 1.75;
-
-            color: #aaa;
-        }
-
-
-        .ai-output {
-            display: none;
-        }
-
-
-        .ai-selected {
-            padding-bottom: 20px;
-
-            border-bottom: 1px solid #555;
-        }
-
-
-        .ai-selected-label {
-            font-size: 8px;
-
-            color: #888;
-        }
-
-
-        .ai-selected-title {
-            margin-top: 7px;
-
-            font-family:
-                Georgia,
-                "Noto Serif KR",
-                serif;
-
-            font-size: 20px;
-            font-weight: 900;
-
-            line-height: 1.35;
-        }
-
-
-        .ai-block {
-            padding: 20px 0;
-
-            border-bottom: 1px solid #3b3b3b;
-        }
-
-
-        .ai-block-title {
-            margin-bottom: 10px;
-
-            font-size: 8px;
-            font-weight: 900;
-
-            letter-spacing: .7px;
-
-            color: #888;
-        }
-
-
-        .ai-block p,
-        .ai-block li {
-            font-size: 10px;
-            line-height: 1.8;
-
-            color: #ddd;
-        }
-
-
-        .ai-block p {
-            margin: 0;
-        }
-
-
-        .ai-block ul {
-            margin: 0;
-
-            padding-left: 17px;
-        }
-
-
-        .ai-block strong {
-            color: white;
-        }
-
-
-        .ai-warning {
-            padding-top: 18px;
-
-            font-size: 8px;
-            line-height: 1.7;
-
-            color: #777;
-        }
-
-
-        /* ===========================
-           하단
-        =========================== */
-
-        .footer {
-            margin-top: 20px;
-
-            padding: 22px 4px;
-
-            display: flex;
-            justify-content: space-between;
-
-            color: var(--gray2);
-
-            font-size: 8px;
-        }
-
-
-        /* ===========================
-           반응형
-        =========================== */
-
-        @media(max-width: 1180px) {
-
-            .workspace {
-                grid-template-columns: 1fr;
-            }
-
-
-            .ai-panel {
-                position: static;
-
-                min-height: 0;
-            }
-
-
-            .hero {
-                grid-template-columns: 1fr;
-            }
-
-
-            .hero-numbers {
-                border-left: 0;
-                border-top: 1px solid var(--gray3);
-
-                padding:
-                    25px 0 0;
-
-                display: grid;
-
-                grid-template-columns:
-                    repeat(3, 1fr);
-
-                gap: 20px;
-            }
-
-        }
-
-
-        @media(max-width: 800px) {
-
-            .header {
-                padding: 0 18px;
-            }
-
-
-            .header-sub,
-            .header-right {
-                display: none;
-            }
-
-
-            .workspace {
-                padding: 14px;
-            }
-
-
-            .hero {
-                padding: 28px 23px;
-            }
-
-
-            .hero h1 {
-                font-size: 43px;
-
-                letter-spacing: -2px;
-            }
-
-
-            .ticker {
-                grid-template-columns: 100px 1fr;
-            }
-
-
-            .chart-layout {
-                grid-template-columns: 1fr;
-            }
-
-
-            .chart-main {
-                border-right: 0;
-                border-bottom: 1px solid var(--gray3);
-            }
-
-
-            .categories {
-                grid-template-columns: 1fr;
-            }
-
-
-            .category {
-                border-right: 0;
-                border-bottom: 1px solid var(--gray3);
-            }
-
-
-            .signal-head {
-                display: none;
-            }
-
-
-            .signal-row {
-                grid-template-columns:
-                    35px 65px 1fr 80px;
-            }
-
-
-            .signal-field,
-            .signal-score,
-            .signal-row>div:nth-child(6) {
-                display: none;
-            }
-
-        }
-
-        /* =========================================
-           후보2 FINAL
-           상단 분야 메뉴 + 슬라이드 사이드바
-        ========================================= */
-
-        .menu-toggle {
-            width: 38px;
-            height: 38px;
-
-            padding: 0;
-
-            flex-shrink: 0;
-
-            display: grid;
-            place-items: center;
-
-            border: 1px solid #505050;
-
-            background: transparent;
-            color: white;
-
-            font-size: 15px;
-            line-height: 1;
-
-            transition:
-                background .18s ease,
-                color .18s ease,
-                border-color .18s ease;
-        }
-
-
-        .menu-toggle:hover,
-        .menu-toggle.active {
-            background: white;
-            color: black;
-
-            border-color: white;
-        }
-
-
-        /* 상단 분야 메뉴 */
-
-        .top-category-nav {
-            margin-left: auto;
-            margin-right: 22px;
-
-            display: flex;
-            align-items: center;
-            gap: 3px;
-        }
-
-
-        .top-category-link {
-            min-height: 34px;
-
-            padding: 0 13px;
-
-            display: flex;
-            align-items: center;
-
-            border: 1px solid transparent;
-
-            color: #b9b9b9;
-
-            font-size: 9px;
-            font-weight: 800;
-
-            letter-spacing: .3px;
-
-            transition:
-                background .18s ease,
-                border-color .18s ease,
-                color .18s ease;
-        }
-
-
-        .top-category-link:hover {
-            color: white;
-
-            border-color: #555;
-        }
-
-
-        .top-category-link.disabled {
-            opacity: .45;
-
-            cursor: default;
-        }
-
-
-        .top-category-link.disabled:hover {
-            color: #b9b9b9;
-
-            border-color: transparent;
-        }
-
-
-        /* =========================================
-           왼쪽 사이드바 배경
-        ========================================= */
-
-        .sidebar-overlay {
-            position: fixed;
-
-            top: 72px;
-            left: 0;
-            right: 0;
-            bottom: 0;
-
-            z-index: 115;
-
-            background: rgba(0, 0, 0, .30);
-
-            opacity: 0;
-
-            pointer-events: none;
-
-            transition:
-                opacity .25s ease;
-        }
-
-
-        .sidebar-overlay.open {
-            opacity: 1;
-
-            pointer-events: auto;
-        }
-
-
-        /* =========================================
-           왼쪽 사이드바
-        ========================================= */
-
-        .newsroom-sidebar {
-            width: 285px;
-
-            position: fixed;
-
-            top: 72px;
-            bottom: 0;
-            left: 0;
-
-            z-index: 120;
-
-            background: #f4f4f2;
-            color: var(--black);
-
-            border-right: 1px solid var(--black);
-
-            transform: translateX(-100%);
-
-            transition:
-                transform .3s cubic-bezier(.2, .8, .2, 1);
-
-            overflow-y: auto;
-        }
-
-
-        .newsroom-sidebar.open {
-            transform: translateX(0);
-        }
-
-
-        .sidebar-inner {
-            min-height: 100%;
-
-            padding:
-                28px 18px 24px;
-
-            display: flex;
-            flex-direction: column;
-        }
-
-
-        /* 닫기 */
-
-        .sidebar-close {
-            width: 34px;
-            height: 34px;
-
-            position: absolute;
-
-            top: 16px;
-            right: 16px;
-
-            border: 1px solid #c9c9c4;
-
-            background: transparent;
-            color: black;
-
-            display: grid;
-            place-items: center;
-
-            font-size: 17px;
-
-            transition:
-                background .18s ease,
-                color .18s ease;
-        }
-
-
-        .sidebar-close:hover {
-            background: black;
-            color: white;
-        }
-
-
-        /* 사이드바 로고 */
-
-        .sidebar-brand {
-            padding:
-                0 10px 28px;
-
-            border-bottom: 1px solid var(--black);
-        }
-
-
-        .sidebar-brand-name {
-            font-family:
-                Georgia,
-                "Times New Roman",
-                serif;
-
-            font-size: 27px;
-            font-weight: 900;
-
-            letter-spacing: -1px;
-        }
-
-
-        .sidebar-brand-sub {
-            margin-top: 9px;
-
-            color: var(--gray2);
-
-            font-size: 9px;
-
-            letter-spacing: 1.2px;
-        }
-
-
-        /* 메뉴 구역 */
-
-        .sidebar-section {
-            margin-top: 27px;
-        }
-
-
-        .sidebar-label {
-            padding:
-                0 10px 10px;
+        .category-number {
 
             color: #999;
 
             font-size: 8px;
+
+        }
+
+        .category-name {
+
+            margin-top: 25px;
+
+            font-family:
+
+                Georgia,
+
+                "Noto Serif KR",
+
+                serif;
+
+            font-size: 25px;
+
             font-weight: 900;
 
-            letter-spacing: 1.3px;
         }
 
+        .category-text {
 
-        .sidebar-link {
-            min-height: 52px;
+            margin-top: 15px;
 
-            padding:
-                0 10px;
+            min-height: 60px;
+
+            color: #666;
+
+            font-size: 9px;
+
+            line-height: 1.75;
+
+        }
+
+        .category:hover
+
+        .category-text {
+
+            color: #aaa;
+
+        }
+
+        .category-bottom {
+
+            margin-top: 20px;
 
             display: flex;
-            align-items: center;
-            justify-content: space-between;
 
-            gap: 12px;
+            justify-content:
 
-            border-top: 1px solid #d4d4cf;
+                space-between;
 
-            font-size: 11px;
-            font-weight: 800;
+            gap: 10px;
 
-            transition:
-                background .18s ease,
-                color .18s ease,
-                padding .18s ease;
+            color: #999;
+
+            font-size: 8px;
+
         }
 
+        /* ==================================================
 
-        .sidebar-link:last-child {
-            border-bottom: 1px solid #d4d4cf;
-        }
+           AI
 
+        ================================================== */
 
-        .sidebar-link:hover,
-        .sidebar-link.active {
-            margin:
-                0 -1px;
+        .ai-panel {
 
-            padding:
-                0 15px;
+            position: sticky;
 
-            background: black;
+            top: 90px;
+
+            background: #111;
+
             color: white;
 
-            border-color: black;
         }
 
+        .ai-head {
 
-        .sidebar-link-left {
-            display: flex;
-            align-items: center;
-            gap: 11px;
+            padding: 29px;
+
+            border-bottom:
+
+                1px solid #303030;
+
         }
 
+        .ai-kicker {
 
-        .sidebar-icon {
-            width: 18px;
+            color: #777;
 
-            flex-shrink: 0;
+            font-size: 8px;
 
-            text-align: center;
-
-            font-family:
-                Georgia,
-                serif;
-
-            font-size: 12px;
-        }
-
-
-        .sidebar-right {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-
-        .sidebar-count {
-            font-family:
-                Georgia,
-                serif;
-
-            font-size: 11px;
-            font-weight: 900;
-        }
-
-
-        .sidebar-arrow {
-            opacity: 0;
-
-            transform: translateX(-5px);
-
-            transition:
-                opacity .18s ease,
-                transform .18s ease;
-        }
-
-
-        .sidebar-link:hover .sidebar-arrow {
-            opacity: 1;
-
-            transform: translateX(0);
-        }
-
-
-        /* 사이드바 하단 문구 */
-
-        .sidebar-bottom {
-            margin-top: auto;
-
-            padding:
-                30px 10px 0;
-
-            border-top: 1px solid black;
-        }
-
-
-        .sidebar-bottom-title {
-            font-family:
-                Georgia,
-                "Noto Serif KR",
-                serif;
-
-            font-size: 24px;
             font-weight: 900;
 
-            line-height: 1.25;
-
-            letter-spacing: -.7px;
         }
 
+        .ai-head h2 {
 
-        .sidebar-bottom-text {
-            margin-top: 13px;
+            margin:
 
-            color: var(--gray2);
+                18px 0 11px;
+
+            font-family:
+
+                Georgia,
+
+                serif;
+
+            font-size: 29px;
+
+            line-height: 1.15;
+
+        }
+
+        .ai-head p {
+
+            margin: 0;
+
+            color: #888;
 
             font-size: 9px;
+
             line-height: 1.8;
-        }
-
-
-        body.sidebar-open {
-            overflow: hidden;
-        }
-
-
-        /* 화면이 조금 좁아지면 상단 분야 메뉴 숨김 */
-
-        @media(max-width: 980px) {
-
-            .top-category-nav {
-                display: none;
-            }
 
         }
 
+        .ai-controls {
 
-        @media(max-width: 800px) {
+            padding: 22px 28px;
 
-            .brand-wrap {
-                gap: 13px;
-            }
+            border-bottom:
 
-
-            .menu-toggle {
-                width: 34px;
-                height: 34px;
-            }
-
-
-            .newsroom-sidebar {
-                width: min(310px, 88vw);
-            }
+                1px solid #303030;
 
         }
 
-        /* =========================================
-           취재 우선순위 탭 필터
-        ========================================= */
+        .ai-controls label {
 
-        .signal-tabs {
-            padding:
-                0 28px;
-
-            display: flex;
-            align-items: center;
-            gap: 0;
-
-            border-bottom: 1px solid var(--gray3);
-        }
-
-
-        .signal-tab {
-            min-height: 46px;
-
-            padding:
-                0 18px;
-
-            border: 0;
-            border-bottom: 2px solid transparent;
-
-            background: transparent;
-            color: var(--gray2);
-
-            font-size: 9px;
-            font-weight: 900;
-
-            transition:
-                color .18s ease,
-                border-color .18s ease,
-                background .18s ease;
-        }
-
-
-        .signal-tab:hover {
-            color: var(--black);
-        }
-
-
-        .signal-tab.active {
-            color: var(--black);
-
-            border-bottom-color: var(--black);
-        }
-
-
-        .signal-empty {
-            display: none;
-
-            padding:
-                60px 28px;
-
-            text-align: center;
-
-            color: var(--gray2);
-
-            font-size: 10px;
-            line-height: 1.8;
-        }
-
-
-        .signal-empty strong {
             display: block;
 
             margin-bottom: 8px;
 
-            color: var(--black);
+            color: #777;
+
+            font-size: 8px;
+
+            font-weight: 900;
+
+        }
+
+        .ai-select {
+
+            width: 100%;
+
+            height: 43px;
+
+            padding: 0 10px;
+
+            border:
+
+                1px solid #444;
+
+            background: #181818;
+
+            color: white;
+
+            font-size: 9px;
+
+        }
+
+        .ai-generate {
+
+            width: 100%;
+
+            height: 42px;
+
+            margin-top: 9px;
+
+            border: 0;
+
+            background: white;
+
+            color: black;
+
+            font-size: 9px;
+
+            font-weight: 900;
+
+        }
+
+        .ai-generate:disabled {
+
+            opacity: .65;
+
+            cursor: wait;
+
+        }
+
+        .ai-body {
+
+            min-height: 400px;
+
+            padding: 27px;
+
+        }
+
+        .ai-empty {
+
+            padding: 65px 0;
+
+            text-align: center;
+
+            color: #777;
+
+        }
+
+        .ai-empty-title {
+
+            color: white;
 
             font-family:
+
                 Georgia,
-                "Noto Serif KR",
+
+                serif;
+
+            font-size: 22px;
+
+            font-weight: 900;
+
+        }
+
+        .ai-output {
+
+            display: none;
+
+        }
+
+        .ai-selected {
+
+            padding-bottom: 18px;
+
+            border-bottom:
+
+                1px solid #303030;
+
+        }
+
+        .ai-label {
+
+            color: #777;
+
+            font-size: 8px;
+
+            font-weight: 900;
+
+        }
+
+        .ai-title {
+
+            margin-top: 7px;
+
+            font-family:
+
+                Georgia,
+
                 serif;
 
             font-size: 18px;
+
+            font-weight: 900;
+
         }
+
+        .ai-block {
+
+            padding: 17px 0;
+
+            border-bottom:
+
+                1px solid #292929;
+
+        }
+
+        .ai-block-title {
+
+            color: #777;
+
+            font-size: 8px;
+
+            font-weight: 900;
+
+        }
+
+        .ai-block p,
+
+        .ai-block ul {
+
+            margin: 9px 0 0;
+
+            color: #bbb;
+
+            font-size: 9px;
+
+            line-height: 1.8;
+
+        }
+
+        .ai-block ul {
+
+            padding-left: 16px;
+
+        }
+
+        /* ==================================================
+
+           FOOTER
+
+        ================================================== */
+
+        .footer {
+
+            height: 75px;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content:
+
+                space-between;
+
+            color: #999;
+
+            font-size: 8px;
+
+        }
+
+        .footer strong {
+
+            color: #111;
+
+            font-family:
+
+                Georgia,
+
+                serif;
+
+        }
+
+        /* ==================================================
+
+           RESPONSIVE
+
+        ================================================== */
+
+        @media (
+
+            max-width:
+
+            1200px
+
+        ) {
+
+            .workspace {
+
+                grid-template-columns:
+
+                    1fr;
+
+            }
+
+            .ai-panel {
+
+                position: static;
+
+            }
+
+        }
+
+        @media (
+
+            max-width:
+
+            950px
+
+        ) {
+
+            .top-nav {
+
+                display: none;
+
+            }
+
+            .hero {
+
+                grid-template-columns:
+
+                    1fr;
+
+            }
+
+            .signal-list {
+
+                overflow-x: auto;
+
+            }
+
+            .signal-head,
+
+            .signal-row {
+
+                min-width: 900px;
+
+            }
+
+            .categories {
+
+                grid-template-columns:
+
+                    repeat(
+
+                        2,
+
+                        1fr
+
+                    );
+
+            }
+
+            .category {
+
+                border-bottom:
+
+                    1px solid var(--line);
+
+            }
+
+            .chart-layout {
+
+                grid-template-columns:
+
+                    1fr;
+
+            }
+
+            .chart-main {
+
+                border-right: 0;
+
+                border-bottom:
+
+                    1px solid var(--line);
+
+            }
+
+        }
+
+        @media (
+
+            max-width:
+
+            650px
+
+        ) {
+
+            .workspace {
+
+                padding: 14px;
+
+            }
+
+            .hero {
+
+                padding: 24px;
+
+            }
+
+            .hero h1 {
+
+                font-size: 36px;
+
+            }
+
+            .hero-stats {
+
+                grid-template-columns:
+
+                    1fr;
+
+            }
+
+            .categories {
+
+                grid-template-columns:
+
+                    1fr;
+
+            }
+
+            .category {
+
+                border-right: 0;
+
+                border-bottom:
+
+                    1px solid var(--line);
+
+            }
+
+            .ticker {
+
+                grid-template-columns:
+
+                    110px
+
+                    minmax(
+
+                        0,
+
+                        1fr
+
+                    );
+
+            }
+
+        }
+
     </style>
 
 </head>
 
-
 <body>
 
-    <div class="page">
+<!-- ==================================================
 
+     HEADER
 
-        <!-- ===========================
-         HEADER
-    =========================== -->
+================================================== -->
 
-        <header class="header">
+<header class="header">
 
-            <div class="brand-wrap">
+    <button
 
+        id="menuButton"
 
-                <!-- 사이드바 열기 -->
+        class="menu-button"
 
-                <button id="sidebar-toggle" class="menu-toggle" type="button" aria-label="메뉴 열기" aria-expanded="false">
-                    ☰
-                </button>
+        type="button"
 
+    >
 
+        ☰
 
-                <a href="/home-v2-nav" class="brand">
-                    DATA TIP-OFF
-                </a>
+    </button>
 
+    <a
 
+        href="/home-v2-nav"
 
-                <div class="header-line"></div>
+        class="brand"
 
+    >
 
+        DATA TIP-OFF
 
-            <div class="header-sub">
-                디지털 뉴스룸 / 취재 시그널 모니터
-            </div>
+    </a>
+
+    <nav class="top-nav">
+
+        <a href="/social">
+
+            사회
+
+        </a>
+
+        <a href="/economy">
+
+            경제
+
+        </a>
+
+        <a href="/stock">
+
+            주식
+
+        </a>
+
+        <a href="/trend">
+
+            K콘텐츠
+
+        </a>
+
+        <a href="/baseball">
+
+            야구
+
+        </a>
+
+    </nav>
+
+    <div class="live">
+
+        ● 탐지 시스템 활성화
+
+    </div>
+
+</header>
+
+<!-- ==================================================
+
+     SIDEBAR
+
+================================================== -->
+
+<div
+
+    id="sidebarOverlay"
+
+    class="sidebar-overlay"
+
+></div>
+
+<aside
+
+    id="sidebar"
+
+    class="sidebar"
+
+>
+
+    <button
+
+        id="sidebarClose"
+
+        class="sidebar-close"
+
+        type="button"
+
+    >
+
+        ×
+
+    </button>
+
+    <div class="sidebar-brand">
+
+        DATA TIP-OFF
+
+    </div>
+
+    <div class="sidebar-section">
+
+        <div class="sidebar-label">
+
+            전체
 
         </div>
 
+        <a
 
+            href="/home-v2-nav"
 
+            class="sidebar-link"
 
-            <!-- 상단 분야 메뉴 -->
+        >
 
-            <nav class="top-category-nav">
+            전체 대시보드
 
-                <a href="/social" class="top-category-link">
-                    사회
-                </a>
+            <span>
 
-                <a href="/economy" class="top-category-link">
-                    경제
-                </a>
-                <a href="/stock" class="top-category-link">
-                    주식
-                </a>
+                →
 
-                <a href="/content/drama" class="top-category-link">
-                    K콘텐츠
-                </a>
+            </span>
 
-                <a href="/baseball" class="top-category-link">
-                야구
-            </a>
+        </a>
 
-            </nav>
+    </div>
 
+    <div class="sidebar-section">
 
+        <div class="sidebar-label">
 
-            <div class="header-right">
+            시그널 분야
 
-                <div class="live">
+        </div>
 
-                    <span class="live-dot"></span>
+        <a
 
-                    탐지 시스템 활성화
+            href="/social"
+
+            class="sidebar-link"
+
+        >
+
+            사회
+
+            <span>
+
+                →
+
+            </span>
+
+        </a>
+
+        <a
+
+            href="/economy"
+
+            class="sidebar-link"
+
+        >
+
+            경제
+
+            <span>
+
+                →
+
+            </span>
+
+        </a>
+
+        <a
+
+            href="/stock"
+
+            class="sidebar-link"
+
+        >
+
+            주식
+
+            <span>
+
+                →
+
+            </span>
+
+        </a>
+
+        <a
+
+            href="/trend"
+
+            class="sidebar-link"
+
+        >
+
+            K콘텐츠
+
+            <span>
+
+                →
+
+            </span>
+
+        </a>
+
+        <a
+
+            href="/baseball"
+
+            class="sidebar-link"
+
+        >
+
+            야구
+
+            <span>
+
+                →
+
+            </span>
+
+        </a>
+
+    </div>
+
+</aside>
+
+<!-- ==================================================
+
+     WORKSPACE
+
+================================================== -->
+
+<div class="workspace">
+
+    <main>
+
+        <!-- ==============================================
+
+             HERO
+
+        ============================================== -->
+
+        <section class="hero">
+
+            <div>
+
+                <div class="hero-label">
+
+                    DATA-DRIVEN NEWSROOM
+
+                </div>
+
+                <h1>
+
+                    숫자가 발견한<br>
+
+                    오늘의 취재 시그널
+
+                </h1>
+
+                <p>
+
+                    데이터 속 평소와 다른 움직임을 통계적으로 탐지하고,
+
+                    기자가 확인할 가치가 있는 시그널 후보를
+
+                    취재 우선순위와 함께 제공합니다.
+
+                </p>
+
+            </div>
+
+            <div class="hero-stats">
+
+                <div class="hero-stat">
+
+                    <div class="hero-number">
+
+                        {{
+
+                            stats.total_candidates
+
+                            |default(0)
+
+                        }}
+
+                    </div>
+
+                    <div class="hero-stat-label">
+
+                        전체 시그널 후보
+
+                    </div>
+
+                </div>
+
+                <div class="hero-stat">
+
+                    <div class="hero-number">
+
+                        {{
+
+                            stats.total_rules
+
+                            |default(0)
+
+                        }}
+
+                    </div>
+
+                    <div class="hero-stat-label">
+
+                        사회·경제 탐지 규칙
+
+                    </div>
+
+                </div>
+
+                <div class="hero-stat">
+
+                    <div class="hero-number">
+
+                        {{
+
+                            stats.high_count
+
+                            |default(0)
+
+                        }}
+
+                    </div>
+
+                    <div class="hero-stat-label">
+
+                        높은 우선순위
+
+                    </div>
 
                 </div>
 
             </div>
 
-        </header>
+        </section>
 
-        <!-- ===========================
-         LEFT SLIDE SIDEBAR
-    =========================== -->
+        <!-- ==============================================
 
+             TICKER
 
-        <div id="sidebar-overlay" class="sidebar-overlay"></div>
+             ★ 자동 무한 롤링
 
+        ============================================== -->
 
+        <section class="ticker">
 
-        <aside id="newsroom-sidebar" class="newsroom-sidebar" aria-hidden="true">
+            <div class="ticker-title">
 
+                주요 시그널
 
-            <button id="sidebar-close" class="sidebar-close" type="button" aria-label="메뉴 닫기">
-                ×
-            </button>
+            </div>
 
+            <div class="ticker-window">
 
+                <div class="ticker-track">
 
-            <div class="sidebar-inner">
+                    <!-- 첫 번째 세트 -->
 
+                    {% for item in top_signals %}
 
-                <!-- 로고 -->
+                    <div class="ticker-item">
 
-                <div class="sidebar-brand">
+                        <span class="ticker-category">
 
-                    <div class="sidebar-brand-name">
-                        DATA TIP-OFF
+                            [{{ item.category }}]
+
+                        </span>
+
+                        <span class="ticker-region">
+
+                            {{ item.region }}
+
+                        </span>
+
+                        <span>
+
+                            {{ item.signal_name }}
+
+                        </span>
+
+                        <span class="ticker-score">
+
+                            {{ item.score }}
+
+                        </span>
+
                     </div>
 
+                    {% endfor %}
 
-                    <div class="sidebar-brand-sub">
-                        데이터 취재 시그널 플랫폼
+                    <!--
+
+                        두 번째 세트
+
+                        같은 내용을 한 번 더 출력해서
+
+                        무한 롤링처럼 자연스럽게 연결
+
+                    -->
+
+                    {% for item in top_signals %}
+
+                    <div class="ticker-item">
+
+                        <span class="ticker-category">
+
+                            [{{ item.category }}]
+
+                        </span>
+
+                        <span class="ticker-region">
+
+                            {{ item.region }}
+
+                        </span>
+
+                        <span>
+
+                            {{ item.signal_name }}
+
+                        </span>
+
+                        <span class="ticker-score">
+
+                            {{ item.score }}
+
+                        </span>
+
+                    </div>
+
+                    {% endfor %}
+
+                </div>
+
+            </div>
+
+        </section>
+
+        <!-- ==============================================
+
+             SIGNAL RANKING
+
+        ============================================== -->
+
+        <section
+
+            id="signalRanking"
+
+            class="section"
+
+        >
+
+            <div class="section-head">
+
+                <div>
+
+                    <div class="section-index">
+
+                        01
+
+                    </div>
+
+                    <div class="section-title">
+
+                        취재 우선순위
+
                     </div>
 
                 </div>
 
+                <div class="section-description">
 
+                    분야별 탭을 선택하면
 
-                <!-- 전체 -->
+                    해당 분야 안에서 순위를
 
-                <div class="sidebar-section">
-
-                    <div class="sidebar-label">
-                        전체
-                    </div>
-
-
-                    <a href="/home-v2-nav" class="sidebar-link active">
-
-                        <span class="sidebar-link-left">
-
-                            <span class="sidebar-icon">
-                                ▦
-                            </span>
-
-                            전체 대시보드
-
-                        </span>
-
-                    </a>
+                    01부터 다시 계산합니다.
 
                 </div>
 
+            </div>
 
+            <div class="signal-tabs">
 
-                <!-- 분야 -->
+                <button
 
-                <div class="sidebar-section">
+                    class="signal-tab active"
 
-                    <div class="sidebar-label">
-                        시그널 분야
-                    </div>
+                    data-filter="all"
 
+                    type="button"
 
+                >
 
-                    <a href="/social" class="sidebar-link">
+                    전체
 
-    <span class="sidebar-link-left">
+                </button>
 
-        <span class="sidebar-icon">
-            ○
-        </span>
+                <button
 
-        사회
+                    class="signal-tab"
 
-    </span>
+                    data-filter="social"
 
+                    type="button"
 
-    <span class="sidebar-right">
+                >
 
-        <span class="sidebar-count">
-            5
-        </span>
+                    사회
 
-        <span class="sidebar-arrow">
-            →
-        </span>
+                </button>
 
-    </span>
+                <button
 
-</a>
+                    class="signal-tab"
 
+                    data-filter="economy"
 
+                    type="button"
 
-<a href="/economy" class="sidebar-link">
+                >
 
-    <span class="sidebar-link-left">
+                    경제
 
-        <span class="sidebar-icon">
-            ○
-        </span>
+                </button>
 
-        경제
+                <button
 
-    </span>
+                    class="signal-tab"
 
+                    data-filter="stock"
 
-    <span class="sidebar-right">
+                    type="button"
 
-        <span class="sidebar-count">
-            6
-        </span>
+                >
 
-        <span class="sidebar-arrow">
-            →
-        </span>
+                    주식
 
-    </span>
+                </button>
 
-</a>
+                <button
 
+                    class="signal-tab"
 
+                    data-filter="content"
 
-                    <a href="/content/drama" class="sidebar-link">
+                    type="button"
 
-                        <span class="sidebar-link-left">
+                >
 
-                            <span class="sidebar-icon">
-                                ○
-                            </span>
+                    K콘텐츠
 
-                            K콘텐츠
+                </button>
 
-                        </span>
+                <button
 
+                    class="signal-tab"
 
-                        <span class="sidebar-arrow">
-                            →
-                        </span>
+                    data-filter="baseball"
 
-                    </a>
+                    type="button"
 
+                >
 
+                    야구
 
-                <a href="/baseball" class="sidebar-link">
-                    <span class="sidebar-link-left">
-                        <span class="sidebar-icon">○</span>
-                        야구
-                    </span>
-                    <span class="sidebar-arrow">→</span>
-                </a>
+                </button>
 
-        </aside>
+            </div>
 
-        <div class="workspace">
+            <div class="signal-list">
 
-
-            <!-- ===========================
-             LEFT
-        =========================== -->
-
-            <main class="newsroom">
-
-
-                <!-- HERO -->
-
-                <section class="hero">
+                <div class="signal-head">
 
                     <div>
 
-                        <div class="hero-label">
-                            DATA-DRIVEN NEWSROOM
-                        </div>
-
-
-                        <h1>
-                            숫자가 발견한<br>
-                            오늘의 취재 시그널
-                        </h1>
-
-
-                        <div class="hero-desc">
-                            데이터 속 평소와 다른 움직임을 통계적으로 탐지하고,
-                            기자가 확인할 가치가 있는 시그널 후보를
-                            취재 우선순위와 함께 제공합니다.
-                        </div>
+                        순위
 
                     </div>
 
+                    <div>
 
-                    <div class="hero-numbers">
-
-                        <div class="hero-stat">
-
-                            <div class="hero-stat-value">
-                                {{ "{:,}".format(stats.total_candidates) }}
-                            </div>
-
-                            <div class="hero-stat-label">
-                                전체 시그널 후보
-                            </div>
-
-                        </div>
-
-
-                        <div class="hero-stat">
-
-                            <div class="hero-stat-value">
-                                {{ stats.total_rules }}
-                            </div>
-
-                            <div class="hero-stat-label">
-                                사회·경제 탐지 규칙
-                            </div>
-
-                        </div>
-
-
-                        <div class="hero-stat">
-
-                            <div class="hero-stat-value">
-                                {{ stats.high_count }}
-                            </div>
-
-                            <div class="hero-stat-label">
-                                높은 우선순위 후보
-                            </div>
-
-                        </div>
+                        분야
 
                     </div>
 
-                </section>
+                    <div>
 
+                        구분
 
-
-                <!-- TICKER -->
-
-                <section class="ticker">
-
-                    <div class="ticker-label">
-                        주요 시그널
                     </div>
 
+                    <div>
 
-                    <div class="ticker-content">
+                        탐지 시그널
 
-                        <div class="ticker-track">
+                    </div>
 
-                            {% for item in top_signals %}
+                    <div>
 
-                            <span class="ticker-item">
+                        점수
 
-                                <span class="ticker-region">
-                                    {{ item.region }}
-                                </span>
+                    </div>
 
-                                {{ item.signal_name }}
+                    <div>
 
-                                &nbsp; / &nbsp;
+                        등급
 
-                                {{ item.score }}
+                    </div>
+
+                    <div>
+
+                        취재
+
+                    </div>
+
+                </div>
+
+                {% for item in top_signals %}
+
+                <div
+
+                    class="signal-row"
+
+                    data-category="{% if item.category == '사회' %}social{% elif item.category == '경제' %}economy{% elif item.category == '주식' %}stock{% elif item.category == 'K콘텐츠' %}content{% elif item.category == '야구' %}baseball{% else %}other{% endif %}"
+
+                    data-global-rank="{{ loop.index }}"
+
+                >
+
+                    <div class="rank">
+
+                        {{
+
+                            "%02d"
+
+                            |format(
+
+                                loop.index
+
+                            )
+
+                        }}
+
+                    </div>
+
+                    <div class="field">
+
+                        {{ item.category }}
+
+                    </div>
+
+                    <div class="region">
+
+                        {{ item.region }}
+
+                    </div>
+
+                    <a
+
+                        href="{{ item.detail_url }}"
+
+                        class="signal-name"
+
+                    >
+
+                        {{ item.signal_name }}
+
+                    </a>
+
+                    <div class="score">
+
+                        {% if item.category == "K콘텐츠" %}
+
+                            {{
+
+                                "%.2f"
+
+                                |format(
+
+                                    item.score
+
+                                )
+
+                            }}
+
+                            <span class="score-unit">
+
+                                Z
 
                             </span>
 
-                            {% endfor %}
+                        {% elif item.category == "주식" %}
 
+                            {{ item.score }}
 
-                            {% for item in top_signals %}
+                            <span class="score-unit">
 
-                            <span class="ticker-item">
-
-                                <span class="ticker-region">
-                                    {{ item.region }}
-                                </span>
-
-                                {{ item.signal_name }}
-
-                                &nbsp; / &nbsp;
-
-                                {{ item.score }}
+                                SCORE
 
                             </span>
 
-                            {% endfor %}
+                        {% else %}
+
+                            {{ item.score }}
+
+                        {% endif %}
+
+                    </div>
+
+                    <div>
+
+                        <span
+
+                            class="badge {{ item.severity|lower }}"
+
+                        >
+
+                            {{ item.severity }}
+
+                        </span>
+
+                    </div>
+
+                    <div>
+
+                        <button
+
+                            class="analyse-button"
+
+                            type="button"
+
+                            data-category="{{ item.category }}"
+
+                            data-region="{{ item.region }}"
+
+                            data-signal-name="{{ item.signal_name }}"
+
+                            data-signal-type="{{ item.signal_type }}"
+
+                            data-item-id="{{ item.item_id|default('') }}"
+
+                            data-stock-market="{{ item.stock_market|default('') }}"
+
+                            data-stock-code="{{ item.stock_code|default('') }}"
+
+                            data-stock-date="{{ item.stock_date|default('') }}"
+
+                        >
+
+                            AI로 분석
+
+                        </button>
+
+                    </div>
+
+                </div>
+
+                {% endfor %}
+
+            </div>
+
+            <div
+
+                id="signalEmpty"
+
+                class="empty"
+
+            >
+
+                해당 분야에 표시할
+
+                시그널이 없습니다.
+
+            </div>
+
+        </section>
+
+        <!-- ==============================================
+
+             CHART
+
+        ============================================== -->
+
+        <section class="section">
+
+            <div class="section-head">
+
+                <div>
+
+                    <div class="section-index">
+
+                        02
+
+                    </div>
+
+                    <div class="section-title">
+
+                        시그널 흐름
+
+                    </div>
+
+                </div>
+
+                <div class="section-description">
+
+                    기존 사회·경제 탐지 데이터를
+
+                    월별 및 탐지 규칙별로
+
+                    확인합니다.
+
+                </div>
+
+            </div>
+
+            <div class="chart-layout">
+
+                <div class="chart-main">
+
+                    <div class="sub-title">
+
+                        월별 탐지 시그널
+
+                    </div>
+
+                    <div class="chart-wrap">
+
+                        <svg
+
+                            id="trend-chart"
+
+                            viewBox="0 0 900 270"
+
+                            preserveAspectRatio="none"
+
+                        ></svg>
+
+                    </div>
+
+                </div>
+
+                <div class="chart-side">
+
+                    <div class="sub-title">
+
+                        규칙별 탐지량
+
+                    </div>
+
+                    {% for rule in rule_chart %}
+
+                    <div class="rule">
+
+                        <div class="rule-top">
+
+                            <span>
+
+                                {{ rule.name }}
+
+                            </span>
+
+                            <strong>
+
+                                {{ rule.count }}
+
+                            </strong>
+
+                        </div>
+
+                        <div class="rule-track">
+
+                            <div
+
+                                class="rule-bar"
+
+                                style="width: {{ rule.width }}%;"
+
+                            ></div>
 
                         </div>
 
                     </div>
 
-                </section>
+                    {% endfor %}
 
+                </div>
 
+            </div>
 
-                <!-- ===========================
-                 SIGNAL RANKING
-            =========================== -->
+        </section>
 
-                <section id="signal-ranking" class="section">
+        <!-- ==============================================
 
-                    <div class="section-head">
+             CATEGORY
 
-                        <div>
+        ============================================== -->
 
-                            <div class="section-index">
-                                01
-                            </div>
+        <section class="section">
 
-                            <div class="section-title">
-                                취재 우선순위
-                            </div>
+            <div class="section-head">
 
-                        </div>
+                <div>
 
+                    <div class="section-index">
 
-                        <div class="section-desc">
-                            Signal Score가 높은 시그널부터 확인합니다.
-                            오른쪽의 'AI로 분석'을 누르면
-                            취재 에이전트로 바로 전달됩니다.
-                        </div>
+                        03
 
                     </div>
 
-                    <!-- 취재 우선순위 탭 -->
+                    <div class="section-title">
 
-                    <div class="signal-tabs">
-
-    <button
-        type="button"
-        class="signal-tab active"
-        data-filter="all"
-    >
-        전체
-    </button>
-
-    <button
-        type="button"
-        class="signal-tab"
-        data-filter="social"
-    >
-        사회
-    </button>
-
-    <button
-        type="button"
-        class="signal-tab"
-        data-filter="economy"
-    >
-        경제
-    </button>
-
-    <button
-        type="button"
-        class="signal-tab"
-        data-filter="content"
-    >
-        K콘텐츠
-    </button>
-
-    <button
-        type="button"
-        class="signal-tab"
-        data-filter="baseball"
-    >
-        야구
-    </button>
-
-</div>
-
-                    <div class="signal-list">
-
-
-                        <div class="signal-head">
-
-                            <div>순위</div>
-                            <div>분야</div>
-                            <div>지역</div>
-                            <div>탐지 시그널</div>
-                            <div>점수</div>
-                            <div>등급</div>
-                            <div>취재</div>
-
-                        </div>
-
-
-
-                        {% for item in top_signals %}
-
-                        <div class="signal-row"
-    data-category="{% if item.category == '사회' %}social{% elif item.category == '경제' %}economy{% elif item.category == 'K콘텐츠' %}content{% elif item.category == '야구' %}baseball{% else %}other{% endif %}"
->
-
-                            <div class="rank">
-                                {{ "%02d"|format(loop.index) }}
-                            </div>
-
-
-                            <div class="signal-field">
-                                {{ item.category }}
-                            </div>
-
-
-                            <div class="signal-region">
-                                {{ item.region }}
-                            </div>
-
-
-                            <a href="{{ item.detail_url }}" class="signal-name">
-                                {{ item.signal_name }}
-                            </a>
-
-
-                            <div class="signal-score">
-                                {{ item.score }}
-                            </div>
-
-
-                            <div>
-
-                                <span class="
-                                    badge
-                                    {{ item.severity|lower }}
-                                ">
-                                    {{ item.severity }}
-                                </span>
-
-                            </div>
-
-
-                            <button class="analyse-button" data-category="{{ item.category }}"
-                                data-signal-type="{{ item.signal_type }}" data-region="{{ item.region }}"
-                                data-signal-name="{{ item.signal_name }}">
-                                AI로 분석
-                            </button>
-
-                        </div>
-
-                        {% endfor %}
-
-
-                    </div>
-                    <div id="signal-empty" class="signal-empty">
-                        <strong>
-                            아직 연결된 시그널이 없습니다.
-                        </strong>
-
-                        해당 분야의 분석 데이터가 연결되면
-                        이곳에 취재 우선순위가 표시됩니다.
-                    </div>
-                </section>
-
-
-
-                <!-- ===========================
-                 GRAPH
-            =========================== -->
-
-                <section class="section">
-
-                    <div class="section-head">
-
-                        <div>
-
-                            <div class="section-index">
-                                02
-                            </div>
-
-                            <div class="section-title">
-                                시그널 흐름
-                            </div>
-
-                        </div>
-
-
-                        <div class="section-desc">
-                            탐지 엔진에서 생성된 실제 사회·경제
-                            시그널 후보를 월별·규칙별로 집계했습니다.
-                        </div>
+                        시그널 탐색
 
                     </div>
 
+                </div>
 
+                <div class="section-description">
 
-                    <div class="chart-layout">
+                    사회·경제·주식·K콘텐츠·야구
 
+                    5개 분야의 분석 화면으로
 
-                        <!-- LINE -->
+                    이동할 수 있습니다.
 
-                        <div class="chart-main">
+                </div>
 
-                            <div class="mini-heading">
+            </div>
 
-                                <span>
-                                    월별 탐지 시그널
-                                </span>
+            <div class="categories">
 
-                                <span>
-                                    마우스를 그래프 점에 올려보세요
-                                </span>
+                <a
 
-                            </div>
+                    href="/social"
 
+                    class="category"
 
-                            <div class="chart-wrap" id="chart-wrap">
+                >
 
-                                <svg id="trend-chart" viewBox="0 0 900 270" preserveAspectRatio="none"></svg>
+                    <div class="category-number">
 
-
-                                <div id="tooltip" class="tooltip">
-                                    <span id="tooltip-date"></span>
-
-                                    <strong id="tooltip-count"></strong>
-
-                                    시그널 후보
-                                </div>
-
-                            </div>
-
-                        </div>
-
-
-
-                        <!-- RULES -->
-
-                        <div class="chart-side">
-
-                            <div class="mini-heading">
-
-                                <span>
-                                    규칙별 탐지량
-                                </span>
-
-                                <span>
-                                    총 {{ stats.total_rules }}개
-                                </span>
-
-                            </div>
-
-
-                            <div class="rule-list">
-
-                                {% for rule in rule_chart %}
-
-                                <div class="rule-item">
-
-                                    <div class="rule-top">
-
-                                        <div class="rule-name">
-                                            {{ rule.name }}
-                                        </div>
-
-                                        <div class="rule-count">
-                                            {{ rule.count }}
-                                        </div>
-
-                                    </div>
-
-
-                                    <div class="rule-track">
-
-                                        <div class="rule-bar" data-width="{{ rule.width }}"></div>
-
-                                    </div>
-
-                                </div>
-
-                                {% endfor %}
-
-                            </div>
-
-                        </div>
-
+                        01 / 05
 
                     </div>
 
-                </section>
+                    <div class="category-name">
 
-
-
-                <!-- ===========================
-                 CATEGORY
-            =========================== -->
-
-                <section class="section">
-
-                    <div class="section-head">
-
-                        <div>
-
-                            <div class="section-index">
-                                03
-                            </div>
-
-                            <div class="section-title">
-                                시그널 탐색
-                            </div>
-
-                        </div>
-
-
-                        <div class="section-desc">
-                            분야 위에 마우스를 올리면
-                            분석 화면으로 이동할 수 있는 정보가 나타납니다.
-                        </div>
+                        사회
 
                     </div>
 
+                    <div class="category-text">
 
+                        인구 이동과 자연증감 데이터를 분석해
 
-                    <div class="categories">
+                        평소와 다른 인구 변화와 이동 패턴을 탐지합니다.
 
+                    </div>
 
-                        <a href="/social" class="category">
-
-                            <div class="category-number">
-                                01 / 04
-                            </div>
-
-
-                            <div class="category-name">
-                                사회
-                            </div>
-
-
-                            <div class="category-text">
-                                인구 이동과 자연증감 데이터를 분석해
-                                평소와 다른 인구 변화와 이동 패턴을 탐지합니다.
-                            </div>
-
-
-                            <div class="category-extra">
-
-                                <span>
-                                    탐지 규칙 5개
-                                </span>
-
-                                <span>
-                                    분석 화면 열기 →
-                                </span>
-
-                            </div>
-
-                        </a>
-
-
-
-                        <a href="/economy" class="category">
-
-                            <div class="category-number">
-                                02 / 04
-                            </div>
-
-
-                            <div class="category-name">
-                                경제
-                            </div>
-
-
-                            <div class="category-text">
-                                주택가격·거래량·금리 데이터를 분석해
-                                평소와 다른 시장 움직임과 패턴을 탐지합니다.
-                            </div>
-
-
-                            <div class="category-extra">
-
-                                <span>
-                                    탐지 규칙 6개
-                                </span>
-
-                                <span>
-                                    분석 화면 열기 →
-                                </span>
-
-                            </div>
-
-                        </a>
-                        <a href="/stock" class="category">
-                            <div class="category-number">
-                                STOCK
-                            </div>
-                        
-                            <div class="category-name">
-                                주식
-                            </div>
-                        
-                            <div class="category-text">
-                                국내 주식의 가격·거래량·거래대금 변화에서
-                                평소와 다른 움직임을 찾습니다.
-                            </div>
-                        
-                            <div class="category-extra">
-                                주식 취재 신호 살펴보기 →
-                            </div>
-                        </a>
-
-
-                        <a href="/content/drama" class="category">
-
-                            <div class="category-number">
-                                03 / 04
-                            </div>
-
-
-                            <div class="category-name">
-                                K콘텐츠
-                            </div>
-
-
-                            <div class="category-text">
-                                드라마·음악·웹툰 등의 콘텐츠 데이터에서
-                                급격한 관심 변화와 통계적 패턴을 탐지합니다.
-                            </div>
-
-
-                            <div class="category-extra">
-
-                                <span>
-                                    콘텐츠 시그널
-                                </span>
-
-                                <span>
-                                    분석 화면 열기 →
-                                </span>
-
-                            </div>
-
-                        </a>
-
-
-
-<a href="/baseball" class="category">
-
-    <div class="category-number">
-        04 / 04
-    </div>
-
-    <div class="category-name">
-        야구
-    </div>
-
-    <div class="category-text">
-        선수 기록과 경기 지표를 분석해
-        평소와 다른 기록 변화를
-        취재 시그널 후보로 포착합니다.
-    </div>
-
-    <div class="category-extra">
-
-        <span>
-            선수 기록 시그널
-        </span>
-
-        <span>
-            분석 화면 열기 →
-        </span>
-
-    </div>
-
-</a>
-
-            <footer class="footer">
-
-                <span>
-                    DATA TIP-OFF
-                </span>
-
-                <span>
-                    숫자가 먼저 제보하는 취재 아이템 발굴 플랫폼
-                </span>
-
-            </footer>
-
-
-        </main>
-
-
-
-        <!-- ===========================
-             RIGHT AI AGENT
-        =========================== -->
-
-            <aside id="ai-agent" class="ai-panel">
-
-
-                <div class="ai-head">
-
-                    <div class="ai-kicker">
+                    <div class="category-bottom">
 
                         <span>
-                            AI 취재 에이전트
-                        </span>
 
-
-                        <span class="ai-status">
-
-                            <span class="ai-status-dot"></span>
-
-                            준비 완료
+                            탐지 규칙 5개
 
                         </span>
 
-                    </div>
+                        <span>
 
+                            분석 화면 →
 
-                    <h2>
-                        데이터 다음의<br>
-                        질문을 찾습니다.
-                    </h2>
-
-
-                    <p>
-                        시그널을 선택하면 탐지 결과를 바탕으로
-                        기사 아이디어와 후속 취재 질문,
-                        추가 확인 데이터를 제안합니다.
-                    </p>
-
-                </div>
-
-
-
-                <div class="ai-controls">
-
-                    <label for="ai-select" class="ai-control-label">
-                        분석할 시그널
-                    </label>
-
-
-                    <select id="ai-select" class="ai-select">
-
-                        <option value="">
-                            시그널을 선택하세요
-                        </option>
-
-
-                        {% for item in top_signals %}
-
-                        <option value="{{ item.signal_name }}" data-category="{{ item.category }}"
-                            data-signal-type="{{ item.signal_type }}" data-region="{{ item.region }}">
-                            [{{ item.category }}]
-                            {{ item.region }} ·
-                            {{ item.signal_name }}
-                        </option>
-
-                        {% endfor %}
-
-                    </select>
-
-
-                    <button id="ai-generate" class="ai-button">
-                        취재 브리핑 생성 →
-                    </button>
-
-                </div>
-
-
-
-                <div class="ai-body">
-
-
-                    <!-- EMPTY -->
-
-                    <div id="ai-empty" class="ai-empty">
-
-                        <div class="ai-empty-icon">
-                            ✦
-                        </div>
-
-
-                        <div class="ai-empty-title">
-                            취재할 시그널을<br>
-                            선택해주세요.
-                        </div>
-
-
-                        <div class="ai-empty-text">
-                            왼쪽 취재 우선순위에서
-                            'AI로 분석'을 누르거나,
-                            위 선택창에서 직접 시그널을 고를 수 있습니다.
-                        </div>
+                        </span>
 
                     </div>
 
+                </a>
 
+                <a
 
-                    <!-- RESULT -->
+                    href="/economy"
 
-                    <div id="ai-output" class="ai-output">
+                    class="category"
 
-                        <div class="ai-selected">
+                >
 
-                            <div class="ai-selected-label">
-                                선택한 취재 시그널
-                            </div>
+                    <div class="category-number">
 
-
-                            <div id="ai-title" class="ai-selected-title"></div>
-
-                        </div>
-
-
-                        <div class="ai-block">
-
-                            <div class="ai-block-title">
-                                핵심 브리핑
-                            </div>
-
-                            <p id="ai-briefing"></p>
-
-                        </div>
-
-
-                        <div class="ai-block">
-
-                            <div class="ai-block-title">
-                                기사 아이디어
-                            </div>
-
-                            <ul id="ai-ideas"></ul>
-
-                        </div>
-
-
-                        <div class="ai-block">
-
-                            <div class="ai-block-title">
-                                주요 취재 질문
-                            </div>
-
-                            <ul id="ai-questions"></ul>
-
-                        </div>
-
-
-                        <div class="ai-block">
-
-                            <div class="ai-block-title">
-                                추가 확인 데이터
-                            </div>
-
-                            <ul id="ai-data"></ul>
-
-                        </div>
-
-
-                        <div class="ai-warning">
-                            ※ 통계적 패턴을 기반으로 한 취재 보조 결과입니다.
-                            특정 사건이나 정책과의 인과관계를 확정하지 않습니다.
-                        </div>
+                        02 / 05
 
                     </div>
 
+                    <div class="category-name">
 
-                </div>
+                        경제
 
+                    </div>
 
-            </aside>
+                    <div class="category-text">
 
+                        주택가격·거래량·금리 데이터를 분석해
+
+                        평소와 다른 시장 움직임을 탐지합니다.
+
+                    </div>
+
+                    <div class="category-bottom">
+
+                        <span>
+
+                            탐지 규칙 6개
+
+                        </span>
+
+                        <span>
+
+                            분석 화면 →
+
+                        </span>
+
+                    </div>
+
+                </a>
+
+                <a
+
+                    href="/stock"
+
+                    class="category"
+
+                >
+
+                    <div class="category-number">
+
+                        03 / 05
+
+                    </div>
+
+                    <div class="category-name">
+
+                        주식
+
+                    </div>
+
+                    <div class="category-text">
+
+                        한국거래소 주식 데이터에서
+
+                        가격 급변·거래량 급증·거래대금 쏠림을
+
+                        취재 시그널로 탐지합니다.
+
+                    </div>
+
+                    <div class="category-bottom">
+
+                        <span>
+
+                            주식 시그널
+
+                        </span>
+
+                        <span>
+
+                            분석 화면 →
+
+                        </span>
+
+                    </div>
+
+                </a>
+
+                <a
+
+                    href="/trend"
+
+                    class="category"
+
+                >
+
+                    <div class="category-number">
+
+                        04 / 05
+
+                    </div>
+
+                    <div class="category-name">
+
+                        K콘텐츠
+
+                    </div>
+
+                    <div class="category-text">
+
+                        노래·드라마·웹툰 콘텐츠의
+
+                        관심도에서 평소 범위를 벗어난 움직임을 탐지합니다.
+
+                    </div>
+
+                    <div class="category-bottom">
+
+                        <span>
+
+                            콘텐츠 시그널
+
+                        </span>
+
+                        <span>
+
+                            분석 화면 →
+
+                        </span>
+
+                    </div>
+
+                </a>
+
+                <a
+
+                    href="/baseball"
+
+                    class="category"
+
+                >
+
+                    <div class="category-number">
+
+                        05 / 05
+
+                    </div>
+
+                    <div class="category-name">
+
+                        야구
+
+                    </div>
+
+                    <div class="category-text">
+
+                        선수 기록과 경기 지표를 분석해
+
+                        평소와 다른 기록 변화를
+
+                        취재 후보로 탐지합니다.
+
+                    </div>
+
+                    <div class="category-bottom">
+
+                        <span>
+
+                            야구 시그널
+
+                        </span>
+
+                        <span>
+
+                            분석 화면 →
+
+                        </span>
+
+                    </div>
+
+                </a>
+
+            </div>
+
+        </section>
+
+        <footer class="footer">
+
+            <strong>
+
+                DATA TIP-OFF
+
+            </strong>
+
+            <span>
+
+                숫자가 먼저 제보하는 취재 아이템 발굴 플랫폼
+
+            </span>
+
+        </footer>
+
+    </main>
+
+    <!-- ==================================================
+
+         AI
+
+    ================================================== -->
+
+    <aside class="ai-panel">
+
+        <div class="ai-head">
+
+            <div class="ai-kicker">
+
+                AI REPORTER AGENT
+
+            </div>
+
+            <h2>
+
+                데이터 다음의<br>
+
+                질문을 찾습니다.
+
+            </h2>
+
+            <p>
+
+                시그널을 선택하면
+
+                기사 아이디어와 취재 질문,
+
+                추가 확인 데이터를 제안합니다.
+
+            </p>
 
         </div>
 
-    </div>
+        <div class="ai-controls">
 
+            <label>
 
+                분석할 시그널
 
-    <!-- ===========================
-     실제 월별 데이터
-=========================== -->
+            </label>
 
-    <script id="monthly-data" type="application/json">
-    {{ monthly_chart | tojson }}
+            <select
+
+                id="aiSelect"
+
+                class="ai-select"
+
+            >
+
+                <option value="">
+
+                    시그널을 선택하세요
+
+                </option>
+
+                {% for item in top_signals %}
+
+                <option
+
+                    value="{{ item.signal_name }}"
+
+                    data-category="{{ item.category }}"
+
+                    data-region="{{ item.region }}"
+
+                    data-signal-type="{{ item.signal_type }}"
+
+                    data-item-id="{{ item.item_id|default('') }}"
+
+                    data-score="{{ item.score }}"
+
+                    data-severity="{{ item.severity }}"
+
+                    data-stock-market="{{ item.stock_market|default('') }}"
+
+                    data-stock-code="{{ item.stock_code|default('') }}"
+
+                    data-stock-date="{{ item.stock_date|default('') }}"
+
+                >
+
+                    [{{ item.category }}]
+
+                    {{ item.region }}
+
+                    ·
+
+                    {{ item.signal_name }}
+
+                </option>
+
+                {% endfor %}
+
+            </select>
+
+            <button
+
+                id="aiGenerate"
+
+                class="ai-generate"
+
+                type="button"
+
+            >
+
+                선택 항목 분석 →
+
+            </button>
+
+        </div>
+
+        <div class="ai-body">
+
+            <div
+
+                id="aiEmpty"
+
+                class="ai-empty"
+
+            >
+
+                <div class="ai-empty-title">
+
+                    취재할 시그널을<br>
+
+                    선택해주세요.
+
+                </div>
+
+            </div>
+
+            <div
+
+                id="aiOutput"
+
+                class="ai-output"
+
+            >
+
+                <div class="ai-selected">
+
+                    <div class="ai-label">
+
+                        선택한 시그널
+
+                    </div>
+
+                    <div
+
+                        id="aiTitle"
+
+                        class="ai-title"
+
+                    ></div>
+
+                </div>
+
+                <div class="ai-block">
+
+                    <div class="ai-block-title">
+
+                        핵심 브리핑
+
+                    </div>
+
+                    <p id="aiBriefing"></p>
+
+                </div>
+
+                <div class="ai-block">
+
+                    <div class="ai-block-title">
+
+                        기사 아이디어
+
+                    </div>
+
+                    <ul id="aiIdeas"></ul>
+
+                </div>
+
+                <div class="ai-block">
+
+                    <div class="ai-block-title">
+
+                        주요 취재 질문
+
+                    </div>
+
+                    <ul id="aiQuestions"></ul>
+
+                </div>
+
+                <div class="ai-block">
+
+                    <div class="ai-block-title">
+
+                        추가 확인 데이터
+
+                    </div>
+
+                    <ul id="aiData"></ul>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </aside>
+
+</div>
+
+<script
+
+    id="monthlyData"
+
+    type="application/json"
+
+>
+
+    {{ monthly_chart|tojson }}
+
 </script>
 
+<script>
 
+document.addEventListener(
 
-    <script>
-        /* =========================================
-           0. 사이드바
-        ========================================= */
+    "DOMContentLoaded",
 
-        const sidebarToggle =
+    function () {
+
+        /* =================================================
+
+           SIDEBAR
+
+        ================================================= */
+
+        const menuButton =
+
             document.getElementById(
-                "sidebar-toggle"
+
+                "menuButton"
+
             );
 
+        const sidebar =
 
-        const newsroomSidebar =
             document.getElementById(
-                "newsroom-sidebar"
+
+                "sidebar"
+
             );
-
-
-        const sidebarOverlay =
-            document.getElementById(
-                "sidebar-overlay"
-            );
-
 
         const sidebarClose =
+
             document.getElementById(
-                "sidebar-close"
+
+                "sidebarClose"
+
             );
 
+        const sidebarOverlay =
 
+            document.getElementById(
+
+                "sidebarOverlay"
+
+            );
 
         function setSidebar(
+
             open
+
         ) {
 
-            newsroomSidebar
-                .classList
-                .toggle(
-                    "open",
-                    open
+            sidebar.classList.toggle(
+
+                "open",
+
+                open
+
+            );
+
+            sidebarOverlay.classList.toggle(
+
+                "open",
+
+                open
+
+            );
+
+        }
+
+        menuButton.addEventListener(
+
+            "click",
+
+            function () {
+
+                setSidebar(
+
+                    true
+
                 );
 
+            }
 
-            sidebarOverlay
-                .classList
-                .toggle(
-                    "open",
-                    open
+        );
+
+        sidebarClose.addEventListener(
+
+            "click",
+
+            function () {
+
+                setSidebar(
+
+                    false
+
                 );
 
+            }
 
-            sidebarToggle
-                .classList
-                .toggle(
-                    "active",
-                    open
+        );
+
+        sidebarOverlay.addEventListener(
+
+            "click",
+
+            function () {
+
+                setSidebar(
+
+                    false
+
                 );
 
+            }
 
-            sidebarToggle
-                .setAttribute(
-                    "aria-expanded",
-                    String(open)
+        );
+
+        /* =================================================
+
+           SIGNAL FILTER
+
+        ================================================= */
+
+        const tabs =
+
+            document.querySelectorAll(
+
+                ".signal-tab"
+
+            );
+
+        const rows =
+
+            document.querySelectorAll(
+
+                ".signal-row"
+
+            );
+
+        const signalEmpty =
+
+            document.getElementById(
+
+                "signalEmpty"
+
+            );
+
+        function applyFilter(
+
+            filter
+
+        ) {
+
+            let rank = 1;
+
+            let count = 0;
+
+            rows.forEach(
+
+                function (row) {
+
+                    const category =
+
+                        (
+
+                            row.dataset.category
+
+                            ||
+
+                            ""
+
+                        )
+
+                        .trim();
+
+                    const visible =
+
+                        (
+
+                            filter
+
+                            ===
+
+                            "all"
+
+                        )
+
+                        ||
+
+                        (
+
+                            category
+
+                            ===
+
+                            filter
+
+                        );
+
+                    if (visible) {
+
+                        row.style.display =
+
+                            "grid";
+
+                        const rankElement =
+
+                            row.querySelector(
+
+                                ".rank"
+
+                            );
+
+                        if (
+
+                            filter
+
+                            ===
+
+                            "all"
+
+                        ) {
+
+                            rankElement.textContent =
+
+                                String(
+
+                                    Number(
+
+                                        row.dataset.globalRank
+
+                                    )
+
+                                )
+
+                                .padStart(
+
+                                    2,
+
+                                    "0"
+
+                                );
+
+                        }
+
+                        else {
+
+                            rankElement.textContent =
+
+                                String(
+
+                                    rank
+
+                                )
+
+                                .padStart(
+
+                                    2,
+
+                                    "0"
+
+                                );
+
+                            rank += 1;
+
+                        }
+
+                        count += 1;
+
+                    }
+
+                    else {
+
+                        row.style.display =
+
+                            "none";
+
+                    }
+
+                }
+
+            );
+
+            signalEmpty.style.display =
+
+                (
+
+                    count
+
+                    ===
+
+                    0
+
+                )
+
+                ?
+
+                "block"
+
+                :
+
+                "none";
+
+        }
+
+        tabs.forEach(
+
+            function (tab) {
+
+                tab.addEventListener(
+
+                    "click",
+
+                    function () {
+
+                        tabs.forEach(
+
+                            function (other) {
+
+                                other.classList.remove(
+
+                                    "active"
+
+                                );
+
+                            }
+
+                        );
+
+                        tab.classList.add(
+
+                            "active"
+
+                        );
+
+                        applyFilter(
+
+                            tab.dataset.filter
+
+                        );
+
+                    }
+
                 );
 
+            }
 
-            newsroomSidebar
-                .setAttribute(
-                    "aria-hidden",
-                    String(!open)
-                );
+        );
 
+        applyFilter(
 
-            document.body
-                .classList
-                .toggle(
-                    "sidebar-open",
-                    open
+            "all"
+
+        );
+
+        /* =================================================
+
+           CHART
+
+        ================================================= */
+
+        let monthlyData = [];
+
+        try {
+
+            monthlyData =
+
+                JSON.parse(
+
+                    document
+
+                    .getElementById(
+
+                        "monthlyData"
+
+                    )
+
+                    .textContent
+
+                    ||
+
+                    "[]"
+
                 );
 
         }
 
+        catch (error) {
 
+            console.error(
 
-        /* 햄버거 버튼 */
+                error
 
-        sidebarToggle.addEventListener(
-            "click",
-            function () {
+            );
 
-                const isOpen =
-                    newsroomSidebar
-                        .classList
-                        .contains(
-                            "open"
-                        );
+        }
 
+        const svg =
 
-                setSidebar(
-                    !isOpen
-                );
+            document.getElementById(
 
-            }
-        );
+                "trend-chart"
 
+            );
 
+        if (
 
-        /* X 버튼 */
+            Array.isArray(
 
-        sidebarClose.addEventListener(
-            "click",
-            function () {
+                monthlyData
 
-                setSidebar(
-                    false
-                );
-
-            }
-        );
-
-
-
-        /* 어두운 배경 누르면 닫기 */
-
-        sidebarOverlay.addEventListener(
-            "click",
-            function () {
-
-                setSidebar(
-                    false
-                );
-
-            }
-        );
-
-
-
-        /* ESC 누르면 닫기 */
-
-        document.addEventListener(
-            "keydown",
-            function (event) {
-
-                if (
-                    event.key === "Escape"
-                ) {
-
-                    setSidebar(
-                        false
-                    );
-
-                }
-
-            }
-        );
-
-
-
-        /* 주요 시그널 / AI 메뉴 클릭 후 자동 닫기 */
-
-        document
-            .querySelectorAll(
-                ".sidebar-scroll-link"
             )
-            .forEach(
-                function (link) {
 
-                    link.addEventListener(
-                        "click",
-                        function () {
+            &&
 
-                            setSidebar(
-                                false
+            monthlyData.length
+
+            >
+
+            0
+
+        ) {
+
+            const W = 900;
+
+            const H = 270;
+
+            const LEFT = 40;
+
+            const RIGHT = 15;
+
+            const TOP = 15;
+
+            const BOTTOM = 28;
+
+            const plotW =
+
+                W
+
+                -
+
+                LEFT
+
+                -
+
+                RIGHT;
+
+            const plotH =
+
+                H
+
+                -
+
+                TOP
+
+                -
+
+                BOTTOM;
+
+            const maxValue =
+
+                Math.max(
+
+                    ...monthlyData.map(
+
+                        function (item) {
+
+                            return (
+
+                                Number(
+
+                                    item.count
+
+                                )
+
+                                ||
+
+                                0
+
                             );
 
                         }
-                    );
 
-                }
-            );
-        /* =========================================
-           1. 월별 실제 데이터 그래프
-        ========================================= */
-
-        const monthlyData =
-            JSON.parse(
-                document.getElementById(
-                    "monthly-data"
-                ).textContent
-            );
-
-
-        const svg =
-            document.getElementById(
-                "trend-chart"
-            );
-
-
-        const tooltip =
-            document.getElementById(
-                "tooltip"
-            );
-
-
-        const tooltipDate =
-            document.getElementById(
-                "tooltip-date"
-            );
-
-
-        const tooltipCount =
-            document.getElementById(
-                "tooltip-count"
-            );
-
-
-        const SVG_NS =
-            "http://www.w3.org/2000/svg";
-
-
-        const W = 900;
-        const H = 270;
-
-        const LEFT = 42;
-        const RIGHT = 15;
-        const TOP = 15;
-        const BOTTOM = 32;
-
-        const plotW =
-            W - LEFT - RIGHT;
-
-        const plotH =
-            H - TOP - BOTTOM;
-
-
-        if (monthlyData.length > 0) {
-
-            const maxValue =
-                Math.max(
-                    ...monthlyData.map(
-                        item => item.count
                     ),
+
                     1
+
                 );
 
-
-            /* 보조선 */
-
             for (
+
                 let i = 0;
+
                 i <= 4;
+
                 i++
+
             ) {
 
                 const y =
-                    TOP
-                    + plotH
-                    * i
-                    / 4;
 
+                    TOP
+
+                    +
+
+                    (
+
+                        plotH
+
+                        *
+
+                        i
+
+                        /
+
+                        4
+
+                    );
 
                 const line =
+
                     document.createElementNS(
-                        SVG_NS,
+
+                        "http://www.w3.org/2000/svg",
+
                         "line"
+
                     );
 
-
                 line.setAttribute(
+
                     "x1",
+
                     LEFT
+
                 );
 
                 line.setAttribute(
+
                     "x2",
+
                     W - RIGHT
+
                 );
 
                 line.setAttribute(
+
                     "y1",
+
                     y
+
                 );
 
                 line.setAttribute(
+
                     "y2",
+
                     y
+
                 );
 
                 line.setAttribute(
+
                     "class",
+
                     "grid-line"
+
                 );
 
-
                 svg.appendChild(
+
                     line
-                );
 
-
-                const text =
-                    document.createElementNS(
-                        SVG_NS,
-                        "text"
-                    );
-
-
-                text.textContent =
-                    Math.round(
-                        maxValue
-                        * (
-                            1 - i / 4
-                        )
-                    );
-
-
-                text.setAttribute(
-                    "x",
-                    LEFT - 8
-                );
-
-                text.setAttribute(
-                    "y",
-                    y + 3
-                );
-
-                text.setAttribute(
-                    "text-anchor",
-                    "end"
-                );
-
-                text.setAttribute(
-                    "class",
-                    "axis-label"
-                );
-
-
-                svg.appendChild(
-                    text
                 );
 
             }
 
-
-            /* 포인트 계산 */
-
             const points =
+
                 monthlyData.map(
-                    function (item, index) {
 
-                        const x =
-                            LEFT
-                            + (
-                                plotW
-                                * index
-                                / Math.max(
-                                    monthlyData.length - 1,
-                                    1
-                                )
-                            );
+                    function (
 
+                        item,
 
-                        const y =
-                            TOP
-                            + plotH
-                            - (
-                                item.count
-                                / maxValue
-                                * plotH
-                            );
+                        index
 
-
-                        return {
-                            x: x,
-                            y: y,
-                            date: item.date,
-                            count: item.count
-                        };
-
-                    }
-                );
-
-
-            /* 배경 영역 */
-
-            const area =
-                document.createElementNS(
-                    SVG_NS,
-                    "path"
-                );
-
-
-            let areaPath =
-                `M ${points[0].x} ${TOP + plotH}`;
-
-
-            points.forEach(
-                function (point) {
-
-                    areaPath +=
-                        ` L ${point.x} ${point.y}`;
-
-                }
-            );
-
-
-            areaPath +=
-                ` L ${points[points.length - 1].x} ${TOP + plotH} Z`;
-
-
-            area.setAttribute(
-                "d",
-                areaPath
-            );
-
-            area.setAttribute(
-                "class",
-                "area"
-            );
-
-
-            svg.appendChild(
-                area
-            );
-
-
-            /* 선 */
-
-            const polyline =
-                document.createElementNS(
-                    SVG_NS,
-                    "polyline"
-                );
-
-
-            polyline.setAttribute(
-                "points",
-                points
-                    .map(
-                        point =>
-                            `${point.x},${point.y}`
-                    )
-                    .join(" ")
-            );
-
-
-            polyline.setAttribute(
-                "class",
-                "line"
-            );
-
-
-            svg.appendChild(
-                polyline
-            );
-
-
-            /* 점 */
-
-            points.forEach(
-                function (point, index) {
-
-                    const show =
-                        index % 4 === 0
-                        ||
-                        index === points.length - 1;
-
-
-                    if (!show) {
-                        return;
-                    }
-
-
-                    const circle =
-                        document.createElementNS(
-                            SVG_NS,
-                            "circle"
-                        );
-
-
-                    circle.setAttribute(
-                        "cx",
-                        point.x
-                    );
-
-                    circle.setAttribute(
-                        "cy",
-                        point.y
-                    );
-
-                    circle.setAttribute(
-                        "r",
-                        3.5
-                    );
-
-                    circle.setAttribute(
-                        "class",
-                        "point"
-                    );
-
-
-                    circle.addEventListener(
-                        "mouseenter",
-                        function () {
-
-                            circle.setAttribute(
-                                "r",
-                                6
-                            );
-
-
-                            tooltip.style.display =
-                                "block";
-
-
-                            tooltipDate.textContent =
-                                point.date;
-
-
-                            tooltipCount.textContent =
-                                point.count + "건";
-
-                        }
-                    );
-
-
-                    circle.addEventListener(
-                        "mousemove",
-                        function (event) {
-
-                            const rect =
-                                document
-                                    .getElementById(
-                                        "chart-wrap"
-                                    )
-                                    .getBoundingClientRect();
-
-
-                            tooltip.style.left =
-                                (
-                                    event.clientX
-                                    - rect.left
-                                    + 12
-                                )
-                                + "px";
-
-
-                            tooltip.style.top =
-                                (
-                                    event.clientY
-                                    - rect.top
-                                    - 58
-                                )
-                                + "px";
-
-                        }
-                    );
-
-
-                    circle.addEventListener(
-                        "mouseleave",
-                        function () {
-
-                            circle.setAttribute(
-                                "r",
-                                3.5
-                            );
-
-
-                            tooltip.style.display =
-                                "none";
-
-                        }
-                    );
-
-
-                    svg.appendChild(
-                        circle
-                    );
-
-                }
-            );
-
-
-            /* 연도 표시 */
-
-            monthlyData.forEach(
-                function (item, index) {
-
-                    const year =
-                        item.date.substring(
-                            0,
-                            4
-                        );
-
-
-                    const previousYear =
-                        index > 0
-                            ? monthlyData[
-                                index - 1
-                            ].date.substring(
-                                0,
-                                4
-                            )
-                            : null;
-
-
-                    if (
-                        year !== previousYear
-                        &&
-                        (
-                            Number(year) % 2 === 1
-                            ||
-                            index === 0
-                        )
                     ) {
 
                         const x =
+
                             LEFT
-                            + (
+
+                            +
+
+                            (
+
                                 plotW
-                                * index
-                                / Math.max(
-                                    monthlyData.length - 1,
+
+                                *
+
+                                index
+
+                                /
+
+                                Math.max(
+
+                                    monthlyData.length
+
+                                    -
+
+                                    1,
+
                                     1
+
                                 )
+
                             );
 
+                        const y =
 
-                        const text =
-                            document.createElementNS(
-                                SVG_NS,
-                                "text"
+                            TOP
+
+                            +
+
+                            plotH
+
+                            -
+
+                            (
+
+                                (
+
+                                    Number(
+
+                                        item.count
+
+                                    )
+
+                                    ||
+
+                                    0
+
+                                )
+
+                                /
+
+                                maxValue
+
+                                *
+
+                                plotH
+
                             );
 
+                        return {
 
-                        text.textContent =
-                            year;
+                            x,
 
+                            y
 
-                        text.setAttribute(
-                            "x",
-                            x
-                        );
+                        };
 
-                        text.setAttribute(
-                            "y",
-                            H - 7
-                        );
+                    }
 
-                        text.setAttribute(
-                            "text-anchor",
-                            "middle"
-                        );
+                );
 
-                        text.setAttribute(
-                            "class",
-                            "axis-label"
-                        );
+            const area =
 
+                document.createElementNS(
 
-                        svg.appendChild(
-                            text
+                    "http://www.w3.org/2000/svg",
+
+                    "path"
+
+                );
+
+            let areaPath =
+
+                `M ${points[0].x} ${TOP + plotH}`;
+
+            points.forEach(
+
+                function (point) {
+
+                    areaPath +=
+
+                        ` L ${point.x} ${point.y}`;
+
+                }
+
+            );
+
+            areaPath +=
+
+                ` L ${points[points.length - 1].x} ${TOP + plotH} Z`;
+
+            area.setAttribute(
+
+                "d",
+
+                areaPath
+
+            );
+
+            area.setAttribute(
+
+                "class",
+
+                "chart-area"
+
+            );
+
+            svg.appendChild(
+
+                area
+
+            );
+
+            const trendLine =
+
+                document.createElementNS(
+
+                    "http://www.w3.org/2000/svg",
+
+                    "polyline"
+
+                );
+
+            trendLine.setAttribute(
+
+                "points",
+
+                points
+
+                .map(
+
+                    function (point) {
+
+                        return (
+
+                            `${point.x},${point.y}`
+
                         );
 
                     }
 
+                )
+
+                .join(" ")
+
+            );
+
+            trendLine.setAttribute(
+
+                "class",
+
+                "chart-line"
+
+            );
+
+            svg.appendChild(
+
+                trendLine
+
+            );
+
+            points.forEach(
+
+                function (point) {
+
+                    const circle =
+
+                        document.createElementNS(
+
+                            "http://www.w3.org/2000/svg",
+
+                            "circle"
+
+                        );
+
+                    circle.setAttribute(
+
+                        "cx",
+
+                        point.x
+
+                    );
+
+                    circle.setAttribute(
+
+                        "cy",
+
+                        point.y
+
+                    );
+
+                    circle.setAttribute(
+
+                        "r",
+
+                        4
+
+                    );
+
+                    circle.setAttribute(
+
+                        "class",
+
+                        "chart-point"
+
+                    );
+
+                    svg.appendChild(
+
+                        circle
+
+                    );
+
                 }
+
             );
 
         }
 
+        /* =================================================
 
+           AI PANEL
 
-        /* =========================================
-           2. 규칙 막대 애니메이션
-        ========================================= */
-
-        window.addEventListener(
-            "load",
-            function () {
-
-                document
-                    .querySelectorAll(
-                        ".rule-bar"
-                    )
-                    .forEach(
-                        function (bar, index) {
-
-                            setTimeout(
-                                function () {
-
-                                    bar.style.width =
-                                        bar.dataset.width
-                                        + "%";
-
-                                },
-                                50 * index
-                            );
-
-                        }
-                    );
-
-            }
-        );
-
-
-
-        /* =========================================
-           3. AI 선택
-        ========================================= */
+        ================================================= */
 
         const aiSelect =
-            document.getElementById(
-                "ai-select"
-            );
 
+            document.getElementById(
+
+                "aiSelect"
+
+            );
 
         const aiGenerate =
-            document.getElementById(
-                "ai-generate"
-            );
 
+            document.getElementById(
+
+                "aiGenerate"
+
+            );
 
         const aiEmpty =
-            document.getElementById(
-                "ai-empty"
-            );
 
+            document.getElementById(
+
+                "aiEmpty"
+
+            );
 
         const aiOutput =
+
             document.getElementById(
-                "ai-output"
+
+                "aiOutput"
+
             );
 
+        const aiTitle =
 
-        /* 왼쪽 AI로 분석 버튼 */
+            document.getElementById(
 
-        document
-            .querySelectorAll(
-                ".analyse-button"
-            )
-            .forEach(
-                function (button) {
+                "aiTitle"
 
-                    button.addEventListener(
-                        "click",
-                        function () {
-
-                            const signalType =
-                                button.dataset.signalType;
-
-
-                            const category =
-                                button.dataset.category;
-
-
-                            Array.from(
-                                aiSelect.options
-                            ).forEach(
-                                function (option) {
-
-                                    if (
-                                        option.dataset.signalType
-                                        === signalType
-                                        &&
-                                        option.dataset.category
-                                        === category
-                                    ) {
-
-                                        option.selected =
-                                            true;
-
-                                    }
-
-                                }
-                            );
-
-
-                            document
-                                .querySelector(
-                                    ".ai-panel"
-                                )
-                                .scrollIntoView({
-                                    behavior: "smooth",
-                                    block: "start"
-                                });
-
-                        }
-                    );
-
-                }
             );
 
+        const aiBriefing =
 
+            document.getElementById(
 
-        /* =========================================
-           4. AI 결과 리스트
-        ========================================= */
+                "aiBriefing"
 
-        function fillList(
-            id,
-            items
+            );
+
+        const aiIdeas =
+
+            document.getElementById(
+
+                "aiIdeas"
+
+            );
+
+        const aiQuestions =
+
+            document.getElementById(
+
+                "aiQuestions"
+
+            );
+
+        const aiData =
+
+            document.getElementById(
+
+                "aiData"
+
+            );
+
+        function escapeHtml(
+
+            value
+
         ) {
 
-            const target =
-                document.getElementById(id);
+            return String(
 
+                value
 
-            target.innerHTML = "";
+            )
 
+            .replaceAll(
 
-            const safeItems =
-                items
-                    && items.length
-                    ? items
-                    : ["추가 제안 없음"];
+                "&",
 
+                "&amp;"
 
-            safeItems.forEach(
-                function (item) {
+            )
 
-                    const li =
-                        document.createElement(
-                            "li"
-                        );
+            .replaceAll(
 
+                "<",
 
-                    /*
-                        API 결과 안의 <strong> 등을
-                        실제 HTML로 표시
-                    */
+                "&lt;"
 
-                    li.innerHTML =
-                        item;
+            )
 
+            .replaceAll(
 
-                    target.appendChild(
-                        li
-                    );
+                ">",
 
-                }
+                "&gt;"
+
+            )
+
+            .replaceAll(
+
+                '"',
+
+                "&quot;"
+
+            )
+
+            .replaceAll(
+
+                "'",
+
+                "&#039;"
+
             );
 
         }
 
+        function listHtml(
 
+            values
 
-        /* =========================================
-           5. AI 브리핑 생성
-        ========================================= */
+        ) {
 
-        aiGenerate.addEventListener(
-            "click",
-            async function () {
+            const list =
 
-                const option =
-                    aiSelect.options[
-                    aiSelect.selectedIndex
-                    ];
+                Array.isArray(
 
+                    values
 
-                if (
-                    !option
-                    ||
-                    !option.value
-                ) {
+                )
 
-                    alert(
-                        "분석할 시그널을 선택해주세요."
-                    );
+                ?
 
-                    return;
+                values
 
-                }
+                :
 
+                [];
 
-                const category =
-                    option.dataset.category;
+            return list
 
+                .map(
 
-                const signalType =
-                    option.dataset.signalType;
+                    function (value) {
 
+                        return (
 
-                const region =
-                    option.dataset.region;
+                            `<li>${escapeHtml(value)}</li>`
 
-
-                let apiUrl = "";
-
-
-                if (
-                    category === "사회"
-                ) {
-
-                    apiUrl =
-                        "/api/social-report/"
-                        + signalType;
-
-                }
-
-                else if (
-                    category === "경제"
-                ) {
-
-                    apiUrl =
-                        "/api/economy-report/"
-                        + signalType;
-
-                }
-
-                else {
-
-                    alert(
-                        "현재 AI 에이전트는 사회·경제 시그널부터 연결되어 있습니다."
-                    );
-
-                    return;
-
-                }
-
-
-                aiGenerate.disabled =
-                    true;
-
-
-                aiGenerate.textContent =
-                    "브리핑 분석 중...";
-
-
-                try {
-
-                    const response =
-                        await fetch(
-                            apiUrl,
-                            {
-                                method: "POST"
-                            }
                         );
 
+                    }
+
+                )
+
+                .join("");
+
+        }
+
+        function renderFallback(
+
+            option
+
+        ) {
+
+            const category =
+
+                option.dataset.category
+
+                ||
+
+                "";
+
+            const region =
+
+                option.dataset.region
+
+                ||
+
+                "";
+
+            const name =
+
+                option.value;
+
+            aiTitle.textContent =
+
+                `${region} · ${name}`;
+
+            aiBriefing.textContent =
+
+                `${category} 데이터에서 '${name}' 시그널이 우선 확인 대상으로 포착되었습니다. 탐지 수치는 취재 우선순위를 정하기 위한 신호이며 실제 원인은 추가 데이터와 현장 취재를 통해 확인해야 합니다.`;
+
+            aiIdeas.innerHTML =
+
+                listHtml([
+
+                    `'${name}' 시그널이 시작된 시점과 배경을 추적`,
+
+                    `유사 사례와 비교해 이번 변화가 이례적인지 검증`,
+
+                    `수치 변화가 실제 현장 변화와 연결되는지 후속 취재`
+
+                ]);
+
+            aiQuestions.innerHTML =
+
+                listHtml([
+
+                    `이 변화가 발생하기 직전에 어떤 사건이나 변화가 있었는가?`,
+
+                    `비슷한 지역·집단에서도 같은 움직임이 나타나는가?`,
+
+                    `일시적인 변화인지 지속적인 흐름인지 확인할 수 있는 지표는 무엇인가?`
+
+                ]);
+
+            aiData.innerHTML =
+
+                listHtml([
+
+                    `최근 원자료 및 이전 기간 시계열`,
+
+                    `유사 지역·집단·종목과의 비교 데이터`,
+
+                    `관련 기관 공식자료와 현장 취재`
+
+                ]);
+
+        }
+
+        async function analyseSelected() {
+
+            const option =
+
+                aiSelect.options[
+
+                    aiSelect.selectedIndex
+
+                ];
+
+            if (
+
+                !option
+
+                ||
+
+                !option.value
+
+            ) {
+
+                aiOutput.style.display =
+
+                    "none";
+
+                aiEmpty.style.display =
+
+                    "block";
+
+                return;
+
+            }
+
+            aiEmpty.style.display =
+
+                "none";
+
+            aiOutput.style.display =
+
+                "block";
+
+            aiGenerate.disabled =
+
+                true;
+
+            aiGenerate.textContent =
+
+                "분석 중...";
+
+            aiTitle.textContent =
+
+                option.value;
+
+            aiBriefing.textContent =
+
+                "선택한 시그널을 분석하고 있습니다...";
+
+            aiIdeas.innerHTML = "";
+
+            aiQuestions.innerHTML = "";
+
+            aiData.innerHTML = "";
+
+            try {
+
+                const category =
+
+                    option.dataset.category
+
+                    ||
+
+                    "";
+
+                /* =========================================
+
+                   K콘텐츠
+
+                ========================================= */
+
+                if (
+
+                    category
+
+                    ===
+
+                    "K콘텐츠"
+
+                ) {
+
+                    const itemId =
+
+                        option.dataset.itemId;
+
+                    const response =
+
+                        await fetch(
+
+                            `/api/ai-report/${itemId}`,
+
+                            {
+
+                                method:
+
+                                    "POST"
+
+                            }
+
+                        );
 
                     const data =
-                        await response.json();
 
+                        await response.json();
 
                     if (!response.ok) {
 
                         throw new Error(
+
                             data.error
+
                             ||
-                            "취재 브리핑을 생성하지 못했습니다."
+
+                            "K콘텐츠 AI 오류"
+
                         );
 
                     }
 
+                    aiTitle.textContent =
 
-                    document.getElementById(
-                        "ai-title"
-                    ).textContent =
-                        region
-                        + " · "
-                        + option.value;
+                        option.value;
 
+                    aiBriefing.textContent =
 
-                    /*
-                        strong 태그 정상 적용
-                    */
-
-                    document.getElementById(
-                        "ai-briefing"
-                    ).innerHTML =
                         data.briefing
+
                         ||
-                        "브리핑 내용이 없습니다.";
 
+                        "";
 
-                    fillList(
-                        "ai-ideas",
-                        data.article_ideas
-                    );
+                    aiIdeas.innerHTML =
 
+                        listHtml(
 
-                    fillList(
-                        "ai-questions",
-                        data.questions
-                    );
+                            data.article_ideas
 
+                            ||
 
-                    fillList(
-                        "ai-data",
-                        data.verification_data
-                    );
+                            data.hypotheses
 
+                            ||
 
-                    aiEmpty.style.display =
-                        "none";
+                            []
 
+                        );
 
-                    aiOutput.style.display =
-                        "block";
+                    aiQuestions.innerHTML =
 
+                        listHtml(
 
-                    aiGenerate.textContent =
-                        "브리핑 생성 완료";
+                            data.questions
+
+                            ||
+
+                            []
+
+                        );
+
+                    aiData.innerHTML =
+
+                        listHtml(
+
+                            data.verification_data
+
+                            ||
+
+                            []
+
+                        );
 
                 }
 
-                catch (error) {
+                /* =========================================
 
-                    alert(
-                        error.message
-                    );
+                   주식
 
+                ========================================= */
 
-                    aiGenerate.textContent =
-                        "취재 브리핑 생성 →";
+                else if (
+
+                    category
+
+                    ===
+
+                    "주식"
+
+                ) {
+
+                    const market =
+
+                        option.dataset.stockMarket;
+
+                    const code =
+
+                        option.dataset.stockCode;
+
+                    const date =
+
+                        option.dataset.stockDate;
+
+                    const url =
+
+                        `/api/stock-report/${encodeURIComponent(market)}/${encodeURIComponent(code)}/${encodeURIComponent(date)}`;
+
+                    const response =
+
+                        await fetch(
+
+                            url,
+
+                            {
+
+                                method:
+
+                                    "POST",
+
+                                headers: {
+
+                                    "Content-Type":
+
+                                        "application/json"
+
+                                },
+
+                                body:
+
+                                    JSON.stringify({
+
+                                        include_news:
+
+                                            false
+
+                                    })
+
+                            }
+
+                        );
+
+                    const data =
+
+                        await response.json();
+
+                    if (!response.ok) {
+
+                        throw new Error(
+
+                            data.error
+
+                            ||
+
+                            "주식 AI 오류"
+
+                        );
+
+                    }
+
+                    aiTitle.textContent =
+
+                        option.value;
+
+                    aiBriefing.textContent =
+
+                        data.briefing
+
+                        ||
+
+                        data.summary
+
+                        ||
+
+                        data.analysis
+
+                        ||
+
+                        "주식 시그널 분석이 완료되었습니다.";
+
+                    aiIdeas.innerHTML =
+
+                        listHtml(
+
+                            data.article_ideas
+
+                            ||
+
+                            data.ideas
+
+                            ||
+
+                            data.hypotheses
+
+                            ||
+
+                            []
+
+                        );
+
+                    aiQuestions.innerHTML =
+
+                        listHtml(
+
+                            data.questions
+
+                            ||
+
+                            data.reporting_questions
+
+                            ||
+
+                            []
+
+                        );
+
+                    aiData.innerHTML =
+
+                        listHtml(
+
+                            data.verification_data
+
+                            ||
+
+                            data.data_to_check
+
+                            ||
+
+                            data.sources
+
+                            ||
+
+                            []
+
+                        );
 
                 }
 
-                finally {
+                /* =========================================
 
-                    aiGenerate.disabled =
-                        false;
+                   사회 / 경제 / 야구
+
+                ========================================= */
+
+                else {
+
+                    renderFallback(
+
+                        option
+
+                    );
 
                 }
 
             }
+
+            catch (error) {
+
+                console.error(
+
+                    error
+
+                );
+
+                renderFallback(
+
+                    option
+
+                );
+
+                aiBriefing.textContent +=
+
+                    ` (AI API 연결 실패: ${error.message})`;
+
+            }
+
+            finally {
+
+                aiGenerate.disabled =
+
+                    false;
+
+                aiGenerate.textContent =
+
+                    "선택 항목 다시 분석 →";
+
+            }
+
+        }
+
+        aiSelect.addEventListener(
+
+            "change",
+
+            analyseSelected
+
         );
 
-        /* =========================================
-           취재 우선순위 탭 필터
-        ========================================= */
+        aiGenerate.addEventListener(
 
-        const signalTabs =
-            document.querySelectorAll(
-                ".signal-tab"
-            );
+            "click",
 
+            analyseSelected
 
-        const signalRows =
-            document.querySelectorAll(
-                ".signal-row"
-            );
+        );
 
+        /* =================================================
 
-        const signalEmpty =
-            document.getElementById(
-                "signal-empty"
-            );
+           각 행 AI로 분석 버튼
 
+        ================================================= */
 
-        signalTabs.forEach(
-            function (tab) {
+        document
 
-                tab.addEventListener(
+        .querySelectorAll(
+
+            ".analyse-button"
+
+        )
+
+        .forEach(
+
+            function (button) {
+
+                button.addEventListener(
+
                     "click",
+
                     function () {
 
-                        const filter =
-                            tab.dataset.filter;
+                        const category =
 
+                            button.dataset.category;
 
-                        signalTabs.forEach(
-                            function (item) {
+                        const itemId =
 
-                                item.classList.remove(
-                                    "active"
-                                );
+                            button.dataset.itemId
 
-                            }
-                        );
+                            ||
 
+                            "";
 
-                        tab.classList.add(
-                            "active"
-                        );
+                        const stockCode =
 
+                            button.dataset.stockCode
 
-                        let visibleCount = 0;
+                            ||
 
+                            "";
 
-                        signalRows.forEach(
-                            function (row) {
+                        const stockMarket =
 
-                                const category =
-                                    row.dataset.category;
+                            button.dataset.stockMarket
 
+                            ||
 
-                                const show =
-                                    filter === "all"
-                                    ||
-                                    category === filter;
+                            "";
 
+                        const stockDate =
 
-                                row.style.display =
-                                    show
-                                        ? "grid"
-                                        : "none";
+                            button.dataset.stockDate
 
+                            ||
 
-                                if (show) {
-                                    visibleCount++;
+                            "";
+
+                        const matching =
+
+                            Array.from(
+
+                                aiSelect.options
+
+                            )
+
+                            .find(
+
+                                function (option) {
+
+                                    if (
+
+                                        option.dataset.category
+
+                                        !==
+
+                                        category
+
+                                    ) {
+
+                                        return false;
+
+                                    }
+
+                                    if (
+
+                                        category
+
+                                        ===
+
+                                        "K콘텐츠"
+
+                                    ) {
+
+                                        return (
+
+                                            option.dataset.itemId
+
+                                            ===
+
+                                            itemId
+
+                                        );
+
+                                    }
+
+                                    if (
+
+                                        category
+
+                                        ===
+
+                                        "주식"
+
+                                    ) {
+
+                                        return (
+
+                                            option.dataset.stockCode
+
+                                            ===
+
+                                            stockCode
+
+                                            &&
+
+                                            option.dataset.stockMarket
+
+                                            ===
+
+                                            stockMarket
+
+                                            &&
+
+                                            option.dataset.stockDate
+
+                                            ===
+
+                                            stockDate
+
+                                        );
+
+                                    }
+
+                                    return (
+
+                                        option.value
+
+                                        ===
+
+                                        button.dataset.signalName
+
+                                    );
+
                                 }
 
-                            }
-                        );
+                            );
 
+                        if (matching) {
 
-                        signalEmpty.style.display =
-                            visibleCount === 0
-                                ? "block"
-                                : "none";
+                            aiSelect.value =
+
+                                matching.value;
+
+                            analyseSelected();
+
+                            aiSelect.scrollIntoView({
+
+                                behavior:
+
+                                    "smooth",
+
+                                block:
+
+                                    "center"
+
+                            });
+
+                        }
 
                     }
+
                 );
 
             }
-        );
-    </script>
 
+        );
+
+    }
+
+);
+
+</script>
 
 </body>
 

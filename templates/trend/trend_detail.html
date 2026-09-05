@@ -76,6 +76,31 @@
         color: #888;
         font-size: 11px;
     }
+    .detail-links {
+        margin-top: 14px;
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+    }
+    .detail-external-link {
+        min-height: 34px;
+        padding: 0 12px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        background: #fff;
+        color: #333;
+        font-size: 9px;
+        font-weight: 800;
+        transition: .18s ease;
+    }
+    .detail-external-link:hover {
+        border-color: #111;
+        background: #111;
+        color: #fff;
+    }
 
     .headline-score {
         flex: 0 0 auto;
@@ -92,6 +117,13 @@
         color: #999;
         font-size: 9px;
         font-weight: 600;
+    }
+    .score-helper {
+        margin-top: 6px;
+        max-width: 170px;
+        color: #aaa;
+        font-size: 7px;
+        line-height: 1.45;
     }
     .score-number {
         margin-top: 6px;
@@ -142,7 +174,7 @@
     .metrics-grid {
         margin-top: 25px;
         display: grid;
-        grid-template-columns: repeat(4, 1fr);
+        grid-template-columns: repeat(5, 1fr);
         gap: 10px;
     }
     .metric-card {
@@ -467,29 +499,82 @@
         font-size: 9px;
         line-height: 1.6;
     }
-    .hypothesis-grid {
+    .reporting-path-grid {
         margin-top: 12px;
         display: grid;
         grid-template-columns: repeat(3, 1fr);
         gap: 10px;
     }
-    .hypothesis-card {
-        padding: 18px;
+    .reporting-path-card {
+        padding: 19px;
         background: #171717;
         border: 1px solid #292929;
-        border-radius: 10px;
+        border-radius: 11px;
+        display: flex;
+        flex-direction: column;
+        min-height: 100%;
     }
-    .hypothesis-number {
+    .path-number {
+        color: #666;
+        font-size: 8px;
+        font-weight: 900;
+        letter-spacing: .8px;
+    }
+    .path-label {
+        margin-top: 8px;
+        color: #fff;
+        font-size: 13px;
+        font-weight: 900;
+        letter-spacing: -.3px;
+    }
+    .path-hypothesis {
+        margin-top: 10px;
+        color: #ddd;
+        font-size: 10px;
+        line-height: 1.75;
+        font-weight: 700;
+    }
+    .path-detail {
+        margin-top: 13px;
+        padding-top: 11px;
+        border-top: 1px solid #292929;
+    }
+    .path-detail-label {
         color: #666;
         font-size: 8px;
         font-weight: 900;
         letter-spacing: .5px;
     }
-    .hypothesis-text {
-        margin-top: 9px;
-        color: #ddd;
-        font-size: 10px;
-        line-height: 1.75;
+    .path-detail-text {
+        margin-top: 5px;
+        color: #999;
+        font-size: 9px;
+        line-height: 1.65;
+    }
+    .path-detail.falsify .path-detail-label { color: #a7777d; }
+    .path-link {
+        margin-top: auto;
+        padding-top: 15px;
+    }
+    .path-link a {
+        min-height: 35px;
+        padding: 0 11px;
+        border: 1px solid #393939;
+        border-radius: 7px;
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        color: #fff;
+        background: #202020;
+        font-size: 8px;
+        font-weight: 900;
+    }
+    .path-link a:hover { background: #2d2d2d; }
+    .path-link-note {
+        margin-top: 7px;
+        color: #555;
+        font-size: 7px;
+        line-height: 1.5;
     }
     .ai-grid {
         margin-top: 12px;
@@ -562,7 +647,7 @@
         .method-grid { grid-template-columns: 1fr; }
     }
     @media (max-width: 850px) {
-        .hypothesis-grid,
+        .reporting-path-grid,
         .ai-grid { grid-template-columns: 1fr; }
         .ai-header,
         .chart-head {
@@ -599,6 +684,8 @@
 {% set interest_ratio = item.get('interest_ratio', 1) %}
 {% set increase_rate = item.get('increase_rate', 0) %}
 {% set z_score = item.get('z_score', 0) %}
+{% set anomaly_days = item.get('anomaly_days', item.get('persistence_days', 0)) %}
+{% set max_consecutive = item.get('max_consecutive_anomaly_days', 0) %}
 {% set trend_score = item.get('trend_score', 0) %}
 {% set signal = item.get('signal', 'LOW') %}
 
@@ -625,21 +712,38 @@
 
             <h1 class="detail-title">{{ item.get('title', '콘텐츠') }}</h1>
             <div class="detail-sub">{{ item.get('sub_info', '') }}</div>
+
+            {% if item.get('category') == 'webtoon' and item.get('external_url') %}
+                <div class="detail-links">
+                    <a
+                        class="detail-external-link"
+                        href="{{ item.get('external_url') }}"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                    >
+                        <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                        {{ item.get('external_link_label', '웹툰 확인하기') }}
+                    </a>
+                </div>
+            {% endif %}
         </div>
 
         <div class="headline-score">
             <div class="score-item">
-                <div class="score-label">이상감지 점수</div>
+                <div class="score-label">취재 우선순위 점수</div>
                 <div class="score-number">
                     {{ trend_score }}
                     <span>/100</span>
+                </div>
+                <div class="score-helper">
+                    변화 크기·통계적 이례성·지속성을 종합한 내부 우선순위 점수
                 </div>
             </div>
 
             <div class="score-divider"></div>
 
             <div class="score-item">
-                <div class="score-label">최근 관심도 변화</div>
+                <div class="score-label">최근 관심도 증감률</div>
                 <div class="score-number red">
                     {{ "%+.1f"|format(increase_rate) }}%
                 </div>
@@ -662,27 +766,33 @@
 
         <div class="metrics-grid">
             <div class="metric-card">
-                <div class="metric-label">기준 23일 평균</div>
-                <div class="metric-value">{{ baseline_avg }}</div>
-                <div class="metric-desc">최근 구간과 비교하기 위한 평소 관심 수준입니다.</div>
+                <div class="metric-label">기준 23일 평균 관심도 지수</div>
+                <div class="metric-value">{{ baseline_avg }}<span class="score-unit"> pt</span></div>
+                <div class="metric-desc">최근 구간과 비교하기 위한 기준 관심도 지수입니다.</div>
             </div>
 
             <div class="metric-card">
-                <div class="metric-label">최근 7일 평균</div>
-                <div class="metric-value red">{{ recent_avg }}</div>
-                <div class="metric-desc">이상징후 판단에 사용하는 최근 관심 수준입니다.</div>
+                <div class="metric-label">최근 7일 평균 관심도 지수</div>
+                <div class="metric-value red">{{ recent_avg }}<span class="score-unit"> pt</span></div>
+                <div class="metric-desc">최근 7일 시뮬레이션 관심도 지수의 평균값입니다.</div>
             </div>
 
             <div class="metric-card">
-                <div class="metric-label">평소 대비 관심 수준</div>
-                <div class="metric-value">{{ "%.2f"|format(interest_ratio) }}배</div>
-                <div class="metric-desc">최근 7일 평균 ÷ 기준 23일 평균입니다.</div>
+                <div class="metric-label">증감률</div>
+                <div class="metric-value red">{{ "%+.1f"|format(increase_rate) }}%</div>
+                <div class="metric-desc">기준 23일 평균과 비교한 최근 7일 평균의 변화 크기입니다.</div>
             </div>
 
             <div class="metric-card">
                 <div class="metric-label">Z-score</div>
                 <div class="metric-value">{{ "%.2f"|format(z_score) }}</div>
-                <div class="metric-desc">최근 움직임이 평소 변동 범위에서 얼마나 벗어났는지 보여줍니다.</div>
+                <div class="metric-desc">최근 움직임이 기준 구간의 평소 변동성에서 얼마나 벗어났는지 보여줍니다.</div>
+            </div>
+
+            <div class="metric-card">
+                <div class="metric-label">이상 지속</div>
+                <div class="metric-value">{{ anomaly_days }} / 7일</div>
+                <div class="metric-desc">최근 7일 중 평소 변동 범위를 벗어난 날짜 수입니다. 최대 {{ max_consecutive }}일 연속입니다.</div>
             </div>
         </div>
     </section>
@@ -720,7 +830,7 @@
                 <div class="method-row">
                     <div class="method-label">주요 지표</div>
                     <div class="method-value">
-                        변화율, 기준 대비 배수, Z-score, 종합 이상감지 점수
+                        증감률, Z-score, 이상 지속일수, 취재 우선순위 점수
                     </div>
                 </div>
             </div>
@@ -734,7 +844,7 @@
         <div class="method-card">
             <div class="method-card-title">DETECTION GUIDE</div>
             <div class="method-card-desc">
-                신호 등급은 취재 우선순위를 정하기 위한 분류이며 사실의 중요도를 확정하는 판정이 아닙니다.
+                신호 등급과 점수는 취재 우선순위를 정하기 위한 내부 지표이며 사실의 중요도·원인·진위를 확정하는 판정이 아닙니다.
             </div>
 
             <div class="guide-list">
@@ -801,16 +911,16 @@
                     AI REPORTER AGENT
                 </div>
 
-                <div class="ai-title">이상신호를 취재 아이디어로 전환합니다</div>
+                <div class="ai-title">이상신호를 취재의 출발점으로 바꿉니다</div>
 
                 <div class="ai-description">
-                    이상감지 수치를 바탕으로 기자가 추가로 확인할 가설과 취재 방향을 제안합니다.
+                    탐지된 패턴을 검증 가능한 가설과 취재 경로로 전환합니다.
                 </div>
 
                 <div class="ai-guardrail">
-                    <strong>중요:</strong>
-                    AI는 이상신호의 실제 원인을 확정하지 않습니다.
-                    아래 내용은 기자가 외부 자료와 취재를 통해 검증해야 할 가설입니다.
+                    <strong>AI NOTE</strong>
+                    원인을 확정하지 않습니다. 탐지 결과를 바탕으로 검증 가능한 취재 가설을 제안하며,
+                    최종 판단은 공식 자료와 추가 취재를 통해 확인해야 합니다.
                 </div>
             </div>
 
@@ -822,7 +932,7 @@
 
                 <button id="generateBtn" class="ai-button" type="button">
                     <i class="fa-solid fa-wand-magic-sparkles"></i>
-                    AI 취재 브리핑 생성
+                    취재 가설 생성
                 </button>
             </div>
         </div>
@@ -831,23 +941,23 @@
             <div class="ai-placeholder-icon">
                 <i class="fa-solid fa-magnifying-glass-chart"></i>
             </div>
-            이상감지 결과를 바탕으로 취재 가설, 기사 아이디어,
-            취재 질문과 추가 확인 데이터를 제안합니다.
+            탐지된 이상 패턴을 세 가지 검증 축으로 나눠,
+            취재 가설·근거·확인 경로와 다음 액션을 제안합니다.
         </div>
 
         <div id="aiError" class="ai-error"></div>
 
         <div id="aiReportBox" class="ai-result">
             <div class="briefing-box">
-                <div class="result-label">EXECUTIVE BRIEFING</div>
+                <div class="result-label">REPORTING BRIEF</div>
                 <div id="aiBriefing" class="briefing-text"></div>
             </div>
 
-            <div class="subsection-title">취재로 검증할 가설</div>
+            <div class="subsection-title">검증 우선순위</div>
             <div class="subsection-desc">
-                확인된 원인이 아니라 추가 자료와 취재를 통해 검증해야 할 가능성입니다.
+                가능한 원인을 세 가지 검증 축으로 나눠, 먼저 확인할 근거와 다음 취재 행동을 제안합니다.
             </div>
-            <div id="aiHypotheses" class="hypothesis-grid"></div>
+            <div id="aiReportingPaths" class="reporting-path-grid"></div>
 
             <div class="ai-grid">
                 <div class="ai-card">
@@ -876,8 +986,8 @@
             </div>
 
             <div class="ai-warning">
-                ※ AI 출력은 취재 방향 설정을 돕기 위한 제안입니다.
-                기사 작성 전 원자료 확인, 이해관계자 취재, 교차 검증이 필요합니다.
+                ※ AI는 이상신호의 원인을 확정하지 않습니다.
+                각 취재 경로는 원자료·공식 일정·외부 검색·현장 취재를 통해 교차 검증해야 합니다.
             </div>
         </div>
     </section>
@@ -896,11 +1006,15 @@
         id: {{ item.get('id', 0) | tojson }},
         title: {{ item.get('title', '') | tojson }},
         category: {{ item.get('category_name', '') | tojson }},
+        categoryType: {{ item.get('category', '') | tojson }},
         signal: {{ signal | tojson }},
         trendScore: {{ trend_score | tojson }},
         increaseRate: {{ increase_rate | tojson }},
         interestRatio: {{ interest_ratio | tojson }},
-        zScore: {{ z_score | tojson }}
+        zScore: {{ z_score | tojson }},
+        anomalyDays: {{ anomaly_days | tojson }},
+        maxConsecutive: {{ max_consecutive | tojson }},
+        externalUrl: {{ item.get('external_url', '') | tojson }}
     };
 
     const DAILY_DATA = {{ item.get('daily_data', []) | tojson }};
@@ -988,27 +1102,89 @@
         });
     }
 
-    function renderHypotheses(values) {
-        const container = document.getElementById("aiHypotheses");
-        const list = Array.isArray(values) ? values : [];
+    function verificationLink(linkType) {
+        const query = encodeURIComponent(CURRENT_ITEM.title || "");
+
+        if (linkType === "source") {
+            if (CURRENT_ITEM.externalUrl) {
+                return {
+                    url: CURRENT_ITEM.externalUrl,
+                    label: CURRENT_ITEM.categoryType === "webtoon"
+                        ? "웹툰 원문 확인"
+                        : "관련 콘텐츠 검색"
+                };
+            }
+
+            return {
+                url: `https://search.naver.com/search.naver?query=${query}`,
+                label: "관련 콘텐츠 검색"
+            };
+        }
+
+        if (linkType === "news") {
+            return {
+                url: `https://search.naver.com/search.naver?where=news&query=${query}`,
+                label: "관련 뉴스 확인"
+            };
+        }
+
+        return {
+            url: `https://trends.google.com/trends/explore?q=${query}`,
+            label: "Google Trends 확인"
+        };
+    }
+
+    function renderReportingPaths(values) {
+        const container = document.getElementById("aiReportingPaths");
+        const list = Array.isArray(values) ? values.slice(0, 3) : [];
 
         if (list.length === 0) {
             container.innerHTML = `
-                <div class="hypothesis-card">
-                    <div class="hypothesis-text">생성된 취재 가설이 없습니다.</div>
+                <div class="reporting-path-card">
+                    <div class="path-hypothesis">생성된 취재 경로가 없습니다.</div>
                 </div>
             `;
             return;
         }
 
-        container.innerHTML = list.map((value, index) => `
-            <div class="hypothesis-card">
-                <div class="hypothesis-number">
-                    HYPOTHESIS ${String(index + 1).padStart(2, "0")}
+        container.innerHTML = list.map((path, index) => {
+            const link = verificationLink(path.link_type || "trends");
+
+            return `
+                <div class="reporting-path-card">
+                    <div class="path-number">${String(index + 1).padStart(2, "0")} / ${["CONTENT", "PLATFORM", "EXTERNAL"][index] || "VERIFY"}</div>
+                    <div class="path-label">${escapeHtml(path.label || "취재 경로")}</div>
+                    <div class="path-hypothesis">${escapeHtml(path.hypothesis || "")}</div>
+
+                    <div class="path-detail">
+                        <div class="path-detail-label">근거</div>
+                        <div class="path-detail-text">${escapeHtml(path.why || "")}</div>
+                    </div>
+
+                    <div class="path-detail">
+                        <div class="path-detail-label">검증</div>
+                        <div class="path-detail-text">${escapeHtml(path.check || "")}</div>
+                    </div>
+
+                    <div class="path-detail falsify">
+                        <div class="path-detail-label">반증</div>
+                        <div class="path-detail-text">${escapeHtml(path.falsify || "")}</div>
+                    </div>
+
+                    <div class="path-link">
+                        <a
+                            href="${escapeHtml(link.url)}"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                        >
+                            <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                            ${escapeHtml(link.label)}
+                        </a>
+                        <div class="path-link-note">외부 자료에서 검증을 시작합니다.</div>
+                    </div>
                 </div>
-                <div class="hypothesis-text">${escapeHtml(value)}</div>
-            </div>
-        `).join("");
+            `;
+        }).join("");
     }
 
     function renderList(elementId, values) {
@@ -1087,14 +1263,27 @@
             document.getElementById("aiBriefing").textContent =
                 data.briefing || "브리핑 결과가 없습니다.";
 
-            renderHypotheses(data.hypotheses);
+            const reportingPaths = Array.isArray(data.reporting_paths)
+                ? data.reporting_paths
+                : (Array.isArray(data.hypotheses)
+                    ? data.hypotheses.map((value, index) => ({
+                        label: `가설 ${index + 1}`,
+                        hypothesis: value,
+                        why: "이상감지 결과와 시간적 연결 여부를 확인할 가치가 있습니다.",
+                        check: "관련 일정·검색·플랫폼·뉴스 데이터를 같은 날짜 축으로 비교합니다.",
+                        falsify: "시점이 맞지 않거나 관련 지표가 움직이지 않으면 가설의 우선순위를 낮춥니다.",
+                        link_type: index === 0 ? "source" : (index === 1 ? "trends" : "news")
+                    }))
+                    : []);
+
+            renderReportingPaths(reportingPaths);
             renderList("aiIdeas", data.article_ideas);
             renderList("aiQuestions", data.questions);
             renderList("aiDataSources", data.verification_data);
 
             button.innerHTML = `
                 <i class="fa-solid fa-check"></i>
-                분석 완료
+                가설 생성 완료
             `;
 
             copyButton.style.display = "inline-flex";
@@ -1104,7 +1293,7 @@
 
             errorBox.style.display = "block";
             errorBox.textContent =
-                `AI 취재 브리핑 생성에 실패했습니다. ${error.message}`;
+                `취재 가설 생성에 실패했습니다. ${error.message}`;
 
             button.innerHTML = `
                 <i class="fa-solid fa-rotate-right"></i>
@@ -1118,8 +1307,8 @@
     async function copyBriefing() {
         if (!latestAiReport) return;
 
-        const hypotheses = Array.isArray(latestAiReport.hypotheses)
-            ? latestAiReport.hypotheses : [];
+        const reportingPaths = Array.isArray(latestAiReport.reporting_paths)
+            ? latestAiReport.reporting_paths : [];
         const ideas = Array.isArray(latestAiReport.article_ideas)
             ? latestAiReport.article_ideas : [];
         const questions = Array.isArray(latestAiReport.questions)
@@ -1143,16 +1332,24 @@
             `콘텐츠: ${CURRENT_ITEM.title}`,
             `카테고리: ${CURRENT_ITEM.category}`,
             `신호: ${CURRENT_ITEM.signal}`,
-            `이상감지 점수: ${CURRENT_ITEM.trendScore}/100`,
-            `관심도 변화율: ${signed(CURRENT_ITEM.increaseRate)}%`,
-            `평소 대비 관심 수준: ${Number(CURRENT_ITEM.interestRatio).toFixed(2)}배`,
+            `취재 우선순위 점수: ${CURRENT_ITEM.trendScore}/100`,
+            `관심도 증감률: ${signed(CURRENT_ITEM.increaseRate)}%`,
             `Z-score: ${Number(CURRENT_ITEM.zScore).toFixed(2)}`,
+            `이상 지속: ${CURRENT_ITEM.anomalyDays}/7일`,
+            `최대 연속 이상: ${CURRENT_ITEM.maxConsecutive}일`,
             "",
             "[핵심 브리핑]",
             latestAiReport.briefing || "",
             "",
-            "[취재 가설]",
-            numbered(hypotheses),
+            "[취재 시작 경로]",
+            reportingPaths.length
+                ? reportingPaths.map((path, index) => [
+                    `${index + 1}. ${path.label || "취재 경로"}`,
+                    `   가설: ${path.hypothesis || ""}`,
+                    `   확인: ${path.check || ""}`,
+                    `   반증: ${path.falsify || ""}`
+                ].join("\n")).join("\n")
+                : "- 없음",
             "",
             "[기사 아이디어]",
             numbered(ideas),
@@ -1163,7 +1360,7 @@
             "[추가 확인 데이터]",
             numbered(verification),
             "",
-            "※ AI 제안은 취재 가설이며 기사 작성 전 사실 검증이 필요합니다."
+            "※ AI 제안은 취재 시작점이며 기사 작성 전 원자료·외부 자료·현장 취재를 통한 사실 검증이 필요합니다."
         ].join("\n");
 
         try {

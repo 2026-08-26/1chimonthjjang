@@ -1,0 +1,3098 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>DATA TIP-OFF | 시그널 탐사실</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg: #f5f4ef;
+            --paper: #ffffff;
+            --ink: #101010;
+            --muted: #777;
+            --line: #d8d5ce;
+            --soft: #ece9e2;
+
+            --accent: #d74d35;
+
+            --high: #bd352e;
+            --medium: #a17625;
+            --low: #4f7258;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            margin: 0;
+
+            background: var(--bg);
+            color: var(--ink);
+
+            font-family:
+                Pretendard,
+                "Noto Sans KR",
+                Arial,
+                sans-serif;
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        button,
+        select {
+            font: inherit;
+        }
+
+        button {
+            cursor: pointer;
+        }
+
+
+        /* =========================
+           HEADER
+        ========================= */
+
+        .header {
+            height: 72px;
+
+            position: sticky;
+            top: 0;
+            z-index: 50;
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            padding: 0 32px;
+
+            background: rgba(245,244,239,.96);
+
+            border-bottom: 1px solid var(--ink);
+
+            backdrop-filter: blur(12px);
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+        }
+
+        .brand-name {
+            font-family:
+                Georgia,
+                serif;
+
+            font-size: 21px;
+            font-weight: 900;
+        }
+
+        .brand-tag {
+            padding-left: 18px;
+
+            border-left: 1px solid var(--ink);
+
+            font-size: 9px;
+            font-weight: 800;
+            letter-spacing: 1.4px;
+        }
+
+        .header-nav {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+        }
+
+        .nav-link {
+            padding: 8px 11px;
+
+            border: 1px solid transparent;
+
+            font-size: 9px;
+            font-weight: 800;
+
+            transition:
+                background .18s ease,
+                color .18s ease,
+                border .18s ease;
+        }
+
+        .nav-link:hover {
+            border-color: var(--ink);
+        }
+
+        .nav-link.active {
+            background: var(--ink);
+            color: white;
+        }
+
+
+        /* =========================
+           MAIN
+        ========================= */
+
+        .main {
+            max-width: 1540px;
+
+            margin: 0 auto;
+
+            padding:
+                34px
+                30px
+                80px;
+        }
+
+
+        /* =========================
+           HERO
+        ========================= */
+
+        .hero {
+            min-height: 430px;
+
+            display: grid;
+
+            grid-template-columns:
+                minmax(0,1.35fr)
+                minmax(310px,.65fr);
+
+            border-top: 2px solid var(--ink);
+            border-bottom: 1px solid var(--ink);
+        }
+
+        .hero-copy {
+            padding:
+                50px
+                50px
+                50px
+                0;
+
+            border-right: 1px solid var(--ink);
+        }
+
+        .hero-kicker {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+
+            font-size: 9px;
+            font-weight: 900;
+
+            letter-spacing: 1.5px;
+        }
+
+        .hero-dot {
+            width: 7px;
+            height: 7px;
+
+            border-radius: 50%;
+
+            background: var(--accent);
+
+            animation:
+                pulse
+                1.6s
+                infinite;
+        }
+
+        @keyframes pulse {
+            50% {
+                opacity: .25;
+            }
+        }
+
+        .hero h1 {
+            max-width: 850px;
+
+            margin:
+                25px
+                0
+                0;
+
+            font-family:
+                Georgia,
+                "Noto Serif KR",
+                serif;
+
+            font-size:
+                clamp(50px,7vw,92px);
+
+            line-height: .96;
+
+            letter-spacing: -5px;
+        }
+
+        .hero-desc {
+            max-width: 680px;
+
+            margin-top: 26px;
+
+            font-size: 12px;
+            line-height: 1.9;
+
+            color: var(--muted);
+        }
+
+        .hero-stats {
+            padding:
+                45px
+                0
+                45px
+                35px;
+
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+        }
+
+        .stat-item {
+            padding: 19px 0;
+
+            border-top: 1px solid var(--ink);
+        }
+
+        .stat-item:last-child {
+            border-bottom: 1px solid var(--ink);
+        }
+
+        .stat-value {
+            font-family:
+                Georgia,
+                serif;
+
+            font-size: 44px;
+            font-weight: 900;
+        }
+
+        .stat-label {
+            margin-top: 5px;
+
+            color: var(--muted);
+
+            font-size: 9px;
+        }
+
+
+        /* =========================
+           SECTION
+        ========================= */
+
+        .section {
+            padding: 45px 0;
+
+            border-bottom: 1px solid var(--ink);
+        }
+
+        .section-head {
+            margin-bottom: 26px;
+
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+
+            gap: 30px;
+        }
+
+        .section-index {
+            font-family:
+                Georgia,
+                serif;
+
+            font-size: 11px;
+
+            color: var(--muted);
+        }
+
+        .section-title {
+            margin-top: 7px;
+
+            font-family:
+                Georgia,
+                "Noto Serif KR",
+                serif;
+
+            font-size: 33px;
+            font-weight: 900;
+
+            letter-spacing: -1.5px;
+        }
+
+        .section-desc {
+            max-width: 430px;
+
+            text-align: right;
+
+            color: var(--muted);
+
+            font-size: 10px;
+            line-height: 1.7;
+        }
+
+
+        /* =========================
+           EXPLORER
+        ========================= */
+
+        .explorer {
+            display: grid;
+
+            grid-template-columns:
+                330px
+                minmax(0,1fr);
+
+            min-height: 540px;
+
+            border: 1px solid var(--ink);
+
+            background: var(--paper);
+        }
+
+        .signal-browser {
+            border-right: 1px solid var(--ink);
+        }
+
+        .browser-head {
+            padding: 20px;
+
+            border-bottom: 1px solid var(--ink);
+        }
+
+        .browser-label {
+            color: var(--muted);
+
+            font-size: 8px;
+            font-weight: 900;
+
+            letter-spacing: 1px;
+        }
+
+        .browser-title {
+            margin-top: 7px;
+
+            font-family:
+                Georgia,
+                "Noto Serif KR",
+                serif;
+
+            font-size: 21px;
+            font-weight: 900;
+        }
+
+        .signal-option {
+            width: 100%;
+
+            padding: 18px 20px;
+
+            border: 0;
+            border-bottom: 1px solid var(--line);
+
+            background: transparent;
+
+            text-align: left;
+
+            display: block;
+
+            transition:
+                background .18s ease,
+                color .18s ease,
+                padding-left .18s ease;
+        }
+
+        .signal-option:hover {
+            background: var(--ink);
+            color: white;
+
+            padding-left: 26px;
+        }
+
+        .signal-option.active {
+            background: var(--ink);
+            color: white;
+        }
+
+        .option-top {
+            display: flex;
+            justify-content: space-between;
+
+            font-size: 8px;
+
+            color: var(--muted);
+        }
+
+        .signal-option:hover
+        .option-top,
+
+        .signal-option.active
+        .option-top {
+            color: #aaa;
+        }
+
+        .option-name {
+            margin-top: 8px;
+
+            font-size: 11px;
+            font-weight: 900;
+
+            line-height: 1.45;
+        }
+
+        .option-score {
+            font-family:
+                Georgia,
+                serif;
+
+            font-size: 13px;
+            font-weight: 900;
+        }
+
+
+        /* =========================
+           SELECTED SIGNAL
+        ========================= */
+
+        .signal-stage {
+            padding: 34px;
+
+            position: relative;
+
+            overflow: hidden;
+        }
+
+        .stage-number {
+            position: absolute;
+
+            right: 25px;
+            top: 5px;
+
+            font-family:
+                Georgia,
+                serif;
+
+            font-size: 150px;
+            font-weight: 900;
+
+            color: #f1f1ed;
+
+            pointer-events: none;
+        }
+
+        .stage-kicker {
+            position: relative;
+
+            color: var(--accent);
+
+            font-size: 9px;
+            font-weight: 900;
+            letter-spacing: 1.2px;
+        }
+
+        .stage-region {
+            position: relative;
+
+            margin-top: 18px;
+
+            font-family:
+                Georgia,
+                "Noto Serif KR",
+                serif;
+
+            font-size: 22px;
+
+            color: var(--muted);
+        }
+
+        .stage-title {
+            position: relative;
+
+            max-width: 750px;
+
+            margin-top: 8px;
+
+            font-family:
+                Georgia,
+                "Noto Serif KR",
+                serif;
+
+            font-size:
+                clamp(35px,5vw,62px);
+
+            line-height: 1.05;
+
+            letter-spacing: -2.5px;
+        }
+
+        .stage-meta {
+            position: relative;
+
+            display: flex;
+            gap: 22px;
+
+            margin-top: 20px;
+
+            font-size: 9px;
+        }
+
+        .meta-value {
+            font-family:
+                Georgia,
+                serif;
+
+            font-size: 20px;
+            font-weight: 900;
+        }
+
+        .meta-label {
+            margin-top: 3px;
+
+            color: var(--muted);
+        }
+
+        .stage-divider {
+            margin: 30px 0;
+
+            border-top: 1px solid var(--ink);
+        }
+
+        .stage-description {
+            max-width: 720px;
+
+            font-family:
+                Georgia,
+                "Noto Serif KR",
+                serif;
+
+            font-size: 14px;
+            line-height: 1.85;
+        }
+
+        .stage-actions {
+            margin-top: 32px;
+
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .stage-button {
+            height: 40px;
+
+            padding: 0 15px;
+
+            border: 1px solid var(--ink);
+
+            background: transparent;
+
+            color: var(--ink);
+
+            font-size: 9px;
+            font-weight: 900;
+
+            transition:
+                background .18s ease,
+                color .18s ease;
+        }
+
+        .stage-button:hover {
+            background: var(--ink);
+            color: white;
+        }
+
+        .stage-button.primary {
+            background: var(--accent);
+            color: white;
+
+            border-color: var(--accent);
+        }
+
+        .stage-button.primary:hover {
+            background: var(--ink);
+
+            border-color: var(--ink);
+        }
+
+
+        /* =========================
+           VISUAL
+        ========================= */
+
+        .visual-layout {
+            display: grid;
+
+            grid-template-columns:
+                minmax(0,1.4fr)
+                minmax(290px,.6fr);
+
+            border-top: 1px solid var(--ink);
+        }
+
+        .chart-block {
+            padding:
+                30px
+                35px
+                15px
+                0;
+
+            border-right: 1px solid var(--ink);
+        }
+
+        .distribution-block {
+            padding:
+                30px
+                0
+                15px
+                35px;
+        }
+
+        .visual-label {
+            font-size: 9px;
+            font-weight: 900;
+
+            letter-spacing: 1px;
+        }
+
+        .visual-title {
+            margin-top: 7px;
+
+            font-family:
+                Georgia,
+                "Noto Serif KR",
+                serif;
+
+            font-size: 24px;
+            font-weight: 900;
+        }
+
+        .chart-wrap {
+            height: 310px;
+
+            margin-top: 20px;
+
+            position: relative;
+        }
+
+        #trend-chart {
+            width: 100%;
+            height: 100%;
+        }
+
+        .grid-line {
+            stroke: #d9d6cf;
+
+            stroke-width: 1;
+
+            stroke-dasharray: 2 7;
+        }
+
+        .axis-label {
+            font-family: Arial;
+
+            font-size: 9px;
+
+            fill: #999;
+        }
+
+        .trend-area {
+            fill: rgba(215,77,53,.05);
+        }
+
+        .trend-line {
+            fill: none;
+
+            stroke: var(--accent);
+
+            stroke-width: 2.5;
+
+            stroke-linejoin: round;
+            stroke-linecap: round;
+
+            stroke-dasharray: 2500;
+            stroke-dashoffset: 2500;
+
+            animation:
+                draw
+                1.7s
+                ease
+                forwards;
+        }
+
+        @keyframes draw {
+            to {
+                stroke-dashoffset: 0;
+            }
+        }
+
+        .trend-point {
+            fill: var(--bg);
+            stroke: var(--accent);
+
+            stroke-width: 2;
+
+            cursor: pointer;
+        }
+
+        .trend-point:hover {
+            fill: var(--accent);
+        }
+
+        .tooltip {
+            display: none;
+
+            position: absolute;
+
+            z-index: 20;
+
+            padding: 10px 12px;
+
+            background: var(--ink);
+            color: white;
+
+            pointer-events: none;
+
+            font-size: 9px;
+        }
+
+        .tooltip strong {
+            display: block;
+
+            margin-top: 3px;
+
+            font-family:
+                Georgia,
+                serif;
+
+            font-size: 17px;
+        }
+
+
+        /* =========================
+           RULE DISTRIBUTION
+        ========================= */
+
+        .rule-list {
+            margin-top: 24px;
+
+            display: flex;
+            flex-direction: column;
+
+            gap: 16px;
+        }
+
+        .rule-head {
+            margin-bottom: 6px;
+
+            display: flex;
+            justify-content: space-between;
+            gap: 15px;
+
+            font-size: 9px;
+        }
+
+        .rule-name {
+            max-width: 210px;
+
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+        }
+
+        .rule-count {
+            font-family:
+                Georgia,
+                serif;
+
+            font-size: 12px;
+            font-weight: 900;
+        }
+
+        .rule-track {
+            height: 5px;
+
+            background: var(--soft);
+        }
+
+        .rule-bar {
+            height: 100%;
+            width: 0;
+
+            background: var(--ink);
+
+            transition:
+                width .8s
+                cubic-bezier(.2,.8,.2,1);
+        }
+
+        .rule-item:hover
+        .rule-bar {
+            background: var(--accent);
+        }
+
+
+        /* =========================
+           CATEGORY
+        ========================= */
+
+        .categories {
+            display: grid;
+
+            grid-template-columns:
+                repeat(3,1fr);
+
+            border-top: 1px solid var(--ink);
+            border-left: 1px solid var(--ink);
+        }
+
+        .category {
+            min-height: 240px;
+
+            padding: 27px;
+
+            position: relative;
+
+            border-right: 1px solid var(--ink);
+            border-bottom: 1px solid var(--ink);
+
+            overflow: hidden;
+
+            transition:
+                background .2s ease,
+                color .2s ease;
+        }
+
+        .category-no {
+            font-family:
+                Georgia,
+                serif;
+
+            font-size: 40px;
+
+            color: #d0cdc6;
+        }
+
+        .category-name {
+            margin-top: 18px;
+
+            font-family:
+                Georgia,
+                "Noto Serif KR",
+                serif;
+
+            font-size: 28px;
+            font-weight: 900;
+        }
+
+        .category-desc {
+            max-width: 280px;
+
+            margin-top: 11px;
+
+            color: var(--muted);
+
+            font-size: 10px;
+            line-height: 1.75;
+        }
+
+        .category-open {
+            position: absolute;
+
+            left: 27px;
+            right: 27px;
+            bottom: -40px;
+
+            display: flex;
+            justify-content: space-between;
+
+            opacity: 0;
+
+            font-size: 9px;
+            font-weight: 900;
+
+            transition:
+                bottom .22s ease,
+                opacity .22s ease;
+        }
+
+        .category:hover {
+            background: var(--ink);
+            color: white;
+        }
+
+        .category:hover
+        .category-no {
+            color: #555;
+        }
+
+        .category:hover
+        .category-desc {
+            color: #aaa;
+        }
+
+        .category:hover
+        .category-open {
+            bottom: 23px;
+            opacity: 1;
+        }
+
+
+        /* =========================
+           AI DRAWER
+        ========================= */
+
+        .drawer-overlay {
+            position: fixed;
+
+            inset: 0;
+
+            z-index: 150;
+
+            background: rgba(0,0,0,.28);
+
+            opacity: 0;
+            pointer-events: none;
+
+            transition:
+                opacity .25s ease;
+        }
+
+        .drawer-overlay.open {
+            opacity: 1;
+
+            pointer-events: auto;
+        }
+
+        .ai-drawer {
+            position: fixed;
+
+            top: 0;
+            right: 0;
+
+            z-index: 200;
+
+            width: min(470px,100vw);
+            height: 100vh;
+
+            background: var(--ink);
+            color: white;
+
+            transform:
+                translateX(100%);
+
+            transition:
+                transform .35s
+                cubic-bezier(.2,.8,.2,1);
+
+            overflow-y: auto;
+
+            box-shadow:
+                -20px 0 50px
+                rgba(0,0,0,.18);
+        }
+
+        .ai-drawer.open {
+            transform:
+                translateX(0);
+        }
+
+        .drawer-head {
+            padding: 25px;
+
+            border-bottom: 1px solid #444;
+
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+
+        .drawer-label {
+            color: #999;
+
+            font-size: 8px;
+            font-weight: 900;
+
+            letter-spacing: 1.1px;
+        }
+
+        .drawer-title {
+            margin-top: 10px;
+
+            font-family:
+                Georgia,
+                "Noto Serif KR",
+                serif;
+
+            font-size: 27px;
+            font-weight: 900;
+
+            line-height: 1.2;
+        }
+
+        .drawer-close {
+            width: 35px;
+            height: 35px;
+
+            border: 1px solid #555;
+
+            background: transparent;
+            color: white;
+
+            font-size: 17px;
+        }
+
+        .drawer-close:hover {
+            background: white;
+            color: black;
+        }
+
+        .drawer-body {
+            padding: 25px;
+        }
+
+        .drawer-selected {
+            padding-bottom: 22px;
+
+            border-bottom: 1px solid #555;
+        }
+
+        .selected-label {
+            color: #888;
+
+            font-size: 8px;
+            font-weight: 900;
+        }
+
+        .selected-title {
+            margin-top: 8px;
+
+            font-family:
+                Georgia,
+                "Noto Serif KR",
+                serif;
+
+            font-size: 21px;
+            font-weight: 900;
+
+            line-height: 1.4;
+        }
+
+        .ai-generate {
+            width: 100%;
+            height: 44px;
+
+            margin-top: 17px;
+
+            border: 1px solid white;
+
+            background: white;
+            color: black;
+
+            font-size: 10px;
+            font-weight: 900;
+        }
+
+        .ai-generate:hover {
+            background: transparent;
+            color: white;
+        }
+
+        .ai-generate:disabled {
+            opacity: .5;
+        }
+
+        .drawer-empty {
+            padding: 40px 0;
+
+            color: #aaa;
+
+            font-size: 11px;
+            line-height: 1.8;
+        }
+
+        .ai-output {
+            display: none;
+        }
+
+        .ai-block {
+            padding: 22px 0;
+
+            border-bottom: 1px solid #444;
+        }
+
+        .ai-block-title {
+            margin-bottom: 10px;
+
+            color: #888;
+
+            font-size: 8px;
+            font-weight: 900;
+            letter-spacing: 1px;
+        }
+
+        .ai-block p,
+        .ai-block li {
+            color: #ddd;
+
+            font-size: 10px;
+            line-height: 1.85;
+        }
+
+        .ai-block p {
+            margin: 0;
+        }
+
+        .ai-block ul {
+            margin: 0;
+
+            padding-left: 18px;
+        }
+
+        .ai-block strong {
+            color: white;
+        }
+
+        .ai-note {
+            padding: 20px 0 30px;
+
+            color: #777;
+
+            font-size: 8px;
+            line-height: 1.7;
+        }
+
+
+        /* =========================
+           FOOTER
+        ========================= */
+
+        .footer {
+            padding-top: 26px;
+
+            display: flex;
+            justify-content: space-between;
+
+            color: var(--muted);
+
+            font-size: 8px;
+        }
+
+
+        /* =========================
+           RESPONSIVE
+        ========================= */
+
+        @media(max-width:1050px) {
+
+            .explorer {
+                grid-template-columns: 1fr;
+            }
+
+            .signal-browser {
+                border-right: 0;
+                border-bottom: 1px solid var(--ink);
+            }
+
+            .visual-layout {
+                grid-template-columns: 1fr;
+            }
+
+            .chart-block {
+                padding-right: 0;
+
+                border-right: 0;
+                border-bottom: 1px solid var(--ink);
+            }
+
+            .distribution-block {
+                padding-left: 0;
+            }
+
+        }
+
+        @media(max-width:800px) {
+
+            .header {
+                padding: 0 15px;
+            }
+
+            .brand-tag,
+            .header-nav a:not(.active) {
+                display: none;
+            }
+
+            .main {
+                padding:
+                    20px
+                    16px
+                    55px;
+            }
+
+            .hero {
+                grid-template-columns: 1fr;
+            }
+
+            .hero-copy {
+                padding:
+                    35px
+                    0;
+
+                border-right: 0;
+            }
+
+            .hero h1 {
+                font-size: 50px;
+
+                letter-spacing: -3px;
+            }
+
+            .hero-stats {
+                padding:
+                    20px
+                    0
+                    30px;
+            }
+
+            .section-head {
+                display: block;
+            }
+
+            .section-desc {
+                margin-top: 10px;
+
+                text-align: left;
+            }
+
+            .categories {
+                grid-template-columns: 1fr;
+            }
+
+        }
+
+    </style>
+</head>
+
+
+<body>
+
+
+<!-- =========================
+     HEADER
+========================= -->
+
+<header class="header">
+
+    <div class="brand">
+
+        <a
+            href="/home-v4"
+            class="brand-name"
+        >
+            DATA TIP-OFF
+        </a>
+
+        <div class="brand-tag">
+            인터랙티브 데이터 탐사실
+        </div>
+
+    </div>
+
+
+    <nav class="header-nav">
+
+        <a
+            href="/home"
+            class="nav-link"
+        >
+            후보 1
+        </a>
+
+        <a
+            href="/home-v2"
+            class="nav-link"
+        >
+            후보 2
+        </a>
+
+        <a
+            href="/home-v3"
+            class="nav-link"
+        >
+            후보 3
+        </a>
+
+        <a
+            href="/home-v4"
+            class="nav-link active"
+        >
+            후보 4
+        </a>
+
+    </nav>
+
+</header>
+
+
+
+<main class="main">
+
+
+    <!-- =========================
+         HERO
+    ========================= -->
+
+    <section class="hero">
+
+        <div class="hero-copy">
+
+            <div class="hero-kicker">
+
+                <span class="hero-dot"></span>
+
+                데이터 탐지 시스템 활성화
+
+            </div>
+
+
+            <h1>
+                숫자가 먼저 발견했습니다.<br>
+                이제 탐사해보세요.
+            </h1>
+
+
+            <div class="hero-desc">
+                DATA TIP-OFF는 여러 통계 탐지 규칙을 데이터 전체에 적용해
+                평소와 다른 움직임을 시그널 후보로 발굴합니다.
+                목록을 보는 데서 끝나지 않고,
+                시그널을 직접 선택해 탐지 근거와 흐름을 탐사할 수 있습니다.
+            </div>
+
+        </div>
+
+
+        <div class="hero-stats">
+
+            <div class="stat-item">
+
+                <div class="stat-value">
+                    {{ "{:,}".format(stats.total_candidates) }}
+                </div>
+
+                <div class="stat-label">
+                    전체 사회·경제 시그널 후보
+                </div>
+
+            </div>
+
+
+            <div class="stat-item">
+
+                <div class="stat-value">
+                    {{ stats.total_rules }}
+                </div>
+
+                <div class="stat-label">
+                    자동 탐지 규칙
+                </div>
+
+            </div>
+
+
+            <div class="stat-item">
+
+                <div class="stat-value">
+                    {{ stats.high_count }}
+                </div>
+
+                <div class="stat-label">
+                    높은 취재 우선순위
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- =========================
+         SIGNAL EXPLORER
+    ========================= -->
+
+    <section class="section">
+
+        <div class="section-head">
+
+            <div>
+
+                <div class="section-index">
+                    01 / 탐사
+                </div>
+
+                <div class="section-title">
+                    시그널 탐사 모드
+                </div>
+
+            </div>
+
+
+            <div class="section-desc">
+                왼쪽의 시그널 후보를 선택해보세요.
+                화면 이동 없이 선택한 시그널의 지역·시점·점수와
+                취재 방향을 바로 확인할 수 있습니다.
+            </div>
+
+        </div>
+
+
+
+        <div class="explorer">
+
+
+            <!-- LEFT SIGNAL LIST -->
+
+            <div class="signal-browser">
+
+                <div class="browser-head">
+
+                    <div class="browser-label">
+                        취재 우선순위
+                    </div>
+
+                    <div class="browser-title">
+                        지금 볼 시그널
+                    </div>
+
+                </div>
+
+
+                {% for item in top_signals %}
+
+                <button
+                    class="
+                        signal-option
+                        {% if loop.first %}
+                            active
+                        {% endif %}
+                    "
+                    data-index="{{ loop.index }}"
+                    data-category="{{ item.category }}"
+                    data-region="{{ item.region }}"
+                    data-name="{{ item.signal_name }}"
+                    data-date="{{ item.date }}"
+                    data-score="{{ item.score }}"
+                    data-severity="{{ item.severity }}"
+                    data-signal-type="{{ item.signal_type }}"
+                    data-detail-url="{{ item.detail_url }}"
+                >
+
+                    <div class="option-top">
+
+                        <span>
+                            {{ "%02d"|format(loop.index) }}
+                            ·
+                            {{ item.category }}
+                            ·
+                            {{ item.region }}
+                        </span>
+
+                        <span class="option-score">
+                            {{ item.score }}
+                        </span>
+
+                    </div>
+
+
+                    <div class="option-name">
+                        {{ item.signal_name }}
+                    </div>
+
+                </button>
+
+                {% endfor %}
+
+            </div>
+
+
+
+            <!-- RIGHT DETAIL -->
+
+            <div class="signal-stage">
+
+                <div
+                    id="stage-number"
+                    class="stage-number"
+                >
+                    01
+                </div>
+
+
+                <div class="stage-kicker">
+                    선택된 취재 시그널
+                </div>
+
+
+                <div
+                    id="stage-region"
+                    class="stage-region"
+                >
+                    {{ top_signals[0].region }}
+                </div>
+
+
+                <div
+                    id="stage-title"
+                    class="stage-title"
+                >
+                    {{ top_signals[0].signal_name }}
+                </div>
+
+
+                <div class="stage-meta">
+
+                    <div>
+
+                        <div
+                            id="stage-date"
+                            class="meta-value"
+                        >
+                            {{ top_signals[0].date }}
+                        </div>
+
+                        <div class="meta-label">
+                            탐지 시점
+                        </div>
+
+                    </div>
+
+
+                    <div>
+
+                        <div
+                            id="stage-score"
+                            class="meta-value"
+                        >
+                            {{ top_signals[0].score }}
+                        </div>
+
+                        <div class="meta-label">
+                            Signal Score
+                        </div>
+
+                    </div>
+
+
+                    <div>
+
+                        <div
+                            id="stage-severity"
+                            class="meta-value"
+                        >
+                            {{ top_signals[0].severity }}
+                        </div>
+
+                        <div class="meta-label">
+                            취재 우선순위
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div class="stage-divider"></div>
+
+
+                <div
+                    id="stage-description"
+                    class="stage-description"
+                >
+                    이 시그널은 통계 탐지 규칙에 의해
+                    평소와 다른 패턴 후보로 포착되었습니다.
+                    탐지 결과만으로 원인을 단정할 수 없으며,
+                    실제 수치와 관련 데이터를 추가 확인할 필요가 있습니다.
+                </div>
+
+
+                <div class="stage-actions">
+
+                    <a
+                        id="detail-link"
+                        href="{{ top_signals[0].detail_url }}"
+                        class="stage-button"
+                        style="
+                            display:flex;
+                            align-items:center;
+                        "
+                    >
+                        탐지 근거 자세히 보기 →
+                    </a>
+
+
+                    <button
+                        id="open-ai"
+                        class="stage-button primary"
+                    >
+                        AI에게 취재 질문 받기 ✦
+                    </button>
+
+                </div>
+
+            </div>
+
+
+        </div>
+
+    </section>
+
+
+
+    <!-- =========================
+         DATA FLOW
+    ========================= -->
+
+    <section class="section">
+
+        <div class="section-head">
+
+            <div>
+
+                <div class="section-index">
+                    02 / 흐름
+                </div>
+
+                <div class="section-title">
+                    데이터의 시간과 패턴
+                </div>
+
+            </div>
+
+
+            <div class="section-desc">
+                실제 사회·경제 시그널 CSV를 이용해
+                월별 탐지량과 탐지 규칙별 후보 분포를
+                자동으로 시각화합니다.
+            </div>
+
+        </div>
+
+
+
+        <div class="visual-layout">
+
+
+            <div class="chart-block">
+
+                <div class="visual-label">
+                    월별 시그널 발생 추이
+                </div>
+
+                <div class="visual-title">
+                    어느 시점에 시그널이 몰렸나
+                </div>
+
+
+                <div
+                    id="chart-wrap"
+                    class="chart-wrap"
+                >
+
+                    <svg
+                        id="trend-chart"
+                        viewBox="0 0 900 310"
+                        preserveAspectRatio="none"
+                    ></svg>
+
+
+                    <div
+                        id="tooltip"
+                        class="tooltip"
+                    >
+
+                        <span id="tooltip-date"></span>
+
+                        <strong id="tooltip-count"></strong>
+
+                        시그널 후보
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+
+            <div class="distribution-block">
+
+                <div class="visual-label">
+                    탐지 규칙별 후보
+                </div>
+
+                <div class="visual-title">
+                    어떤 패턴이 많이 포착됐나
+                </div>
+
+
+                <div class="rule-list">
+
+                    {% for rule in rule_chart %}
+
+                    <div class="rule-item">
+
+                        <div class="rule-head">
+
+                            <span class="rule-name">
+                                {{ rule.name }}
+                            </span>
+
+                            <span class="rule-count">
+                                {{ rule.count }}
+                            </span>
+
+                        </div>
+
+
+                        <div class="rule-track">
+
+                            <div
+                                class="rule-bar"
+                                data-width="{{ rule.width }}"
+                            ></div>
+
+                        </div>
+
+                    </div>
+
+                    {% endfor %}
+
+                </div>
+
+            </div>
+
+
+        </div>
+
+    </section>
+
+
+
+    <!-- =========================
+         CATEGORY
+    ========================= -->
+
+    <section class="section">
+
+        <div class="section-head">
+
+            <div>
+
+                <div class="section-index">
+                    03 / 분야
+                </div>
+
+                <div class="section-title">
+                    어디에서 시그널을 찾을까
+                </div>
+
+            </div>
+
+
+            <div class="section-desc">
+                사회·경제, K콘텐츠, 야구 데이터를
+                하나의 DATA TIP-OFF 구조에서 탐지합니다.
+            </div>
+
+        </div>
+
+
+
+        <div class="categories">
+
+
+            <a
+                href="/social"
+                class="category"
+            >
+
+                <div class="category-no">
+                    01
+                </div>
+
+                <div class="category-name">
+                    사회·경제
+                </div>
+
+                <div class="category-desc">
+                    인구 이동과 자연증감,
+                    주택가격·거래량·금리에서
+                    평소와 다른 움직임을 탐지합니다.
+                </div>
+
+                <div class="category-open">
+
+                    <span>
+                        탐지 규칙 11개
+                    </span>
+
+                    <span>
+                        탐사 시작 →
+                    </span>
+
+                </div>
+
+            </a>
+
+
+
+            <a
+                href="/content/drama"
+                class="category"
+            >
+
+                <div class="category-no">
+                    02
+                </div>
+
+                <div class="category-name">
+                    K콘텐츠
+                </div>
+
+                <div class="category-desc">
+                    드라마·음악·웹툰 등
+                    콘텐츠 데이터에서
+                    급격한 관심 변화와 패턴을 탐지합니다.
+                </div>
+
+                <div class="category-open">
+
+                    <span>
+                        콘텐츠 시그널
+                    </span>
+
+                    <span>
+                        탐사 시작 →
+                    </span>
+
+                </div>
+
+            </a>
+
+
+
+            <div class="category">
+
+                <div class="category-no">
+                    03
+                </div>
+
+                <div class="category-name">
+                    야구
+                </div>
+
+                <div class="category-desc">
+                    선수 기록과 경기 데이터를 분석해
+                    평소와 다른 경기력과 기록 변화를
+                    취재 시그널 후보로 탐지합니다.
+                </div>
+
+                <div class="category-open">
+
+                    <span>
+                        선수 기록 시그널
+                    </span>
+
+                    <span>
+                        분석 준비 중 →
+                    </span>
+
+                </div>
+
+            </div>
+
+
+        </div>
+
+    </section>
+
+
+
+    <footer class="footer">
+
+        <span>
+            DATA TIP-OFF
+        </span>
+
+        <span>
+            숫자가 먼저 제보하는 취재 아이템 발굴 플랫폼
+        </span>
+
+    </footer>
+
+
+</main>
+
+
+
+<!-- =========================
+     AI DRAWER
+========================= -->
+
+<div
+    id="drawer-overlay"
+    class="drawer-overlay"
+></div>
+
+
+<aside
+    id="ai-drawer"
+    class="ai-drawer"
+>
+
+    <div class="drawer-head">
+
+        <div>
+
+            <div class="drawer-label">
+                DATA TIP-OFF / AI 취재 노트
+            </div>
+
+            <div class="drawer-title">
+                다음 질문을<br>
+                찾아드립니다.
+            </div>
+
+        </div>
+
+
+        <button
+            id="drawer-close"
+            class="drawer-close"
+        >
+            ×
+        </button>
+
+    </div>
+
+
+
+    <div class="drawer-body">
+
+
+        <div class="drawer-selected">
+
+            <div class="selected-label">
+                현재 선택한 시그널
+            </div>
+
+            <div
+                id="ai-selected-title"
+                class="selected-title"
+            ></div>
+
+
+            <button
+                id="ai-generate"
+                class="ai-generate"
+            >
+                AI 취재 브리핑 생성 →
+            </button>
+
+        </div>
+
+
+
+        <div
+            id="drawer-empty"
+            class="drawer-empty"
+        >
+            브리핑 생성 버튼을 누르면
+            기사 아이디어와 주요 취재 질문,
+            추가 확인 데이터를 확인할 수 있습니다.
+        </div>
+
+
+
+        <div
+            id="ai-output"
+            class="ai-output"
+        >
+
+            <div class="ai-block">
+
+                <div class="ai-block-title">
+                    핵심 브리핑
+                </div>
+
+                <p id="ai-briefing"></p>
+
+            </div>
+
+
+            <div class="ai-block">
+
+                <div class="ai-block-title">
+                    기사 아이디어
+                </div>
+
+                <ul id="ai-ideas"></ul>
+
+            </div>
+
+
+            <div class="ai-block">
+
+                <div class="ai-block-title">
+                    주요 취재 질문
+                </div>
+
+                <ul id="ai-questions"></ul>
+
+            </div>
+
+
+            <div class="ai-block">
+
+                <div class="ai-block-title">
+                    추가 확인 필요 데이터
+                </div>
+
+                <ul id="ai-data"></ul>
+
+            </div>
+
+
+            <div class="ai-note">
+                ※ 통계적 탐지 결과를 바탕으로 한 취재 보조 기능입니다.
+                특정 사건이나 정책과의 인과관계를 확정하지 않습니다.
+            </div>
+
+        </div>
+
+    </div>
+
+</aside>
+
+
+
+<!-- =========================
+     GRAPH DATA
+========================= -->
+
+<script
+    id="monthly-data"
+    type="application/json"
+>
+    {{ monthly_chart | tojson }}
+</script>
+
+
+
+<script>
+
+    /* =====================================
+       현재 선택 시그널
+    ===================================== */
+
+    let selectedSignal = {
+        category:
+            "{{ top_signals[0].category }}",
+
+        region:
+            "{{ top_signals[0].region }}",
+
+        name:
+            "{{ top_signals[0].signal_name }}",
+
+        date:
+            "{{ top_signals[0].date }}",
+
+        score:
+            "{{ top_signals[0].score }}",
+
+        severity:
+            "{{ top_signals[0].severity }}",
+
+        signalType:
+            "{{ top_signals[0].signal_type }}",
+
+        detailUrl:
+            "{{ top_signals[0].detail_url }}"
+    };
+
+
+    const options =
+        document.querySelectorAll(
+            ".signal-option"
+        );
+
+
+    const stageNumber =
+        document.getElementById(
+            "stage-number"
+        );
+
+    const stageRegion =
+        document.getElementById(
+            "stage-region"
+        );
+
+    const stageTitle =
+        document.getElementById(
+            "stage-title"
+        );
+
+    const stageDate =
+        document.getElementById(
+            "stage-date"
+        );
+
+    const stageScore =
+        document.getElementById(
+            "stage-score"
+        );
+
+    const stageSeverity =
+        document.getElementById(
+            "stage-severity"
+        );
+
+    const detailLink =
+        document.getElementById(
+            "detail-link"
+        );
+
+
+    options.forEach(
+        function(option) {
+
+            option.addEventListener(
+                "click",
+                function() {
+
+                    options.forEach(
+                        item =>
+                            item.classList.remove(
+                                "active"
+                            )
+                    );
+
+
+                    option.classList.add(
+                        "active"
+                    );
+
+
+                    selectedSignal = {
+
+                        category:
+                            option.dataset.category,
+
+                        region:
+                            option.dataset.region,
+
+                        name:
+                            option.dataset.name,
+
+                        date:
+                            option.dataset.date,
+
+                        score:
+                            option.dataset.score,
+
+                        severity:
+                            option.dataset.severity,
+
+                        signalType:
+                            option.dataset.signalType,
+
+                        detailUrl:
+                            option.dataset.detailUrl
+                    };
+
+
+                    stageNumber.textContent =
+                        String(
+                            option.dataset.index
+                        ).padStart(
+                            2,
+                            "0"
+                        );
+
+
+                    stageRegion.textContent =
+                        selectedSignal.region;
+
+
+                    stageTitle.textContent =
+                        selectedSignal.name;
+
+
+                    stageDate.textContent =
+                        selectedSignal.date;
+
+
+                    stageScore.textContent =
+                        selectedSignal.score;
+
+
+                    stageSeverity.textContent =
+                        selectedSignal.severity;
+
+
+                    detailLink.href =
+                        selectedSignal.detailUrl;
+
+
+                    stageTitle.animate(
+                        [
+                            {
+                                opacity: 0,
+                                transform:
+                                    "translateY(8px)"
+                            },
+                            {
+                                opacity: 1,
+                                transform:
+                                    "translateY(0)"
+                            }
+                        ],
+                        {
+                            duration: 260,
+                            easing: "ease"
+                        }
+                    );
+
+                }
+            );
+
+        }
+    );
+
+
+
+    /* =====================================
+       GRAPH
+    ===================================== */
+
+    const monthlyData =
+        JSON.parse(
+            document.getElementById(
+                "monthly-data"
+            ).textContent
+        );
+
+
+    const svg =
+        document.getElementById(
+            "trend-chart"
+        );
+
+
+    const tooltip =
+        document.getElementById(
+            "tooltip"
+        );
+
+
+    const tooltipDate =
+        document.getElementById(
+            "tooltip-date"
+        );
+
+
+    const tooltipCount =
+        document.getElementById(
+            "tooltip-count"
+        );
+
+
+    const NS =
+        "http://www.w3.org/2000/svg";
+
+
+    const W = 900;
+    const H = 310;
+
+    const LEFT = 42;
+    const RIGHT = 15;
+    const TOP = 18;
+    const BOTTOM = 35;
+
+    const plotW =
+        W - LEFT - RIGHT;
+
+    const plotH =
+        H - TOP - BOTTOM;
+
+
+    if (monthlyData.length > 0) {
+
+
+        const maxValue =
+            Math.max(
+                ...monthlyData.map(
+                    d => d.count
+                ),
+                1
+            );
+
+
+        for (
+            let i = 0;
+            i <= 4;
+            i++
+        ) {
+
+            const y =
+                TOP
+                + plotH
+                * i
+                / 4;
+
+
+            const line =
+                document.createElementNS(
+                    NS,
+                    "line"
+                );
+
+
+            line.setAttribute(
+                "x1",
+                LEFT
+            );
+
+            line.setAttribute(
+                "x2",
+                W - RIGHT
+            );
+
+            line.setAttribute(
+                "y1",
+                y
+            );
+
+            line.setAttribute(
+                "y2",
+                y
+            );
+
+            line.setAttribute(
+                "class",
+                "grid-line"
+            );
+
+
+            svg.appendChild(
+                line
+            );
+
+
+            const label =
+                document.createElementNS(
+                    NS,
+                    "text"
+                );
+
+
+            label.textContent =
+                Math.round(
+                    maxValue
+                    * (
+                        1 - i / 4
+                    )
+                );
+
+
+            label.setAttribute(
+                "x",
+                LEFT - 8
+            );
+
+            label.setAttribute(
+                "y",
+                y + 3
+            );
+
+            label.setAttribute(
+                "text-anchor",
+                "end"
+            );
+
+            label.setAttribute(
+                "class",
+                "axis-label"
+            );
+
+
+            svg.appendChild(
+                label
+            );
+
+        }
+
+
+        const points =
+            monthlyData.map(
+                function(item, index) {
+
+                    return {
+
+                        x:
+                            LEFT
+                            + plotW
+                            * index
+                            / Math.max(
+                                monthlyData.length - 1,
+                                1
+                            ),
+
+                        y:
+                            TOP
+                            + plotH
+                            - (
+                                item.count
+                                / maxValue
+                                * plotH
+                            ),
+
+                        date:
+                            item.date,
+
+                        count:
+                            item.count
+                    };
+
+                }
+            );
+
+
+        const area =
+            document.createElementNS(
+                NS,
+                "path"
+            );
+
+
+        let areaPath =
+            `M ${points[0].x} ${TOP + plotH}`;
+
+
+        points.forEach(
+            point => {
+
+                areaPath +=
+                    ` L ${point.x} ${point.y}`;
+
+            }
+        );
+
+
+        areaPath +=
+            ` L ${points[points.length - 1].x} ${TOP + plotH} Z`;
+
+
+        area.setAttribute(
+            "d",
+            areaPath
+        );
+
+        area.setAttribute(
+            "class",
+            "trend-area"
+        );
+
+
+        svg.appendChild(area);
+
+
+
+        const polyline =
+            document.createElementNS(
+                NS,
+                "polyline"
+            );
+
+
+        polyline.setAttribute(
+            "points",
+            points
+                .map(
+                    point =>
+                        `${point.x},${point.y}`
+                )
+                .join(" ")
+        );
+
+
+        polyline.setAttribute(
+            "class",
+            "trend-line"
+        );
+
+
+        svg.appendChild(
+            polyline
+        );
+
+
+
+        points.forEach(
+            function(point, index) {
+
+                if (
+                    index % 5 !== 0
+                    &&
+                    index !== points.length - 1
+                ) {
+                    return;
+                }
+
+
+                const circle =
+                    document.createElementNS(
+                        NS,
+                        "circle"
+                    );
+
+
+                circle.setAttribute(
+                    "cx",
+                    point.x
+                );
+
+                circle.setAttribute(
+                    "cy",
+                    point.y
+                );
+
+                circle.setAttribute(
+                    "r",
+                    3.5
+                );
+
+                circle.setAttribute(
+                    "class",
+                    "trend-point"
+                );
+
+
+                circle.addEventListener(
+                    "mouseenter",
+                    function() {
+
+                        circle.setAttribute(
+                            "r",
+                            6
+                        );
+
+                        tooltip.style.display =
+                            "block";
+
+                        tooltipDate.textContent =
+                            point.date;
+
+                        tooltipCount.textContent =
+                            point.count + "건";
+
+                    }
+                );
+
+
+                circle.addEventListener(
+                    "mousemove",
+                    function(event) {
+
+                        const rect =
+                            document
+                            .getElementById(
+                                "chart-wrap"
+                            )
+                            .getBoundingClientRect();
+
+
+                        tooltip.style.left =
+                            (
+                                event.clientX
+                                - rect.left
+                                + 12
+                            )
+                            + "px";
+
+
+                        tooltip.style.top =
+                            (
+                                event.clientY
+                                - rect.top
+                                - 58
+                            )
+                            + "px";
+
+                    }
+                );
+
+
+                circle.addEventListener(
+                    "mouseleave",
+                    function() {
+
+                        circle.setAttribute(
+                            "r",
+                            3.5
+                        );
+
+                        tooltip.style.display =
+                            "none";
+
+                    }
+                );
+
+
+                svg.appendChild(
+                    circle
+                );
+
+            }
+        );
+
+
+
+        monthlyData.forEach(
+            function(item, index) {
+
+                const year =
+                    item.date.substring(
+                        0,
+                        4
+                    );
+
+
+                const previous =
+                    index > 0
+                    ? monthlyData[
+                        index - 1
+                    ].date.substring(
+                        0,
+                        4
+                    )
+                    : null;
+
+
+                if (
+                    year !== previous
+                    &&
+                    (
+                        Number(year) % 2 === 1
+                        ||
+                        index === 0
+                    )
+                ) {
+
+                    const x =
+                        LEFT
+                        + plotW
+                        * index
+                        / Math.max(
+                            monthlyData.length - 1,
+                            1
+                        );
+
+
+                    const label =
+                        document.createElementNS(
+                            NS,
+                            "text"
+                        );
+
+
+                    label.textContent =
+                        year;
+
+
+                    label.setAttribute(
+                        "x",
+                        x
+                    );
+
+                    label.setAttribute(
+                        "y",
+                        H - 8
+                    );
+
+                    label.setAttribute(
+                        "text-anchor",
+                        "middle"
+                    );
+
+                    label.setAttribute(
+                        "class",
+                        "axis-label"
+                    );
+
+
+                    svg.appendChild(
+                        label
+                    );
+
+                }
+
+            }
+        );
+
+    }
+
+
+
+    /* =====================================
+       RULE BARS
+    ===================================== */
+
+    window.addEventListener(
+        "load",
+        function() {
+
+            document
+                .querySelectorAll(
+                    ".rule-bar"
+                )
+                .forEach(
+                    function(bar, index) {
+
+                        setTimeout(
+                            function() {
+
+                                bar.style.width =
+                                    bar.dataset.width
+                                    + "%";
+
+                            },
+                            index * 55
+                        );
+
+                    }
+                );
+
+        }
+    );
+
+
+
+    /* =====================================
+       AI DRAWER
+    ===================================== */
+
+    const drawer =
+        document.getElementById(
+            "ai-drawer"
+        );
+
+
+    const overlay =
+        document.getElementById(
+            "drawer-overlay"
+        );
+
+
+    const openAI =
+        document.getElementById(
+            "open-ai"
+        );
+
+
+    const closeAI =
+        document.getElementById(
+            "drawer-close"
+        );
+
+
+    const selectedTitle =
+        document.getElementById(
+            "ai-selected-title"
+        );
+
+
+    const generateAI =
+        document.getElementById(
+            "ai-generate"
+        );
+
+
+    const drawerEmpty =
+        document.getElementById(
+            "drawer-empty"
+        );
+
+
+    const aiOutput =
+        document.getElementById(
+            "ai-output"
+        );
+
+
+    function openDrawer() {
+
+        selectedTitle.textContent =
+            selectedSignal.region
+            + " · "
+            + selectedSignal.name;
+
+
+        drawer.classList.add(
+            "open"
+        );
+
+
+        overlay.classList.add(
+            "open"
+        );
+
+
+        document.body.style.overflow =
+            "hidden";
+
+    }
+
+
+    function closeDrawer() {
+
+        drawer.classList.remove(
+            "open"
+        );
+
+
+        overlay.classList.remove(
+            "open"
+        );
+
+
+        document.body.style.overflow =
+            "";
+
+    }
+
+
+    openAI.addEventListener(
+        "click",
+        openDrawer
+    );
+
+
+    closeAI.addEventListener(
+        "click",
+        closeDrawer
+    );
+
+
+    overlay.addEventListener(
+        "click",
+        closeDrawer
+    );
+
+
+
+    /* =====================================
+       AI LIST
+    ===================================== */
+
+    function fillList(
+        id,
+        items
+    ) {
+
+        const target =
+            document.getElementById(id);
+
+
+        target.innerHTML = "";
+
+
+        const list =
+            items
+            && items.length
+            ? items
+            : ["추가 제안 없음"];
+
+
+        list.forEach(
+            function(item) {
+
+                const li =
+                    document.createElement(
+                        "li"
+                    );
+
+
+                li.innerHTML =
+                    item;
+
+
+                target.appendChild(
+                    li
+                );
+
+            }
+        );
+
+    }
+
+
+
+    /* =====================================
+       AI GENERATE
+    ===================================== */
+
+    generateAI.addEventListener(
+        "click",
+        async function() {
+
+            let apiUrl = "";
+
+
+            if (
+                selectedSignal.category
+                === "사회"
+            ) {
+
+                apiUrl =
+                    "/api/social-report/"
+                    + selectedSignal.signalType;
+
+            }
+
+            else if (
+                selectedSignal.category
+                === "경제"
+            ) {
+
+                apiUrl =
+                    "/api/economy-report/"
+                    + selectedSignal.signalType;
+
+            }
+
+            else {
+
+                alert(
+                    "현재 AI 취재 노트는 사회·경제 시그널부터 연결되어 있습니다."
+                );
+
+                return;
+
+            }
+
+
+            generateAI.disabled =
+                true;
+
+
+            generateAI.textContent =
+                "브리핑 분석 중...";
+
+
+            try {
+
+                const response =
+                    await fetch(
+                        apiUrl,
+                        {
+                            method:
+                                "POST"
+                        }
+                    );
+
+
+                const data =
+                    await response.json();
+
+
+                if (!response.ok) {
+
+                    throw new Error(
+                        data.error
+                        ||
+                        "브리핑 생성에 실패했습니다."
+                    );
+
+                }
+
+
+                document.getElementById(
+                    "ai-briefing"
+                ).innerHTML =
+                    data.briefing
+                    ||
+                    "브리핑 내용이 없습니다.";
+
+
+                fillList(
+                    "ai-ideas",
+                    data.article_ideas
+                );
+
+
+                fillList(
+                    "ai-questions",
+                    data.questions
+                );
+
+
+                fillList(
+                    "ai-data",
+                    data.verification_data
+                );
+
+
+                drawerEmpty.style.display =
+                    "none";
+
+
+                aiOutput.style.display =
+                    "block";
+
+
+                generateAI.textContent =
+                    "브리핑 생성 완료";
+
+            }
+
+            catch(error) {
+
+                alert(
+                    error.message
+                );
+
+
+                generateAI.textContent =
+                    "AI 취재 브리핑 생성 →";
+
+            }
+
+            finally {
+
+                generateAI.disabled =
+                    false;
+
+            }
+
+        }
+    );
+
+</script>
+
+
+</body>
+</html>

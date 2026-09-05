@@ -1,0 +1,3305 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>DATA TIP-OFF | 뉴스룸 + 사이드바</title>
+
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+
+        :root {
+            --paper: #f3f1eb;
+            --white: #ffffff;
+            --black: #101010;
+
+            --gray1: #555;
+            --gray2: #858585;
+            --gray3: #cbc8c0;
+            --gray4: #e3e0d9;
+            --gray5: #f7f6f2;
+
+            --high: #b43a32;
+            --medium: #926c2b;
+            --low: #4c7058;
+        }
+
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+
+        body {
+            margin: 0;
+
+            background: var(--paper);
+            color: var(--black);
+
+            font-family:
+                Pretendard,
+                "Noto Sans KR",
+                Arial,
+                sans-serif;
+        }
+
+
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+
+        button,
+        select {
+            font: inherit;
+        }
+
+
+        button {
+            cursor: pointer;
+        }
+
+
+        /* =========================================
+           전체 레이아웃
+        ========================================= */
+
+        .app {
+            min-height: 100vh;
+
+            display: grid;
+
+            grid-template-columns:
+                250px
+                minmax(0, 1fr)
+                360px;
+        }
+
+
+        /* =========================================
+           왼쪽 사이드바
+        ========================================= */
+
+        .sidebar {
+            height: 100vh;
+
+            position: sticky;
+            top: 0;
+
+            padding:
+                28px
+                18px
+                24px;
+
+            background: var(--paper);
+
+            border-right: 1px solid var(--black);
+
+            display: flex;
+            flex-direction: column;
+
+            overflow-y: auto;
+        }
+
+
+        .side-brand {
+            padding:
+                0
+                12px
+                30px;
+
+            border-bottom: 1px solid var(--black);
+        }
+
+
+        .side-brand-name {
+            font-family:
+                Georgia,
+                "Times New Roman",
+                serif;
+
+            font-size: 29px;
+            font-weight: 900;
+
+            line-height: 1;
+
+            letter-spacing: -1px;
+        }
+
+
+        .side-brand-sub {
+            margin-top: 10px;
+
+            font-size: 10px;
+
+            color: var(--gray2);
+
+            letter-spacing: 1.4px;
+        }
+
+
+        .side-section {
+            margin-top: 28px;
+        }
+
+
+        .side-label {
+            padding:
+                0
+                12px
+                11px;
+
+            font-size: 9px;
+            font-weight: 900;
+
+            letter-spacing: 1.3px;
+
+            color: #999;
+        }
+
+
+        .side-link {
+            min-height: 53px;
+
+            padding:
+                0
+                12px;
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            gap: 12px;
+
+            border-top: 1px solid var(--gray3);
+
+            font-size: 12px;
+            font-weight: 800;
+
+            transition:
+                background .18s ease,
+                color .18s ease,
+                padding .18s ease;
+        }
+
+
+        .side-link:last-child {
+            border-bottom: 1px solid var(--gray3);
+        }
+
+
+        .side-link:hover {
+            margin:
+                0
+                -1px;
+
+            padding:
+                0
+                17px;
+
+            background: var(--black);
+            color: white;
+        }
+
+
+        .side-link.active {
+            margin-top: 1px;
+
+            background: var(--black);
+            color: white;
+
+            border-color: var(--black);
+        }
+
+
+        .side-link-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+
+        .side-icon {
+            width: 18px;
+
+            text-align: center;
+
+            font-size: 13px;
+        }
+
+
+        .side-count {
+            font-family:
+                Georgia,
+                serif;
+
+            font-size: 11px;
+            font-weight: 900;
+        }
+
+
+        .side-arrow {
+            opacity: 0;
+
+            transform: translateX(-7px);
+
+            transition:
+                opacity .18s ease,
+                transform .18s ease;
+        }
+
+
+        .side-link:hover
+        .side-arrow {
+            opacity: 1;
+
+            transform: translateX(0);
+        }
+
+
+        .side-bottom {
+            margin-top: auto;
+
+            padding:
+                30px
+                12px
+                0;
+
+            border-top: 1px solid var(--black);
+        }
+
+
+        .side-bottom-title {
+            font-family:
+                Georgia,
+                "Noto Serif KR",
+                serif;
+
+            font-size: 23px;
+            font-weight: 900;
+
+            line-height: 1.25;
+        }
+
+
+        .side-bottom-text {
+            margin-top: 13px;
+
+            color: var(--gray2);
+
+            font-size: 10px;
+            line-height: 1.8;
+        }
+
+
+        /* =========================================
+           가운데
+        ========================================= */
+
+        .content {
+            min-width: 0;
+
+            padding:
+                26px
+                22px
+                60px;
+        }
+
+
+        /* =========================================
+           HERO
+        ========================================= */
+
+        .hero {
+            background: white;
+
+            border: 1px solid var(--gray3);
+
+            padding: 40px;
+
+            display: grid;
+
+            grid-template-columns:
+                minmax(0, 1fr)
+                230px;
+
+            gap: 40px;
+        }
+
+
+        .hero-kicker {
+            font-size: 9px;
+            font-weight: 900;
+
+            letter-spacing: 1.5px;
+
+            color: var(--gray2);
+        }
+
+
+        .hero h1 {
+            margin:
+                16px
+                0
+                0;
+
+            font-family:
+                Georgia,
+                "Noto Serif KR",
+                serif;
+
+            font-size:
+                clamp(40px, 5vw, 66px);
+
+            line-height: 1.03;
+
+            letter-spacing: -3px;
+        }
+
+
+        .hero-desc {
+            max-width: 650px;
+
+            margin-top: 18px;
+
+            color: var(--gray1);
+
+            font-size: 11px;
+            line-height: 1.85;
+        }
+
+
+        .hero-stats {
+            border-left: 1px solid var(--gray3);
+
+            padding-left: 25px;
+
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+        }
+
+
+        .hero-stat {
+            padding: 15px 0;
+
+            border-top: 1px solid var(--gray4);
+        }
+
+
+        .hero-stat:last-child {
+            border-bottom: 1px solid var(--gray4);
+        }
+
+
+        .hero-number {
+            font-family:
+                Georgia,
+                serif;
+
+            font-size: 31px;
+            font-weight: 900;
+        }
+
+
+        .hero-stat-label {
+            margin-top: 4px;
+
+            color: var(--gray2);
+
+            font-size: 8px;
+        }
+
+
+        /* =========================================
+           뉴스 티커
+        ========================================= */
+
+        .ticker {
+            height: 50px;
+
+            margin-top: 18px;
+
+            display: grid;
+
+            grid-template-columns:
+                120px
+                minmax(0,1fr);
+
+            background: var(--black);
+            color: white;
+
+            overflow: hidden;
+        }
+
+
+        .ticker-label {
+            padding-left: 16px;
+
+            display: flex;
+            align-items: center;
+
+            border-right: 1px solid #444;
+
+            font-size: 9px;
+            font-weight: 900;
+        }
+
+
+        .ticker-wrap {
+            display: flex;
+            align-items: center;
+
+            overflow: hidden;
+        }
+
+
+        .ticker-track {
+            display: flex;
+
+            white-space: nowrap;
+
+            animation:
+                tickerMove
+                35s
+                linear
+                infinite;
+        }
+
+
+        .ticker-wrap:hover
+        .ticker-track {
+            animation-play-state: paused;
+        }
+
+
+        .ticker-item {
+            padding: 0 28px;
+
+            border-right: 1px solid #444;
+
+            font-size: 9px;
+        }
+
+
+        .ticker-region {
+            color: #aaa;
+
+            margin-right: 6px;
+        }
+
+
+        @keyframes tickerMove {
+
+            from {
+                transform: translateX(0);
+            }
+
+            to {
+                transform: translateX(-50%);
+            }
+
+        }
+
+
+        /* =========================================
+           공통 섹션
+        ========================================= */
+
+        .section {
+            margin-top: 18px;
+
+            background: white;
+
+            border: 1px solid var(--gray3);
+        }
+
+
+        .section-head {
+            padding:
+                22px
+                25px;
+
+            border-bottom: 1px solid var(--gray3);
+
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+
+            gap: 25px;
+        }
+
+
+        .section-no {
+            font-family:
+                Georgia,
+                serif;
+
+            font-size: 10px;
+
+            color: var(--gray2);
+        }
+
+
+        .section-title {
+            margin-top: 5px;
+
+            font-family:
+                Georgia,
+                "Noto Serif KR",
+                serif;
+
+            font-size: 24px;
+            font-weight: 900;
+
+            letter-spacing: -1px;
+        }
+
+
+        .section-desc {
+            max-width: 350px;
+
+            text-align: right;
+
+            color: var(--gray2);
+
+            font-size: 9px;
+            line-height: 1.7;
+        }
+
+
+        /* =========================================
+           시그널 랭킹
+        ========================================= */
+
+        .signal-list {
+            padding:
+                0
+                25px;
+        }
+
+
+        .signal-head,
+        .signal-row {
+            display: grid;
+
+            grid-template-columns:
+                40px
+                68px
+                85px
+                minmax(0,1fr)
+                60px
+                55px
+                75px;
+
+            gap: 10px;
+
+            align-items: center;
+        }
+
+
+        .signal-head {
+            min-height: 41px;
+
+            border-bottom: 1px solid var(--black);
+
+            color: var(--gray2);
+
+            font-size: 7px;
+            font-weight: 900;
+        }
+
+
+        .signal-row {
+            min-height: 63px;
+
+            border-bottom: 1px solid var(--gray4);
+
+            transition:
+                background .18s ease,
+                color .18s ease,
+                padding .18s ease;
+        }
+
+
+        .signal-row:last-child {
+            border-bottom: 0;
+        }
+
+
+        .signal-row:hover {
+            margin:
+                0
+                -25px;
+
+            padding:
+                0
+                25px;
+
+            background: var(--black);
+            color: white;
+        }
+
+
+        .rank {
+            font-family:
+                Georgia,
+                serif;
+
+            font-size: 17px;
+            font-weight: 900;
+        }
+
+
+        .field {
+            font-size: 8px;
+            font-weight: 900;
+        }
+
+
+        .region {
+            color: var(--gray1);
+
+            font-size: 9px;
+        }
+
+
+        .signal-row:hover
+        .region {
+            color: #bbb;
+        }
+
+
+        .signal-name {
+            overflow: hidden;
+
+            white-space: nowrap;
+            text-overflow: ellipsis;
+
+            font-size: 10px;
+            font-weight: 800;
+        }
+
+
+        .score {
+            font-family:
+                Georgia,
+                serif;
+
+            font-size: 14px;
+            font-weight: 900;
+        }
+
+
+        .badge {
+            padding: 3px 5px;
+
+            border: 1px solid currentColor;
+
+            font-size: 7px;
+            font-weight: 900;
+        }
+
+
+        .badge.high {
+            color: var(--high);
+        }
+
+
+        .badge.medium {
+            color: var(--medium);
+        }
+
+
+        .badge.low {
+            color: var(--low);
+        }
+
+
+        .signal-row:hover
+        .badge {
+            color: white;
+        }
+
+
+        .analyse {
+            height: 28px;
+
+            border: 1px solid var(--black);
+
+            background: transparent;
+            color: var(--black);
+
+            font-size: 7px;
+            font-weight: 900;
+        }
+
+
+        .signal-row:hover
+        .analyse {
+            border-color: white;
+            color: white;
+        }
+
+
+        .signal-row:hover
+        .analyse:hover {
+            background: white;
+            color: black;
+        }
+
+
+        /* =========================================
+           데이터 그래프
+        ========================================= */
+
+        .chart-layout {
+            display: grid;
+
+            grid-template-columns:
+                minmax(0, 1.35fr)
+                minmax(230px, .65fr);
+        }
+
+
+        .chart-main {
+            padding: 25px;
+
+            border-right: 1px solid var(--gray3);
+        }
+
+
+        .chart-side {
+            padding: 25px;
+        }
+
+
+        .mini-head {
+            margin-bottom: 20px;
+
+            display: flex;
+            justify-content: space-between;
+
+            font-size: 8px;
+            font-weight: 900;
+        }
+
+
+        .mini-head span:last-child {
+            color: var(--gray2);
+
+            font-weight: 400;
+        }
+
+
+        .chart-wrap {
+            height: 255px;
+
+            position: relative;
+        }
+
+
+        #trend-chart {
+            width: 100%;
+            height: 100%;
+        }
+
+
+        .grid-line {
+            stroke: #ddd9d1;
+
+            stroke-width: 1;
+
+            stroke-dasharray: 2 6;
+        }
+
+
+        .axis-label {
+            fill: #999;
+
+            font-family: Arial;
+            font-size: 8px;
+        }
+
+
+        .area {
+            fill: rgba(0,0,0,.045);
+        }
+
+
+        .line {
+            fill: none;
+
+            stroke: var(--black);
+
+            stroke-width: 2;
+
+            stroke-linecap: round;
+            stroke-linejoin: round;
+
+            stroke-dasharray: 2500;
+            stroke-dashoffset: 2500;
+
+            animation:
+                drawLine
+                1.7s
+                ease
+                forwards;
+        }
+
+
+        @keyframes drawLine {
+
+            to {
+                stroke-dashoffset: 0;
+            }
+
+        }
+
+
+        .point {
+            fill: white;
+            stroke: black;
+
+            stroke-width: 2;
+
+            cursor: pointer;
+        }
+
+
+        .point:hover {
+            fill: black;
+        }
+
+
+        .tooltip {
+            display: none;
+
+            position: absolute;
+
+            z-index: 20;
+
+            padding: 9px 11px;
+
+            background: black;
+            color: white;
+
+            pointer-events: none;
+
+            font-size: 8px;
+            line-height: 1.5;
+        }
+
+
+        .tooltip strong {
+            display: block;
+
+            margin-top: 2px;
+
+            font-family:
+                Georgia,
+                serif;
+
+            font-size: 15px;
+        }
+
+
+        /* =========================================
+           규칙 분포
+        ========================================= */
+
+        .rule-list {
+            display: flex;
+            flex-direction: column;
+            gap: 13px;
+        }
+
+
+        .rule-head {
+            margin-bottom: 5px;
+
+            display: flex;
+            justify-content: space-between;
+
+            gap: 12px;
+
+            font-size: 8px;
+        }
+
+
+        .rule-name {
+            max-width: 170px;
+
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+        }
+
+
+        .rule-count {
+            font-family:
+                Georgia,
+                serif;
+
+            font-size: 10px;
+            font-weight: 900;
+        }
+
+
+        .rule-track {
+            height: 4px;
+
+            background: var(--gray4);
+        }
+
+
+        .rule-bar {
+            height: 100%;
+            width: 0;
+
+            background: var(--black);
+
+            transition:
+                width
+                .8s
+                cubic-bezier(.2,.8,.2,1);
+        }
+
+
+        /* =========================================
+           분야 카드
+        ========================================= */
+
+        .categories {
+            display: grid;
+
+            grid-template-columns:
+                repeat(3,1fr);
+        }
+
+
+        .category {
+            min-height: 195px;
+
+            padding: 24px;
+
+            position: relative;
+
+            border-right: 1px solid var(--gray3);
+
+            overflow: hidden;
+
+            transition:
+                background .2s ease,
+                color .2s ease;
+        }
+
+
+        .category:last-child {
+            border-right: 0;
+        }
+
+
+        .category-no {
+            font-family:
+                Georgia,
+                serif;
+
+            font-size: 10px;
+
+            color: var(--gray2);
+        }
+
+
+        .category-name {
+            margin-top: 35px;
+
+            font-family:
+                Georgia,
+                "Noto Serif KR",
+                serif;
+
+            font-size: 23px;
+            font-weight: 900;
+        }
+
+
+        .category-desc {
+            margin-top: 9px;
+
+            color: var(--gray1);
+
+            font-size: 9px;
+            line-height: 1.7;
+        }
+
+
+        .category-open {
+            position: absolute;
+
+            left: 24px;
+            right: 24px;
+            bottom: -35px;
+
+            display: flex;
+            justify-content: space-between;
+
+            font-size: 8px;
+            font-weight: 900;
+
+            opacity: 0;
+
+            transition:
+                bottom .22s ease,
+                opacity .22s ease;
+        }
+
+
+        .category:hover {
+            background: var(--black);
+            color: white;
+        }
+
+
+        .category:hover
+        .category-no,
+
+        .category:hover
+        .category-desc {
+            color: #aaa;
+        }
+
+
+        .category:hover
+        .category-open {
+            bottom: 21px;
+
+            opacity: 1;
+        }
+
+
+        /* =========================================
+           오른쪽 AI
+        ========================================= */
+
+        .ai-panel {
+            height: 100vh;
+
+            position: sticky;
+            top: 0;
+
+            background: var(--black);
+            color: white;
+
+            border-left: 1px solid var(--black);
+
+            overflow-y: auto;
+        }
+
+
+        .ai-head {
+            padding: 27px;
+
+            border-bottom: 1px solid #444;
+        }
+
+
+        .ai-kicker {
+            display: flex;
+            justify-content: space-between;
+
+            color: #999;
+
+            font-size: 8px;
+            font-weight: 900;
+
+            letter-spacing: 1px;
+        }
+
+
+        .ai-live {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+
+        .ai-dot {
+            width: 5px;
+            height: 5px;
+
+            border-radius: 50%;
+
+            background: white;
+        }
+
+
+        .ai-head h2 {
+            margin:
+                17px
+                0
+                0;
+
+            font-family:
+                Georgia,
+                "Noto Serif KR",
+                serif;
+
+            font-size: 29px;
+
+            line-height: 1.15;
+            letter-spacing: -1px;
+        }
+
+
+        .ai-head p {
+            margin:
+                12px
+                0
+                0;
+
+            color: #aaa;
+
+            font-size: 9px;
+            line-height: 1.75;
+        }
+
+
+        .ai-controls {
+            padding: 22px 27px;
+
+            border-bottom: 1px solid #444;
+        }
+
+
+        .ai-control-label {
+            display: block;
+
+            margin-bottom: 7px;
+
+            color: #999;
+
+            font-size: 8px;
+            font-weight: 900;
+        }
+
+
+        .ai-select {
+            width: 100%;
+            height: 42px;
+
+            padding: 0 9px;
+
+            background: #1b1b1b;
+            color: white;
+
+            border: 1px solid #555;
+
+            outline: none;
+
+            font-size: 9px;
+        }
+
+
+        .ai-button {
+            width: 100%;
+            height: 42px;
+
+            margin-top: 8px;
+
+            background: white;
+            color: black;
+
+            border: 1px solid white;
+
+            font-size: 9px;
+            font-weight: 900;
+        }
+
+
+        .ai-button:hover {
+            background: black;
+            color: white;
+        }
+
+
+        .ai-button:disabled {
+            opacity: .5;
+        }
+
+
+        .ai-body {
+            padding: 27px;
+        }
+
+
+        .ai-empty {
+            min-height: 300px;
+
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+
+        .ai-empty-symbol {
+            width: 49px;
+            height: 49px;
+
+            border: 1px solid #555;
+            border-radius: 50%;
+
+            display: grid;
+            place-items: center;
+
+            font-family:
+                Georgia,
+                serif;
+
+            font-size: 19px;
+        }
+
+
+        .ai-empty-title {
+            margin-top: 20px;
+
+            font-family:
+                Georgia,
+                "Noto Serif KR",
+                serif;
+
+            font-size: 20px;
+            font-weight: 900;
+
+            line-height: 1.4;
+        }
+
+
+        .ai-empty-text {
+            margin-top: 9px;
+
+            color: #999;
+
+            font-size: 9px;
+            line-height: 1.75;
+        }
+
+
+        .ai-output {
+            display: none;
+        }
+
+
+        .ai-selected {
+            padding-bottom: 19px;
+
+            border-bottom: 1px solid #555;
+        }
+
+
+        .ai-selected-label {
+            color: #888;
+
+            font-size: 8px;
+        }
+
+
+        .ai-selected-title {
+            margin-top: 7px;
+
+            font-family:
+                Georgia,
+                "Noto Serif KR",
+                serif;
+
+            font-size: 19px;
+            font-weight: 900;
+
+            line-height: 1.4;
+        }
+
+
+        .ai-block {
+            padding: 19px 0;
+
+            border-bottom: 1px solid #3e3e3e;
+        }
+
+
+        .ai-block-title {
+            margin-bottom: 9px;
+
+            color: #888;
+
+            font-size: 8px;
+            font-weight: 900;
+
+            letter-spacing: .8px;
+        }
+
+
+        .ai-block p,
+        .ai-block li {
+            color: #ddd;
+
+            font-size: 9px;
+            line-height: 1.85;
+        }
+
+
+        .ai-block p {
+            margin: 0;
+        }
+
+
+        .ai-block ul {
+            margin: 0;
+
+            padding-left: 16px;
+        }
+
+
+        .ai-block strong {
+            color: white;
+        }
+
+
+        .ai-note {
+            padding-top: 17px;
+
+            color: #777;
+
+            font-size: 7px;
+            line-height: 1.7;
+        }
+
+
+        /* =========================================
+           푸터
+        ========================================= */
+
+        .footer {
+            padding:
+                23px
+                3px
+                0;
+
+            display: flex;
+            justify-content: space-between;
+
+            color: var(--gray2);
+
+            font-size: 7px;
+        }
+
+
+        /* =========================================
+           반응형
+        ========================================= */
+
+        @media(max-width:1250px) {
+
+            .app {
+                grid-template-columns:
+                    220px
+                    minmax(0,1fr);
+            }
+
+
+            .ai-panel {
+                height: auto;
+
+                position: static;
+
+                grid-column:
+                    2 / 3;
+
+                margin:
+                    0
+                    22px
+                    50px;
+            }
+
+        }
+
+
+        @media(max-width:850px) {
+
+            .app {
+                display: block;
+            }
+
+
+            .sidebar {
+                height: auto;
+
+                position: static;
+
+                border-right: 0;
+                border-bottom: 1px solid var(--black);
+            }
+
+
+            .side-bottom {
+                display: none;
+            }
+
+
+            .content {
+                padding: 15px;
+            }
+
+
+            .hero {
+                grid-template-columns: 1fr;
+
+                padding: 27px 22px;
+            }
+
+
+            .hero-stats {
+                padding:
+                    20px
+                    0
+                    0;
+
+                border-left: 0;
+                border-top: 1px solid var(--gray3);
+            }
+
+
+            .chart-layout {
+                grid-template-columns: 1fr;
+            }
+
+
+            .chart-main {
+                border-right: 0;
+                border-bottom: 1px solid var(--gray3);
+            }
+
+
+            .categories {
+                grid-template-columns: 1fr;
+            }
+
+
+            .category {
+                border-right: 0;
+                border-bottom: 1px solid var(--gray3);
+            }
+
+
+            .ai-panel {
+                margin: 15px;
+            }
+
+
+            .signal-head {
+                display: none;
+            }
+
+
+            .signal-row {
+                grid-template-columns:
+                    35px
+                    70px
+                    minmax(0,1fr)
+                    72px;
+            }
+
+
+            .field,
+            .score,
+            .signal-row > div:nth-child(6) {
+                display: none;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<div class="app">
+
+
+    <!-- =========================================
+         LEFT SIDEBAR
+    ========================================= -->
+
+    <aside class="sidebar">
+
+
+        <div class="side-brand">
+
+            <a
+                href="/home-v2-sidebar"
+                class="side-brand-name"
+            >
+                DATA TIP-OFF
+            </a>
+
+            <div class="side-brand-sub">
+                데이터 취재 시그널 플랫폼
+            </div>
+
+        </div>
+
+
+
+        <div class="side-section">
+
+            <div class="side-label">
+                전체
+            </div>
+
+            <a
+                href="/home-v2-sidebar"
+                class="side-link active"
+            >
+
+                <span class="side-link-left">
+
+                    <span class="side-icon">
+                        ▦
+                    </span>
+
+                    전체 대시보드
+
+                </span>
+
+            </a>
+
+        </div>
+
+
+
+        <div class="side-section">
+
+            <div class="side-label">
+                시그널 분야
+            </div>
+
+
+            <a
+                href="/social"
+                class="side-link"
+            >
+
+                <span class="side-link-left">
+
+                    <span class="side-icon">
+                        ○
+                    </span>
+
+                    사회·경제
+
+                </span>
+
+                <span>
+
+                    <span class="side-count">
+                        11
+                    </span>
+
+                    <span class="side-arrow">
+                        →
+                    </span>
+
+                </span>
+
+            </a>
+
+
+            <a
+                href="/content/drama"
+                class="side-link"
+            >
+
+                <span class="side-link-left">
+
+                    <span class="side-icon">
+                        ○
+                    </span>
+
+                    K콘텐츠
+
+                </span>
+
+                <span class="side-arrow">
+                    →
+                </span>
+
+            </a>
+
+
+            <div class="side-link">
+
+                <span class="side-link-left">
+
+                    <span class="side-icon">
+                        ○
+                    </span>
+
+                    야구
+
+                </span>
+
+            </div>
+
+        </div>
+
+
+
+        <div class="side-section">
+
+            <div class="side-label">
+                취재 도구
+            </div>
+
+
+            <a
+                href="#signals"
+                class="side-link"
+            >
+
+                <span class="side-link-left">
+
+                    <span class="side-icon">
+                        ↗
+                    </span>
+
+                    주요 시그널
+
+                </span>
+
+                <span class="side-arrow">
+                    →
+                </span>
+
+            </a>
+
+
+            <a
+                href="#ai-agent"
+                class="side-link"
+            >
+
+                <span class="side-link-left">
+
+                    <span class="side-icon">
+                        ✦
+                    </span>
+
+                    AI 취재 에이전트
+
+                </span>
+
+                <span class="side-arrow">
+                    →
+                </span>
+
+            </a>
+
+        </div>
+
+
+
+        <div class="side-bottom">
+
+            <div class="side-bottom-title">
+                숫자가 먼저<br>
+                제보합니다.
+            </div>
+
+            <div class="side-bottom-text">
+                통계 알고리즘이 평소와 다른 움직임을 탐지하고
+                기자가 확인할 다음 질문을 제안합니다.
+            </div>
+
+        </div>
+
+
+    </aside>
+
+
+
+    <!-- =========================================
+         CENTER CONTENT
+    ========================================= -->
+
+    <main class="content">
+
+
+        <!-- HERO -->
+
+        <section class="hero">
+
+            <div>
+
+                <div class="hero-kicker">
+                    데이터 기반 취재 시그널
+                </div>
+
+                <h1>
+                    숫자가 발견한<br>
+                    오늘의 취재 시그널
+                </h1>
+
+                <div class="hero-desc">
+                    데이터 속 평소와 다른 움직임을 통계적으로 탐지하고,
+                    기자가 확인할 가치가 있는 시그널 후보를
+                    취재 우선순위와 함께 제공합니다.
+                </div>
+
+            </div>
+
+
+            <div class="hero-stats">
+
+                <div class="hero-stat">
+
+                    <div class="hero-number">
+                        {{ "{:,}".format(stats.total_candidates) }}
+                    </div>
+
+                    <div class="hero-stat-label">
+                        전체 시그널 후보
+                    </div>
+
+                </div>
+
+
+                <div class="hero-stat">
+
+                    <div class="hero-number">
+                        {{ stats.total_rules }}
+                    </div>
+
+                    <div class="hero-stat-label">
+                        탐지 규칙
+                    </div>
+
+                </div>
+
+
+                <div class="hero-stat">
+
+                    <div class="hero-number">
+                        {{ stats.high_count }}
+                    </div>
+
+                    <div class="hero-stat-label">
+                        높은 우선순위
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- TICKER -->
+
+        <section class="ticker">
+
+            <div class="ticker-label">
+                주요 시그널
+            </div>
+
+            <div class="ticker-wrap">
+
+                <div class="ticker-track">
+
+                    {% for item in top_signals %}
+
+                    <span class="ticker-item">
+
+                        <span class="ticker-region">
+                            {{ item.region }}
+                        </span>
+
+                        {{ item.signal_name }}
+
+                        &nbsp;/&nbsp;
+
+                        {{ item.score }}
+
+                    </span>
+
+                    {% endfor %}
+
+
+                    {% for item in top_signals %}
+
+                    <span class="ticker-item">
+
+                        <span class="ticker-region">
+                            {{ item.region }}
+                        </span>
+
+                        {{ item.signal_name }}
+
+                        &nbsp;/&nbsp;
+
+                        {{ item.score }}
+
+                    </span>
+
+                    {% endfor %}
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- SIGNALS -->
+
+        <section
+            id="signals"
+            class="section"
+        >
+
+            <div class="section-head">
+
+                <div>
+
+                    <div class="section-no">
+                        01
+                    </div>
+
+                    <div class="section-title">
+                        취재 우선순위
+                    </div>
+
+                </div>
+
+                <div class="section-desc">
+                    Signal Score가 높은 후보부터 확인합니다.
+                    AI로 분석을 누르면 오른쪽 에이전트에 바로 연결됩니다.
+                </div>
+
+            </div>
+
+
+
+            <div class="signal-list">
+
+                <div class="signal-head">
+
+                    <div>순위</div>
+                    <div>분야</div>
+                    <div>지역</div>
+                    <div>시그널</div>
+                    <div>점수</div>
+                    <div>등급</div>
+                    <div>취재</div>
+
+                </div>
+
+
+                {% for item in top_signals %}
+
+                <div class="signal-row">
+
+                    <div class="rank">
+                        {{ "%02d"|format(loop.index) }}
+                    </div>
+
+
+                    <div class="field">
+                        {{ item.category }}
+                    </div>
+
+
+                    <div class="region">
+                        {{ item.region }}
+                    </div>
+
+
+                    <a
+                        href="{{ item.detail_url }}"
+                        class="signal-name"
+                    >
+                        {{ item.signal_name }}
+                    </a>
+
+
+                    <div class="score">
+                        {{ item.score }}
+                    </div>
+
+
+                    <div>
+
+                        <span class="badge {{ item.severity|lower }}">
+                            {{ item.severity }}
+                        </span>
+
+                    </div>
+
+
+                    <button
+                        class="analyse"
+                        data-category="{{ item.category }}"
+                        data-signal-type="{{ item.signal_type }}"
+                        data-region="{{ item.region }}"
+                    >
+                        AI 분석
+                    </button>
+
+                </div>
+
+                {% endfor %}
+
+            </div>
+
+        </section>
+
+
+
+        <!-- GRAPH -->
+
+        <section class="section">
+
+            <div class="section-head">
+
+                <div>
+
+                    <div class="section-no">
+                        02
+                    </div>
+
+                    <div class="section-title">
+                        시그널 흐름
+                    </div>
+
+                </div>
+
+                <div class="section-desc">
+                    실제 탐지 결과를 월별·규칙별로 집계한 데이터입니다.
+                </div>
+
+            </div>
+
+
+
+            <div class="chart-layout">
+
+
+                <div class="chart-main">
+
+                    <div class="mini-head">
+
+                        <span>
+                            월별 탐지 시그널
+                        </span>
+
+                        <span>
+                            점에 마우스를 올려보세요
+                        </span>
+
+                    </div>
+
+
+                    <div
+                        id="chart-wrap"
+                        class="chart-wrap"
+                    >
+
+                        <svg
+                            id="trend-chart"
+                            viewBox="0 0 900 255"
+                            preserveAspectRatio="none"
+                        ></svg>
+
+
+                        <div
+                            id="tooltip"
+                            class="tooltip"
+                        >
+
+                            <span id="tooltip-date"></span>
+
+                            <strong id="tooltip-count"></strong>
+
+                            시그널 후보
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+
+                <div class="chart-side">
+
+                    <div class="mini-head">
+
+                        <span>
+                            규칙별 탐지량
+                        </span>
+
+                        <span>
+                            {{ stats.total_rules }}개 규칙
+                        </span>
+
+                    </div>
+
+
+                    <div class="rule-list">
+
+                        {% for rule in rule_chart %}
+
+                        <div class="rule-item">
+
+                            <div class="rule-head">
+
+                                <span class="rule-name">
+                                    {{ rule.name }}
+                                </span>
+
+                                <span class="rule-count">
+                                    {{ rule.count }}
+                                </span>
+
+                            </div>
+
+
+                            <div class="rule-track">
+
+                                <div
+                                    class="rule-bar"
+                                    data-width="{{ rule.width }}"
+                                ></div>
+
+                            </div>
+
+                        </div>
+
+                        {% endfor %}
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- CATEGORY -->
+
+        <section class="section">
+
+            <div class="section-head">
+
+                <div>
+
+                    <div class="section-no">
+                        03
+                    </div>
+
+                    <div class="section-title">
+                        시그널 분야
+                    </div>
+
+                </div>
+
+                <div class="section-desc">
+                    분야별 데이터는 다르지만
+                    같은 탐지 철학으로 취재 후보를 발굴합니다.
+                </div>
+
+            </div>
+
+
+
+            <div class="categories">
+
+
+                <a
+                    href="/social"
+                    class="category"
+                >
+
+                    <div class="category-no">
+                        01 / 03
+                    </div>
+
+                    <div class="category-name">
+                        사회·경제
+                    </div>
+
+                    <div class="category-desc">
+                        인구, 이동, 주택가격, 거래량,
+                        금리 데이터에서 변화를 탐지합니다.
+                    </div>
+
+                    <div class="category-open">
+
+                        <span>
+                            11개 규칙
+                        </span>
+
+                        <span>
+                            분석 열기 →
+                        </span>
+
+                    </div>
+
+                </a>
+
+
+                <a
+                    href="/content/drama"
+                    class="category"
+                >
+
+                    <div class="category-no">
+                        02 / 03
+                    </div>
+
+                    <div class="category-name">
+                        K콘텐츠
+                    </div>
+
+                    <div class="category-desc">
+                        드라마·음악·웹툰 등 콘텐츠 데이터의
+                        급격한 관심 변화를 탐지합니다.
+                    </div>
+
+                    <div class="category-open">
+
+                        <span>
+                            콘텐츠 시그널
+                        </span>
+
+                        <span>
+                            분석 열기 →
+                        </span>
+
+                    </div>
+
+                </a>
+
+
+                <div class="category">
+
+                    <div class="category-no">
+                        03 / 03
+                    </div>
+
+                    <div class="category-name">
+                        야구
+                    </div>
+
+                    <div class="category-desc">
+                        선수 기록과 경기 지표에서
+                        평소와 다른 움직임을 탐지합니다.
+                    </div>
+
+                    <div class="category-open">
+
+                        <span>
+                            선수 시그널
+                        </span>
+
+                        <span>
+                            준비 중 →
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+            </div>
+
+        </section>
+
+
+
+        <footer class="footer">
+
+            <span>
+                DATA TIP-OFF
+            </span>
+
+            <span>
+                숫자가 먼저 제보하는 취재 아이템 발굴 플랫폼
+            </span>
+
+        </footer>
+
+
+    </main>
+
+
+
+    <!-- =========================================
+         RIGHT AI
+    ========================================= -->
+
+    <aside
+        id="ai-agent"
+        class="ai-panel"
+    >
+
+        <div class="ai-head">
+
+            <div class="ai-kicker">
+
+                <span>
+                    AI 취재 에이전트
+                </span>
+
+                <span class="ai-live">
+
+                    <span class="ai-dot"></span>
+
+                    준비 완료
+
+                </span>
+
+            </div>
+
+
+            <h2>
+                데이터 다음의<br>
+                질문을 찾습니다.
+            </h2>
+
+
+            <p>
+                시그널을 선택하면 탐지 결과를 바탕으로
+                기사 아이디어와 후속 취재 질문,
+                추가 확인 데이터를 제안합니다.
+            </p>
+
+        </div>
+
+
+
+        <div class="ai-controls">
+
+            <label
+                for="ai-select"
+                class="ai-control-label"
+            >
+                분석할 시그널
+            </label>
+
+
+            <select
+                id="ai-select"
+                class="ai-select"
+            >
+
+                <option value="">
+                    시그널을 선택하세요
+                </option>
+
+
+                {% for item in top_signals %}
+
+                <option
+                    value="{{ item.signal_name }}"
+                    data-category="{{ item.category }}"
+                    data-signal-type="{{ item.signal_type }}"
+                    data-region="{{ item.region }}"
+                >
+                    [{{ item.category }}]
+                    {{ item.region }}
+                    ·
+                    {{ item.signal_name }}
+                </option>
+
+                {% endfor %}
+
+            </select>
+
+
+            <button
+                id="ai-generate"
+                class="ai-button"
+            >
+                취재 브리핑 생성 →
+            </button>
+
+        </div>
+
+
+
+        <div class="ai-body">
+
+
+            <div
+                id="ai-empty"
+                class="ai-empty"
+            >
+
+                <div class="ai-empty-symbol">
+                    ✦
+                </div>
+
+                <div class="ai-empty-title">
+                    취재할 시그널을<br>
+                    선택해주세요.
+                </div>
+
+                <div class="ai-empty-text">
+                    가운데 취재 우선순위에서
+                    AI 분석 버튼을 누르거나
+                    위 목록에서 직접 선택할 수 있습니다.
+                </div>
+
+            </div>
+
+
+
+            <div
+                id="ai-output"
+                class="ai-output"
+            >
+
+                <div class="ai-selected">
+
+                    <div class="ai-selected-label">
+                        선택한 시그널
+                    </div>
+
+                    <div
+                        id="ai-title"
+                        class="ai-selected-title"
+                    ></div>
+
+                </div>
+
+
+                <div class="ai-block">
+
+                    <div class="ai-block-title">
+                        핵심 브리핑
+                    </div>
+
+                    <p id="ai-briefing"></p>
+
+                </div>
+
+
+                <div class="ai-block">
+
+                    <div class="ai-block-title">
+                        기사 아이디어
+                    </div>
+
+                    <ul id="ai-ideas"></ul>
+
+                </div>
+
+
+                <div class="ai-block">
+
+                    <div class="ai-block-title">
+                        주요 취재 질문
+                    </div>
+
+                    <ul id="ai-questions"></ul>
+
+                </div>
+
+
+                <div class="ai-block">
+
+                    <div class="ai-block-title">
+                        추가 확인 필요 데이터
+                    </div>
+
+                    <ul id="ai-data"></ul>
+
+                </div>
+
+
+                <div class="ai-note">
+                    ※ 통계적 탐지 결과를 기반으로 한 취재 보조 기능입니다.
+                    특정 사건이나 정책과의 인과관계를 확정하지 않습니다.
+                </div>
+
+            </div>
+
+        </div>
+
+    </aside>
+
+
+</div>
+
+
+
+<script
+    id="monthly-data"
+    type="application/json"
+>
+    {{ monthly_chart | tojson }}
+</script>
+
+
+
+<script>
+
+    /* =========================================
+       GRAPH
+    ========================================= */
+
+    const monthlyData =
+        JSON.parse(
+            document
+                .getElementById(
+                    "monthly-data"
+                )
+                .textContent
+        );
+
+
+    const svg =
+        document.getElementById(
+            "trend-chart"
+        );
+
+
+    const tooltip =
+        document.getElementById(
+            "tooltip"
+        );
+
+
+    const tooltipDate =
+        document.getElementById(
+            "tooltip-date"
+        );
+
+
+    const tooltipCount =
+        document.getElementById(
+            "tooltip-count"
+        );
+
+
+    const NS =
+        "http://www.w3.org/2000/svg";
+
+
+    const W = 900;
+    const H = 255;
+
+    const LEFT = 40;
+    const RIGHT = 12;
+    const TOP = 15;
+    const BOTTOM = 30;
+
+    const plotW =
+        W - LEFT - RIGHT;
+
+    const plotH =
+        H - TOP - BOTTOM;
+
+
+    if (monthlyData.length > 0) {
+
+
+        const maxValue =
+            Math.max(
+                ...monthlyData.map(
+                    item => item.count
+                ),
+                1
+            );
+
+
+        for (
+            let i = 0;
+            i <= 4;
+            i++
+        ) {
+
+            const y =
+                TOP
+                + plotH
+                * i
+                / 4;
+
+
+            const line =
+                document.createElementNS(
+                    NS,
+                    "line"
+                );
+
+
+            line.setAttribute(
+                "x1",
+                LEFT
+            );
+
+            line.setAttribute(
+                "x2",
+                W - RIGHT
+            );
+
+            line.setAttribute(
+                "y1",
+                y
+            );
+
+            line.setAttribute(
+                "y2",
+                y
+            );
+
+            line.setAttribute(
+                "class",
+                "grid-line"
+            );
+
+
+            svg.appendChild(
+                line
+            );
+
+
+            const label =
+                document.createElementNS(
+                    NS,
+                    "text"
+                );
+
+
+            label.textContent =
+                Math.round(
+                    maxValue
+                    * (
+                        1 - i / 4
+                    )
+                );
+
+
+            label.setAttribute(
+                "x",
+                LEFT - 7
+            );
+
+            label.setAttribute(
+                "y",
+                y + 3
+            );
+
+            label.setAttribute(
+                "text-anchor",
+                "end"
+            );
+
+            label.setAttribute(
+                "class",
+                "axis-label"
+            );
+
+
+            svg.appendChild(
+                label
+            );
+
+        }
+
+
+        const points =
+            monthlyData.map(
+                function(item, index) {
+
+                    return {
+
+                        x:
+                            LEFT
+                            + plotW
+                            * index
+                            / Math.max(
+                                monthlyData.length - 1,
+                                1
+                            ),
+
+                        y:
+                            TOP
+                            + plotH
+                            - (
+                                item.count
+                                / maxValue
+                                * plotH
+                            ),
+
+                        date:
+                            item.date,
+
+                        count:
+                            item.count
+                    };
+
+                }
+            );
+
+
+        const area =
+            document.createElementNS(
+                NS,
+                "path"
+            );
+
+
+        let areaPath =
+            `M ${points[0].x} ${TOP + plotH}`;
+
+
+        points.forEach(
+            function(point) {
+
+                areaPath +=
+                    ` L ${point.x} ${point.y}`;
+
+            }
+        );
+
+
+        areaPath +=
+            ` L ${points[points.length - 1].x} ${TOP + plotH} Z`;
+
+
+        area.setAttribute(
+            "d",
+            areaPath
+        );
+
+        area.setAttribute(
+            "class",
+            "area"
+        );
+
+
+        svg.appendChild(
+            area
+        );
+
+
+        const polyline =
+            document.createElementNS(
+                NS,
+                "polyline"
+            );
+
+
+        polyline.setAttribute(
+            "points",
+            points
+                .map(
+                    point =>
+                        `${point.x},${point.y}`
+                )
+                .join(" ")
+        );
+
+
+        polyline.setAttribute(
+            "class",
+            "line"
+        );
+
+
+        svg.appendChild(
+            polyline
+        );
+
+
+        points.forEach(
+            function(point, index) {
+
+                if (
+                    index % 5 !== 0
+                    &&
+                    index !== points.length - 1
+                ) {
+                    return;
+                }
+
+
+                const circle =
+                    document.createElementNS(
+                        NS,
+                        "circle"
+                    );
+
+
+                circle.setAttribute(
+                    "cx",
+                    point.x
+                );
+
+                circle.setAttribute(
+                    "cy",
+                    point.y
+                );
+
+                circle.setAttribute(
+                    "r",
+                    3.5
+                );
+
+                circle.setAttribute(
+                    "class",
+                    "point"
+                );
+
+
+                circle.addEventListener(
+                    "mouseenter",
+                    function() {
+
+                        tooltip.style.display =
+                            "block";
+
+
+                        tooltipDate.textContent =
+                            point.date;
+
+
+                        tooltipCount.textContent =
+                            point.count
+                            + "건";
+
+
+                        circle.setAttribute(
+                            "r",
+                            6
+                        );
+
+                    }
+                );
+
+
+                circle.addEventListener(
+                    "mousemove",
+                    function(event) {
+
+                        const rect =
+                            document
+                                .getElementById(
+                                    "chart-wrap"
+                                )
+                                .getBoundingClientRect();
+
+
+                        tooltip.style.left =
+                            (
+                                event.clientX
+                                - rect.left
+                                + 12
+                            )
+                            + "px";
+
+
+                        tooltip.style.top =
+                            (
+                                event.clientY
+                                - rect.top
+                                - 55
+                            )
+                            + "px";
+
+                    }
+                );
+
+
+                circle.addEventListener(
+                    "mouseleave",
+                    function() {
+
+                        tooltip.style.display =
+                            "none";
+
+
+                        circle.setAttribute(
+                            "r",
+                            3.5
+                        );
+
+                    }
+                );
+
+
+                svg.appendChild(
+                    circle
+                );
+
+            }
+        );
+
+
+        monthlyData.forEach(
+            function(item, index) {
+
+                const year =
+                    item.date.substring(
+                        0,
+                        4
+                    );
+
+
+                const previousYear =
+                    index > 0
+                    ? monthlyData[
+                        index - 1
+                    ].date.substring(
+                        0,
+                        4
+                    )
+                    : null;
+
+
+                if (
+                    year !== previousYear
+                    &&
+                    (
+                        Number(year) % 2 === 1
+                        ||
+                        index === 0
+                    )
+                ) {
+
+                    const x =
+                        LEFT
+                        + plotW
+                        * index
+                        / Math.max(
+                            monthlyData.length - 1,
+                            1
+                        );
+
+
+                    const label =
+                        document.createElementNS(
+                            NS,
+                            "text"
+                        );
+
+
+                    label.textContent =
+                        year;
+
+
+                    label.setAttribute(
+                        "x",
+                        x
+                    );
+
+                    label.setAttribute(
+                        "y",
+                        H - 6
+                    );
+
+                    label.setAttribute(
+                        "text-anchor",
+                        "middle"
+                    );
+
+                    label.setAttribute(
+                        "class",
+                        "axis-label"
+                    );
+
+
+                    svg.appendChild(
+                        label
+                    );
+
+                }
+
+            }
+        );
+
+    }
+
+
+
+    /* =========================================
+       RULE BARS
+    ========================================= */
+
+    window.addEventListener(
+        "load",
+        function() {
+
+            document
+                .querySelectorAll(
+                    ".rule-bar"
+                )
+                .forEach(
+                    function(bar, index) {
+
+                        setTimeout(
+                            function() {
+
+                                bar.style.width =
+                                    bar.dataset.width
+                                    + "%";
+
+                            },
+                            index * 50
+                        );
+
+                    }
+                );
+
+        }
+    );
+
+
+
+    /* =========================================
+       AI
+    ========================================= */
+
+    const aiSelect =
+        document.getElementById(
+            "ai-select"
+        );
+
+
+    const aiGenerate =
+        document.getElementById(
+            "ai-generate"
+        );
+
+
+    const aiEmpty =
+        document.getElementById(
+            "ai-empty"
+        );
+
+
+    const aiOutput =
+        document.getElementById(
+            "ai-output"
+        );
+
+
+    document
+        .querySelectorAll(
+            ".analyse"
+        )
+        .forEach(
+            function(button) {
+
+                button.addEventListener(
+                    "click",
+                    function() {
+
+                        const category =
+                            button.dataset.category;
+
+
+                        const signalType =
+                            button.dataset.signalType;
+
+
+                        Array
+                            .from(
+                                aiSelect.options
+                            )
+                            .forEach(
+                                function(option) {
+
+                                    if (
+                                        option.dataset.category
+                                        === category
+                                        &&
+                                        option.dataset.signalType
+                                        === signalType
+                                    ) {
+
+                                        option.selected =
+                                            true;
+
+                                    }
+
+                                }
+                            );
+
+
+                        document
+                            .getElementById(
+                                "ai-agent"
+                            )
+                            .scrollIntoView({
+                                behavior:
+                                    "smooth",
+                                block:
+                                    "start"
+                            });
+
+                    }
+                );
+
+            }
+        );
+
+
+
+    function fillList(
+        id,
+        items
+    ) {
+
+        const target =
+            document.getElementById(id);
+
+
+        target.innerHTML = "";
+
+
+        const list =
+            items
+            && items.length
+            ? items
+            : ["추가 제안 없음"];
+
+
+        list.forEach(
+            function(item) {
+
+                const li =
+                    document.createElement(
+                        "li"
+                    );
+
+
+                li.innerHTML =
+                    item;
+
+
+                target.appendChild(
+                    li
+                );
+
+            }
+        );
+
+    }
+
+
+
+    aiGenerate.addEventListener(
+        "click",
+        async function() {
+
+            const option =
+                aiSelect.options[
+                    aiSelect.selectedIndex
+                ];
+
+
+            if (
+                !option
+                ||
+                !option.value
+            ) {
+
+                alert(
+                    "분석할 시그널을 선택해주세요."
+                );
+
+                return;
+
+            }
+
+
+            const category =
+                option.dataset.category;
+
+
+            const signalType =
+                option.dataset.signalType;
+
+
+            const region =
+                option.dataset.region;
+
+
+            let apiUrl = "";
+
+
+            if (
+                category === "사회"
+            ) {
+
+                apiUrl =
+                    "/api/social-report/"
+                    + signalType;
+
+            }
+
+            else if (
+                category === "경제"
+            ) {
+
+                apiUrl =
+                    "/api/economy-report/"
+                    + signalType;
+
+            }
+
+            else {
+
+                alert(
+                    "현재 AI 취재 에이전트는 사회·경제 시그널부터 연결되어 있습니다."
+                );
+
+                return;
+
+            }
+
+
+            aiGenerate.disabled =
+                true;
+
+
+            aiGenerate.textContent =
+                "브리핑 분석 중...";
+
+
+            try {
+
+                const response =
+                    await fetch(
+                        apiUrl,
+                        {
+                            method:
+                                "POST"
+                        }
+                    );
+
+
+                const data =
+                    await response.json();
+
+
+                if (!response.ok) {
+
+                    throw new Error(
+                        data.error
+                        ||
+                        "브리핑 생성에 실패했습니다."
+                    );
+
+                }
+
+
+                document
+                    .getElementById(
+                        "ai-title"
+                    )
+                    .textContent =
+                        region
+                        + " · "
+                        + option.value;
+
+
+                document
+                    .getElementById(
+                        "ai-briefing"
+                    )
+                    .innerHTML =
+                        data.briefing
+                        ||
+                        "브리핑 내용이 없습니다.";
+
+
+                fillList(
+                    "ai-ideas",
+                    data.article_ideas
+                );
+
+
+                fillList(
+                    "ai-questions",
+                    data.questions
+                );
+
+
+                fillList(
+                    "ai-data",
+                    data.verification_data
+                );
+
+
+                aiEmpty.style.display =
+                    "none";
+
+
+                aiOutput.style.display =
+                    "block";
+
+
+                aiGenerate.textContent =
+                    "브리핑 생성 완료";
+
+            }
+
+            catch(error) {
+
+                alert(
+                    error.message
+                );
+
+
+                aiGenerate.textContent =
+                    "취재 브리핑 생성 →";
+
+            }
+
+            finally {
+
+                aiGenerate.disabled =
+                    false;
+
+            }
+
+        }
+    );
+
+</script>
+
+
+</body>
+</html>

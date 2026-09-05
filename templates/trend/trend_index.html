@@ -1,123 +1,193 @@
 {% extends "trend/trend_base.html" %}
 
 {% block content %}
-<!-- Page Header -->
-<div class="mb-8 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-    <div>
-        <h1 class="text-2xl font-bold text-slate-900 tracking-tight">
-            {% if category_name %}{{ category_name }} 트렌드 신호{% else %}오늘의 TOP 트렌드 이상감지{% endif %}
-        </h1>
-        <p class="text-sm text-slate-500 mt-1">과거 30일 평균 대비 검색 관심도 및 미디어 반응 급증 신호를 분석합니다.</p>
+
+<!-- Main Hero Block (Image Header Style) -->
+<div class="bg-white border border-neutral-300 rounded-2xl p-6 md:p-10 shadow-sm mb-8">
+
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
+
+        <!-- Left Column: Big Editorial Title -->
+        <div class="lg:col-span-8 flex flex-col justify-between">
+            <div>
+                <div class="inline-block px-2.5 py-1 bg-neutral-100 border border-neutral-300 text-neutral-800 font-mono text-[11px] font-bold tracking-wider mb-4 uppercase">
+                    DATA-DRIVEN NEWSROOM
+                </div>
+
+                <h1 class="text-3xl md:text-5xl font-black text-neutral-900 tracking-tight leading-tight font-serif">
+                    {% if category_name %}
+                        {{ category_name }} <br/><span class="text-neutral-900">취재 시그널 모니터</span>
+                    {% else %}
+                        숫자가 발견한<br/>오늘의 취재 시그널
+                    {% endif %}
+                </h1>
+
+                <p class="text-xs md:text-sm text-neutral-600 mt-6 leading-relaxed max-w-xl font-sans">
+                    데이터 속 평소와 다른 움직임을 통계적으로 탐지하고, 기자가 확인할 가치가 있는 시그널 후보를 취재 우선순위와 함께 제공합니다.
+                </p>
+            </div>
+
+            <div class="mt-8 pt-4 border-t border-neutral-200 flex items-center justify-between">
+                <div class="flex items-center space-x-2 text-xs font-mono text-neutral-500">
+                    <span class="w-2 h-2 rounded-full bg-neutral-900 animate-pulse"></span>
+                    <span>AUTO-SYNCED: LIVE RADAR</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Column: Vertical Stat Stack (Divided Style) -->
+        <div class="lg:col-span-4 border-t lg:border-t-0 lg:border-l border-neutral-200 lg:pl-8 pt-6 lg:pt-0 flex flex-col justify-between space-y-6">
+
+            <!-- Stat 1: Total -->
+            <div class="pb-4 border-b border-neutral-200">
+                <div class="text-3xl sm:text-4xl font-black font-serif text-neutral-900 tracking-tight">
+                    {{ stats.total if stats else items|length }}
+                </div>
+                <div class="text-xs font-mono text-neutral-500 font-semibold mt-1 uppercase">
+                    전체 시그널 후보
+                </div>
+            </div>
+
+            <!-- Stat 2: High Signal -->
+            <div class="pb-4 border-b border-neutral-200">
+                <div class="text-3xl sm:text-4xl font-black font-serif text-rose-600 tracking-tight flex items-baseline justify-between">
+                    <span>{{ stats.high if stats else 0 }}</span>
+                    <span class="text-xs font-mono font-bold text-rose-600 bg-rose-50 px-2 py-0.5 border border-rose-200 rounded">HIGH</span>
+                </div>
+                <div class="text-xs font-mono text-neutral-500 font-semibold mt-1 uppercase">
+                    높은 우선순위 후보
+                </div>
+            </div>
+
+            <!-- Stat 3: Medium / Low Signal -->
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <div class="text-2xl font-bold font-serif text-amber-600">
+                        {{ stats.medium if stats else 0 }}
+                    </div>
+                    <div class="text-[11px] font-mono text-neutral-500 mt-0.5">보통 시그널</div>
+                </div>
+                <div>
+                    <div class="text-2xl font-bold font-serif text-emerald-600">
+                        {{ stats.low if stats else 0 }}
+                    </div>
+                    <div class="text-[11px] font-mono text-neutral-500 mt-0.5">일반 시그널</div>
+                </div>
+            </div>
+
+        </div>
+
     </div>
+
 </div>
 
-<!-- Signal Stats Summary Grid -->
-<div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-    <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
-        <div class="text-xs font-semibold text-slate-500">전체 감지 신호</div>
-        <div class="text-2xl font-bold text-slate-900 mt-1">{{ stats.total if stats else items|length }} <span class="text-xs font-normal text-slate-400">건</span></div>
-    </div>
-    <div class="bg-white p-5 rounded-xl border border-rose-100 shadow-sm">
-        <div class="text-xs font-semibold text-rose-600 flex items-center">
-            <span class="w-2 h-2 bg-rose-500 rounded-full mr-1.5"></span> HIGH (고위험/급상승)
-        </div>
-        <div class="text-2xl font-bold text-rose-600 mt-1">{{ stats.high if stats else 0 }} <span class="text-xs font-normal text-slate-400">건</span></div>
-    </div>
-    <div class="bg-white p-5 rounded-xl border border-amber-100 shadow-sm">
-        <div class="text-xs font-semibold text-amber-600 flex items-center">
-            <span class="w-2 h-2 bg-amber-500 rounded-full mr-1.5"></span> MEDIUM (주의)
-        </div>
-        <div class="text-2xl font-bold text-amber-600 mt-1">{{ stats.medium if stats else 0 }} <span class="text-xs font-normal text-slate-400">건</span></div>
-    </div>
-    <div class="bg-white p-5 rounded-xl border border-emerald-100 shadow-sm">
-        <div class="text-xs font-semibold text-emerald-600 flex items-center">
-            <span class="w-2 h-2 bg-emerald-500 rounded-full mr-1.5"></span> LOW (정상/유지)
-        </div>
-        <div class="text-2xl font-bold text-emerald-600 mt-1">{{ stats.low if stats else 0 }} <span class="text-xs font-normal text-slate-400">건</span></div>
-    </div>
+
+<!-- Category Navigation Buttons -->
+<div class="flex space-x-2 mb-6 overflow-x-auto pb-2 font-mono text-xs">
+
+    <a href="/" class="px-4 py-2 rounded-lg font-bold transition whitespace-nowrap {% if not category_type %} bg-black text-white shadow-md {% else %} bg-white text-neutral-700 border border-neutral-300 hover:bg-neutral-100 {% endif %}">
+        ALL CATEGORIES
+    </a>
+
+    <a href="/content/music" class="px-4 py-2 rounded-lg font-bold transition whitespace-nowrap {% if category_type == 'music' %} bg-black text-white shadow-md {% else %} bg-white text-neutral-700 border border-neutral-300 hover:bg-neutral-100 {% endif %}">
+        🎵 MUSIC
+    </a>
+
+    <a href="/content/drama" class="px-4 py-2 rounded-lg font-bold transition whitespace-nowrap {% if category_type == 'drama' %} bg-black text-white shadow-md {% else %} bg-white text-neutral-700 border border-neutral-300 hover:bg-neutral-100 {% endif %}">
+        🎬 DRAMA
+    </a>
+
+    <a href="/content/webtoon" class="px-4 py-2 rounded-lg font-bold transition whitespace-nowrap {% if category_type == 'webtoon' %} bg-black text-white shadow-md {% else %} bg-white text-neutral-700 border border-neutral-300 hover:bg-neutral-100 {% endif %}">
+        📱 WEBTOON
+    </a>
+
 </div>
 
-<!-- Category Tab Navigation -->
-<div class="flex space-x-2 border-b border-slate-200 mb-6 pb-2">
-    <a href="/" class="px-4 py-2 rounded-lg text-sm font-semibold transition {% if not category_type %}bg-slate-900 text-white shadow-sm{% else %}text-slate-600 hover:bg-slate-100{% endif %}">
-        전체
-    </a>
-    <a href="/content/music" class="px-4 py-2 rounded-lg text-sm font-semibold transition {% if category_type == 'music' %}bg-slate-900 text-white shadow-sm{% else %}text-slate-600 hover:bg-slate-100{% endif %}">
-        🎵 노래
-    </a>
-    <a href="/content/drama" class="px-4 py-2 rounded-lg text-sm font-semibold transition {% if category_type == 'drama' %}bg-slate-900 text-white shadow-sm{% else %}text-slate-600 hover:bg-slate-100{% endif %}">
-        🎬 드라마
-    </a>
-    <a href="/content/webtoon" class="px-4 py-2 rounded-lg text-sm font-semibold transition {% if category_type == 'webtoon' %}bg-slate-900 text-white shadow-sm{% else %}text-slate-600 hover:bg-slate-100{% endif %}">
-        📱 웹툰
-    </a>
-</div>
 
-<!-- Trend List Table -->
-<div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
-    <div class="px-6 py-4 border-b border-slate-100 bg-slate-50/50 flex justify-between items-center">
-        <h3 class="font-bold text-slate-800 text-sm">트렌드 순위 리스트</h3>
-        <span class="text-xs text-slate-400">트렌드 점수 높은 순</span>
-    </div>
-    
-    <div class="divide-y divide-slate-100">
-        {% for item in items %}
-        <a href="/detail/{{ item.id }}" class="p-5 flex flex-col md:flex-row md:items-center justify-between hover:bg-blue-50/40 transition group">
-            <!-- Left Info -->
-            <div class="flex items-center space-x-4 mb-3 md:mb-0">
-                <div class="w-9 h-9 rounded-full bg-slate-100 text-slate-600 font-bold flex items-center justify-center text-sm group-hover:bg-blue-600 group-hover:text-white transition">
+<!-- Trend Items List (High-Contrast Editorial Rows) -->
+<div class="space-y-3">
+
+    {% for item in items %}
+
+    <a href="/detail/{{ item.id }}" class="group block bg-white border border-neutral-300 p-5 rounded-xl editorial-card transition duration-150">
+
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+
+            <!-- Left: Rank Number + Info -->
+            <div class="flex items-start space-x-4">
+
+                <div class="w-8 h-8 rounded-lg bg-neutral-100 border border-neutral-300 font-mono font-bold flex items-center justify-center text-xs text-neutral-800 group-hover:bg-black group-hover:text-white group-hover:border-black transition">
                     {{ loop.index }}
                 </div>
+
                 <div>
                     <div class="flex items-center space-x-2">
-                        <span class="font-bold text-slate-900 text-base group-hover:text-blue-600 transition">{{ item.title }}</span>
-                        <span class="text-xs px-2 py-0.5 rounded bg-slate-100 text-slate-600 font-medium">{{ item.category_name }}</span>
+                        <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-neutral-100 text-neutral-700 border border-neutral-300 font-semibold">
+                            {{ item.category_name }}
+                        </span>
+
+                        {% if item.signal == 'HIGH' %}
+                            <span class="text-[10px] font-mono font-extrabold px-2 py-0.5 rounded bg-rose-50 text-rose-600 border border-rose-200 flex items-center">
+                                <span class="w-1.5 h-1.5 rounded-full bg-rose-500 mr-1.5 animate-pulse"></span> HIGH
+                            </span>
+                        {% elif item.signal == 'MEDIUM' %}
+                            <span class="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-amber-50 text-amber-700 border border-amber-200">
+                                MEDIUM
+                            </span>
+                        {% else %}
+                            <span class="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-emerald-50 text-emerald-700 border border-emerald-200">
+                                LOW
+                            </span>
+                        {% endif %}
                     </div>
-                    <div class="text-xs text-slate-400 mt-1">{{ item.sub_info }}</div>
+
+                    <h3 class="text-base md:text-lg font-bold text-neutral-900 mt-2 group-hover:underline">
+                        {{ item.title }}
+                    </h3>
+
+                    <p class="text-xs text-neutral-500 mt-1 font-mono">
+                        {{ item.sub_info }}
+                    </p>
                 </div>
+
             </div>
 
-            <!-- Right Indicators -->
-            <div class="flex items-center justify-between md:justify-end space-x-6">
-                <!-- Increase Rate -->
+
+            <!-- Right: Change Rate & Score Metrics -->
+            <div class="flex items-center justify-between md:justify-end space-x-8 pt-3 md:pt-0 border-t md:border-t-0 border-neutral-100">
+
                 <div class="text-right">
-                    <div class="text-xs text-slate-400">검색 관심도</div>
-                    <div class="font-extrabold text-sm text-rose-600">+{{ item.increase_rate }}%</div>
+                    <div class="text-[10px] font-mono text-neutral-400 font-bold uppercase">CHANGE RATE</div>
+                    <div class="text-base font-extrabold font-mono mt-0.5 {% if item.increase_rate >= 0 %} text-rose-600 {% else %} text-neutral-900 {% endif %}">
+                        {{ "%+.1f"|format(item.increase_rate) }}%
+                    </div>
                 </div>
 
-                <!-- Signal Level -->
-                <div>
-                    {% if item.signal == 'HIGH' %}
-                        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-rose-100 text-rose-700 border border-rose-200">
-                            HIGH
-                        </span>
-                    {% elif item.signal == 'MEDIUM' %}
-                        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-amber-100 text-amber-700 border border-amber-200">
-                            MEDIUM
-                        </span>
-                    {% else %}
-                        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-700 border border-emerald-200">
-                            LOW
-                        </span>
-                    {% endif %}
+                <div class="text-right pl-6 border-l border-neutral-200">
+                    <div class="text-[10px] font-mono text-neutral-400 font-bold uppercase">PULSE SCORE</div>
+                    <div class="text-lg font-black text-neutral-900 font-mono mt-0.5">
+                        {{ item.trend_score }}<span class="text-xs text-neutral-400 font-normal">/100</span>
+                    </div>
                 </div>
 
-                <!-- Trend Score -->
-                <div class="text-right w-20">
-                    <div class="text-xs text-slate-400">트렌드 점수</div>
-                    <div class="font-black text-slate-900 text-lg">{{ item.trend_score }}<span class="text-xs text-slate-400 font-normal">/100</span></div>
+                <div class="w-8 h-8 rounded-lg bg-neutral-100 border border-neutral-300 flex items-center justify-center text-neutral-600 group-hover:bg-black group-hover:text-white group-hover:border-black transition">
+                    <i class="fa-solid fa-arrow-right text-xs"></i>
                 </div>
 
-                <div class="text-slate-300 group-hover:text-blue-600 transition">
-                    <i class="fa-solid fa-chevron-right text-sm"></i>
-                </div>
             </div>
-        </a>
-        {% else %}
-        <div class="p-12 text-center text-slate-400 text-sm">
-            감지된 트렌드 데이터가 없습니다.
+
         </div>
-        {% endfor %}
+
+    </a>
+
+    {% else %}
+
+    <div class="bg-white border border-neutral-300 p-12 rounded-xl text-center text-neutral-400 font-mono text-sm">
+        NO ANOMALY DETECTED IN THIS CATEGORY.
     </div>
+
+    {% endfor %}
+
 </div>
+
 {% endblock %}

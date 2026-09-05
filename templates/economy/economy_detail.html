@@ -9,7 +9,7 @@
         content="width=device-width, initial-scale=1.0"
     >
 
-    <title>DATA TIP-OFF | 경제 시그널 상세</title>
+    <title>{{ item.signal_name }} · DATA TIP-OFF</title>
 
     <style>
         * {
@@ -18,543 +18,341 @@
 
         body {
             margin: 0;
-            background: #050505;
-            color: #f5f5f5;
-            font-family:
-                "Malgun Gothic",
-                "Apple SD Gothic Neo",
-                Arial,
-                sans-serif;
+            background: #f4f4f1;
+            color: #111;
+            font-family: Arial, "Noto Sans KR", sans-serif;
         }
 
         a {
             color: inherit;
+            text-decoration: none;
+        }
+
+        button {
+            font: inherit;
         }
 
         .page {
-            width: min(1180px, calc(100% - 40px));
+            max-width: 1440px;
             margin: 0 auto;
-            padding: 36px 0 90px;
+            padding: 0 40px 100px;
         }
 
-        .topbar {
+        header {
+            height: 88px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 42px;
+            border-bottom: 1px solid #111;
         }
 
-        .back-link {
-            text-decoration: none;
-            color: #a0a0a0;
-            font-size: 14px;
+        .logo {
+            font-size: 22px;
+            font-weight: 900;
         }
 
-        .back-link:hover {
-            color: #ffffff;
-        }
-
-        .brand {
-            font-size: 13px;
-            font-weight: 800;
-            letter-spacing: 1.2px;
-            color: #b7b7b7;
+        .back {
+            font-size: 12px;
+            letter-spacing: 1px;
         }
 
         .hero {
-            border-bottom: 1px solid #292929;
-            padding-bottom: 32px;
-            margin-bottom: 24px;
+            padding: 70px 0 55px;
+            border-bottom: 1px solid #111;
         }
 
-        .hero-top {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            gap: 30px;
-        }
-
-        .kicker {
-            color: #9b9b9b;
+        .eyebrow {
+            margin-bottom: 20px;
             font-size: 12px;
-            font-weight: 800;
-            letter-spacing: 1.4px;
-            margin-bottom: 14px;
+            letter-spacing: 2px;
         }
 
-        .hero h1 {
+        h1 {
             margin: 0;
-            font-size: 48px;
-            letter-spacing: -2px;
-            line-height: 1.15;
+            font-size: clamp(48px, 7vw, 96px);
+            line-height: .95;
+            letter-spacing: -5px;
         }
 
-        .meta {
-            margin-top: 17px;
-            color: #a1a1a1;
-            font-size: 15px;
+        .hero-meta {
+            margin-top: 35px;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            border: 1px solid #111;
         }
 
-        .high-badge {
-            flex-shrink: 0;
-            background: #f5f5f5;
-            color: #050505;
-            padding: 9px 14px;
-            border-radius: 999px;
-            font-size: 12px;
+        .meta-box {
+            padding: 20px;
+            border-right: 1px solid #111;
+        }
+
+        .meta-box:last-child {
+            border-right: 0;
+        }
+
+        .meta-label {
+            font-size: 10px;
+            letter-spacing: 1.5px;
+            opacity: .55;
+        }
+
+        .meta-value {
+            margin-top: 8px;
+            font-size: 24px;
             font-weight: 900;
         }
 
-        .panel {
-            background: #0d0d0d;
-            border: 1px solid #292929;
-            border-radius: 18px;
-            padding: 27px;
-            margin-bottom: 20px;
+        .section {
+            padding: 55px 0;
+            border-bottom: 1px solid #111;
+        }
+
+        .section-head {
+            display: grid;
+            grid-template-columns: 220px 1fr;
+            gap: 40px;
+            margin-bottom: 35px;
         }
 
         .section-label {
-            color: #888888;
-            font-size: 11px;
+            font-size: 12px;
             font-weight: 800;
-            letter-spacing: 1.3px;
-            margin-bottom: 9px;
+            letter-spacing: 2px;
         }
 
         .section-title {
-            margin: 0 0 22px;
-            font-size: 23px;
+            font-size: clamp(30px, 4vw, 52px);
             font-weight: 900;
+            letter-spacing: -2px;
+            line-height: 1.05;
         }
 
-        .metric-grid {
+        .snapshot-grid {
             display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 14px;
+            grid-template-columns: repeat(3, 1fr);
+            border: 1px solid #111;
         }
 
-        .metric-card {
-            background: #050505;
-            border: 1px solid #292929;
-            border-radius: 14px;
-            padding: 21px;
+        .snapshot-card {
+            padding: 30px;
+            border-right: 1px solid #111;
         }
 
-        .metric-icon {
-            font-size: 23px;
-            margin-bottom: 15px;
+        .snapshot-card:last-child {
+            border-right: 0;
         }
 
-        .metric-label {
-            color: #979797;
-            font-size: 13px;
-            margin-bottom: 9px;
-        }
-
-        .metric-value {
-            font-size: 27px;
-            font-weight: 900;
-            letter-spacing: -1px;
-        }
-
-        .metric-change {
-            margin-top: 9px;
-            font-size: 14px;
-            font-weight: 900;
-        }
-
-        .score-line {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding-top: 20px;
-            margin-top: 20px;
-            border-top: 1px solid #292929;
-        }
-
-        .score-title {
-            color: #999999;
-            font-size: 13px;
-        }
-
-        .score-value {
-            font-size: 31px;
-            font-weight: 900;
-        }
-
-        .chart-box {
-            display: grid;
-            gap: 30px;
-        }
-
-        .chart-item {
-            border-bottom: 1px solid #242424;
-            padding-bottom: 26px;
-        }
-
-        .chart-item:last-child {
-            border-bottom: none;
-            padding-bottom: 0;
-        }
-
-        .chart-name {
-            font-size: 16px;
-            font-weight: 900;
-            margin-bottom: 18px;
-        }
-
-        .bar-line {
-            display: grid;
-            grid-template-columns: 90px minmax(0, 1fr) 110px;
-            align-items: center;
-            gap: 14px;
-            margin-bottom: 13px;
-        }
-
-        .bar-label {
-            color: #9b9b9b;
-            font-size: 13px;
-        }
-
-        .bar-track {
-            width: 100%;
-            height: 20px;
-            background: #181818;
-            border: 1px solid #292929;
-            border-radius: 4px;
-            overflow: hidden;
-        }
-
-        .bar-fill {
-            height: 100%;
-            min-width: 3px;
-            width: 0;
-            transition: width 0.7s ease;
-        }
-
-        .bar-prev {
-            background: #555555;
-        }
-
-        .bar-current {
-            background: #f1f1f1;
-        }
-
-        .bar-number {
-            text-align: right;
-            font-size: 13px;
-            font-weight: 800;
-        }
-
-        .chart-caption {
-            margin-top: 15px;
-            color: #777777;
-            font-size: 12px;
-            line-height: 1.6;
-        }
-
-        .reason-list {
-            display: grid;
-            gap: 13px;
-        }
-
-        .reason-item {
-            display: flex;
-            gap: 13px;
-            align-items: flex-start;
-            line-height: 1.7;
-            color: #cecece;
-        }
-
-        .reason-number {
-            flex: 0 0 auto;
-            width: 28px;
-            height: 28px;
-            border-radius: 50%;
-            border: 1px solid #606060;
-            display: grid;
-            place-items: center;
+        .snapshot-label {
             font-size: 11px;
+            letter-spacing: 1.4px;
+            opacity: .55;
+        }
+
+        .snapshot-value {
+            margin-top: 16px;
+            font-size: clamp(24px, 3vw, 42px);
             font-weight: 900;
-            color: #ffffff;
+            letter-spacing: -1.5px;
         }
 
-        .caution-box {
-            margin-top: 22px;
-            padding: 17px 19px;
-            background: #080808;
-            border-left: 3px solid #eeeeee;
-            color: #a9a9a9;
+        .snapshot-sub {
+            margin-top: 10px;
             font-size: 13px;
-            line-height: 1.7;
+            opacity: .65;
         }
 
-        .table-scroll {
-            overflow-x: auto;
+        .why-box {
+            border: 1px solid #111;
+            padding: 30px;
+        }
+
+        .why-main {
+            font-size: 24px;
+            font-weight: 900;
+            line-height: 1.4;
+        }
+
+        .why-sub {
+            margin-top: 18px;
+            font-size: 14px;
+            line-height: 1.8;
+            opacity: .7;
         }
 
         table {
             width: 100%;
-            min-width: 720px;
             border-collapse: collapse;
         }
 
-        th {
-            padding: 14px 13px;
-            border-bottom: 1px solid #393939;
-            text-align: left;
-            color: #888888;
-            font-size: 11px;
-            letter-spacing: 0.4px;
-        }
-
+        th,
         td {
-            padding: 15px 13px;
-            border-bottom: 1px solid #222222;
-            color: #cfcfcf;
-            font-size: 14px;
-        }
-
-        tbody tr:hover {
-            background: #151515;
-        }
-
-        .top-row {
-            background: #171717;
-        }
-
-        .top-row td {
-            color: #ffffff;
-            font-weight: 900;
-        }
-
-        .rank {
-            font-weight: 900;
-        }
-
-        .ai-section {
-            margin-top: 42px;
-            background: #090909;
-            border: 1px solid #333333;
-            border-radius: 20px;
-            overflow: hidden;
-        }
-
-        .ai-start {
-            padding: 40px 30px;
-            text-align: center;
-        }
-
-        .robot {
-            font-size: 43px;
-            margin-bottom: 15px;
-        }
-
-        .ai-start h2 {
-            margin: 0 0 12px;
-            font-size: 28px;
-        }
-
-        .ai-start p {
-            max-width: 690px;
-            margin: 0 auto 25px;
-            color: #989898;
-            font-size: 14px;
-            line-height: 1.8;
-        }
-
-        .ai-button {
-            appearance: none;
-            border: 1px solid #ffffff;
-            border-radius: 10px;
-            background: #ffffff;
-            color: #050505;
-            padding: 14px 23px;
-            font-size: 15px;
-            font-weight: 900;
-            cursor: pointer;
-        }
-
-        .ai-button:hover {
-            background: #dddddd;
-        }
-
-        .ai-button:disabled {
-            background: #777777;
-            border-color: #777777;
-            cursor: wait;
-        }
-
-        .loading {
-            display: none;
-            margin-top: 18px;
-            color: #aaaaaa;
+            padding: 16px 10px;
+            border-bottom: 1px solid #111;
+            text-align: left;
             font-size: 13px;
         }
 
-        .ai-result {
-            display: none;
+        th {
+            font-size: 10px;
+            letter-spacing: 1px;
+            opacity: .55;
         }
 
-        .ai-result-header {
-            padding: 23px 27px;
-            border-top: 1px solid #292929;
-            border-bottom: 1px solid #292929;
+        .severity {
+            display: inline-block;
+            border: 1px solid currentColor;
+            padding: 5px 8px;
+            font-size: 10px;
+        }
+
+        .ai-box {
+            background: #111;
+            color: #fff;
+            padding: 40px;
+        }
+
+        .ai-top {
             display: flex;
             justify-content: space-between;
+            gap: 30px;
             align-items: center;
         }
 
-        .ai-result-title {
-            font-size: 20px;
-            font-weight: 900;
-        }
-
-        .complete-badge {
-            color: #d5d5d5;
-            border: 1px solid #555555;
-            padding: 7px 11px;
-            border-radius: 999px;
+        .ai-kicker {
             font-size: 11px;
+            letter-spacing: 2px;
+            opacity: .6;
         }
 
-        .briefing {
-            padding: 28px;
-            border-bottom: 1px solid #292929;
-        }
-
-        .briefing-label {
-            color: #888888;
-            font-size: 11px;
+        .ai-title {
+            margin-top: 10px;
+            font-size: clamp(30px, 4vw, 50px);
             font-weight: 900;
-            letter-spacing: 1.2px;
-            margin-bottom: 13px;
+            letter-spacing: -2px;
         }
 
-        #briefing-text {
-            font-size: 17px;
-            line-height: 1.9;
-            color: #e5e5e5;
+        #ai-button {
+            background: #fff;
+            color: #111;
+            border: 0;
+            padding: 16px 22px;
+            font-weight: 800;
+            cursor: pointer;
         }
 
-        #briefing-text strong {
-            color: #ffffff;
+        .ai-result {
+            margin-top: 35px;
+            display: none;
         }
 
-        .ai-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
+        .ai-section {
+            padding: 25px 0;
+            border-top: 1px solid rgba(255,255,255,.25);
         }
 
-        .ai-card {
-            padding: 27px;
-            border-right: 1px solid #292929;
-        }
-
-        .ai-card:last-child {
-            border-right: none;
-        }
-
-        .ai-card-icon {
-            font-size: 23px;
-            margin-bottom: 12px;
-        }
-
-        .ai-card h3 {
-            margin: 0 0 15px;
-            font-size: 17px;
-        }
-
-        .ai-card ul {
-            margin: 0;
-            padding-left: 18px;
-        }
-
-        .ai-card li {
-            color: #b8b8b8;
-            font-size: 14px;
-            line-height: 1.7;
-            margin-bottom: 11px;
-        }
-
-        .footer-note {
-            margin-top: 18px;
-            color: #707070;
+        .ai-section h3 {
+            margin: 0 0 14px;
             font-size: 12px;
-            line-height: 1.7;
+            letter-spacing: 1.5px;
         }
 
-        @media (max-width: 850px) {
-            .metric-grid {
+        .ai-section p,
+        .ai-section li {
+            font-size: 15px;
+            line-height: 1.8;
+        }
+
+        @media (max-width: 900px) {
+            .page {
+                padding-left: 20px;
+                padding-right: 20px;
+            }
+
+            .hero-meta {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .snapshot-grid {
                 grid-template-columns: 1fr;
             }
 
-            .ai-grid {
+            .snapshot-card {
+                border-right: 0;
+                border-bottom: 1px solid #111;
+            }
+
+            .snapshot-card:last-child {
+                border-bottom: 0;
+            }
+
+            .section-head {
                 grid-template-columns: 1fr;
+                gap: 12px;
             }
 
-            .ai-card {
-                border-right: none;
-                border-bottom: 1px solid #292929;
+            .ai-top {
+                display: block;
             }
 
-            .hero-top {
-                flex-direction: column;
-            }
-        }
-
-        @media (max-width: 600px) {
-            .hero h1 {
-                font-size: 36px;
+            #ai-button {
+                width: 100%;
+                margin-top: 25px;
             }
 
-            .bar-line {
-                grid-template-columns: 75px minmax(0, 1fr) 85px;
+            table {
+                display: block;
+                overflow-x: auto;
             }
         }
     </style>
 </head>
 
+
 <body>
 
 <div class="page">
 
-    <div class="topbar">
-        <a
-            href="/economy"
-            class="back-link"
-        >
-            ← 경제 시그널 목록
+    <header>
+        <a href="/" class="logo">
+            DATA TIP-OFF
         </a>
 
-        <div class="brand">
-            DATA TIP-OFF / ECONOMY
-        </div>
-    </div>
+        <a href="/economy" class="back">
+            ← ECONOMY SIGNALS
+        </a>
+    </header>
 
 
     <section class="hero">
 
-        <div class="hero-top">
+        <div class="eyebrow">
+            ECONOMY / SIGNAL DETAIL
+        </div>
 
-            <div>
-                <div class="kicker">
-                    🚨 DETECTED ECONOMY SIGNAL
-                </div>
+        <h1>
+            {{ item.signal_name }}
+        </h1>
 
-                <h1>
-                    {{ item.title }}
-                </h1>
+        <div class="hero-meta">
 
-                <div class="meta">
-                    📍 {{ item.region }}
-                    &nbsp;·&nbsp;
-                    🗓️ {{ item.date }}
-                </div>
+            <div class="meta-box">
+                <div class="meta-label">REGION</div>
+                <div class="meta-value">{{ item.region }}</div>
             </div>
 
-            <div class="high-badge">
-                HIGH SIGNAL
+            <div class="meta-box">
+                <div class="meta-label">DATE</div>
+                <div class="meta-value">{{ item.date }}</div>
+            </div>
+
+            <div class="meta-box">
+                <div class="meta-label">SIGNAL SCORE</div>
+                <div class="meta-value">{{ item.score }}</div>
+            </div>
+
+            <div class="meta-box">
+                <div class="meta-label">SEVERITY</div>
+                <div class="meta-value">{{ item.severity }}</div>
             </div>
 
         </div>
@@ -562,123 +360,108 @@
     </section>
 
 
-    <section class="panel">
+    <section class="section">
 
-        <div class="section-label">
-            DATA SNAPSHOT
+        <div class="section-head">
+            <div class="section-label">
+                01 / DATA SNAPSHOT
+            </div>
+
+            <div class="section-title">
+                시장 지표가 어떻게 움직였나
+            </div>
         </div>
 
-        <h2 class="section-title">
-            📌 숫자가 포착한 핵심 변화
-        </h2>
+        <div class="snapshot-grid">
 
-
-        {% if item.signal_type == "rate" %}
-
-        <div class="metric-grid">
-
-            <div class="metric-card">
-                <div class="metric-icon">
-                    🏠
+            <div class="snapshot-card">
+                <div class="snapshot-label">
+                    MEDIAN PRICE / ㎡
                 </div>
 
-                <div class="metric-label">
-                    아파트 ㎡당 중앙가격
-                </div>
-
-                <div class="metric-value">
-                    {{ item.price_prev }}
+                <div class="snapshot-value">
+                    {% if item.price_prev is not none %}
+                        {{ "{:,.1f}".format(item.price_prev) }}
+                    {% else %}
+                        -
+                    {% endif %}
                     →
-                    {{ item.price_now }}
+                    {% if item.price_now is not none %}
+                        {{ "{:,.1f}".format(item.price_now) }}
+                    {% else %}
+                        -
+                    {% endif %}
                 </div>
 
-                <div class="metric-change">
-                    ↑ {{ item.price_change }}%
+                <div class="snapshot-sub">
+                    전년 동월 대비
+                    {% if item.price_change is not none %}
+                        {{ "{:+.1f}".format(item.price_change) }}%
+                    {% else %}
+                        -
+                    {% endif %}
                 </div>
             </div>
 
 
-            <div class="metric-card">
-                <div class="metric-icon">
-                    🏦
+            <div class="snapshot-card">
+                <div class="snapshot-label">
+                    TRANSACTIONS
                 </div>
 
-                <div class="metric-label">
-                    한국은행 기준금리
-                </div>
-
-                <div class="metric-value">
-                    {{ item.rate_prev }}%
+                <div class="snapshot-value">
+                    {% if item.transaction_prev is not none %}
+                        {{ "{:,.0f}".format(item.transaction_prev) }}
+                    {% else %}
+                        -
+                    {% endif %}
                     →
-                    {{ item.rate_now }}%
+                    {% if item.transaction_now is not none %}
+                        {{ "{:,.0f}".format(item.transaction_now) }}
+                    {% else %}
+                        -
+                    {% endif %}
                 </div>
 
-                <div class="metric-change">
-                    ↑ {{ item.rate_change }}%p
+                <div class="snapshot-sub">
+                    전년 동월 대비
+                    {% if item.transaction_change is not none %}
+                        {{ "{:+.1f}".format(item.transaction_change) }}%
+                    {% else %}
+                        -
+                    {% endif %}
                 </div>
             </div>
 
-        </div>
 
-
-        {% elif item.signal_type == "cross" %}
-
-        <div class="metric-grid">
-
-            <div class="metric-card">
-                <div class="metric-icon">
-                    🏠
+            <div class="snapshot-card">
+                <div class="snapshot-label">
+                    BASE RATE
                 </div>
 
-                <div class="metric-label">
-                    아파트 ㎡당 중앙가격
-                </div>
-
-                <div class="metric-value">
-                    {{ item.price_prev }}
+                <div class="snapshot-value">
+                    {% if item.rate_prev is not none %}
+                        {{ item.rate_prev }}
+                    {% else %}
+                        -
+                    {% endif %}
                     →
-                    {{ item.price_now }}
+                    {% if item.rate_now is not none %}
+                        {{ item.rate_now }}
+                    {% else %}
+                        -
+                    {% endif %}
+                    %
                 </div>
 
-                <div class="metric-change">
-                    ↑ {{ item.price_change }}%
+                <div class="snapshot-sub">
+                    전년 동월 대비
+                    {% if item.rate_change is not none %}
+                        {{ "{:+.2f}".format(item.rate_change) }}%p
+                    {% else %}
+                        -
+                    {% endif %}
                 </div>
-            </div>
-
-
-            <div class="metric-card">
-                <div class="metric-icon">
-                    🤝
-                </div>
-
-                <div class="metric-label">
-                    아파트 거래량
-                </div>
-
-                <div class="metric-value">
-                    {{ item.transaction_prev }}
-                    →
-                    {{ item.transaction_now }}
-                </div>
-
-                <div class="metric-change">
-                    ↓ {{ item.transaction_change | abs }}%
-                </div>
-            </div>
-
-        </div>
-
-        {% endif %}
-
-
-        <div class="score-line">
-
-            <div class="score-title">
-                SIGNAL SCORE · 이례성 탐지 점수
-            </div>
-
-            <div class="score-value">
-                {{ item.score }}
             </div>
 
         </div>
@@ -686,440 +469,167 @@
     </section>
 
 
-    <section class="panel">
+    <section class="section">
 
-        <div class="section-label">
-            VISUAL EVIDENCE
-        </div>
-
-        <h2 class="section-title">
-            📊 전년 동월 데이터 비교
-        </h2>
-
-
-        <div class="chart-box">
-
-            {% for chart in chart_rows %}
-
-            <div class="chart-item">
-
-                <div class="chart-name">
-                    {{ chart.label }}
-                </div>
-
-
-                <div class="bar-line">
-
-                    <div class="bar-label">
-                        전년 동월
-                    </div>
-
-                    <div class="bar-track">
-
-                        <div
-                            class="bar-fill bar-prev"
-                            data-width="{{ chart.prev_width }}"
-                        ></div>
-
-                    </div>
-
-                    <div class="bar-number">
-                        {{ chart.prev_value }}
-                        {{ chart.unit }}
-                    </div>
-
-                </div>
-
-
-                <div class="bar-line">
-
-                    <div class="bar-label">
-                        탐지 시점
-                    </div>
-
-                    <div class="bar-track">
-
-                        <div
-                            class="bar-fill bar-current"
-                            data-width="{{ chart.current_width }}"
-                        ></div>
-
-                    </div>
-
-                    <div class="bar-number">
-                        {{ chart.current_value }}
-                        {{ chart.unit }}
-                    </div>
-
-                </div>
-
+        <div class="section-head">
+            <div class="section-label">
+                02 / WHY DETECTED
             </div>
 
-            {% endfor %}
-
+            <div class="section-title">
+                왜 탐지됐나요?
+            </div>
         </div>
 
+        <div class="why-box">
 
-        <div class="chart-caption">
-            회색 막대는 전년 동월,
-            흰색 막대는 시그널이 탐지된 시점의 값입니다.
-            서로 단위가 다른 지표는 각각의 항목 안에서 비교합니다.
+            <div class="why-main">
+                {{ item.reason }}
+            </div>
+
+            <div class="why-sub">
+                이 시그널은 가격, 거래량, 금리의 전년 동월 변화와
+                같은 시점 다른 지역과의 상대적 차이를 이용해 탐지했습니다.
+                통계적 동시 발생이나 급변이 특정 원인의 증거는 아니며,
+                실제 원인은 공급·수요·정책·지역 개발 등 추가 자료를 확인해야 합니다.
+            </div>
+
         </div>
 
     </section>
 
 
-    <section class="panel">
+    <section class="section">
 
-        <div class="section-label">
-            WHY DETECTED
+        <div class="section-head">
+            <div class="section-label">
+                03 / TOP SIGNALS
+            </div>
+
+            <div class="section-title">
+                같은 규칙에서 탐지된 상위 후보
+            </div>
         </div>
 
-        <h2 class="section-title">
-            🔎 왜 탐지됐나요?
-        </h2>
-
-
-        <div class="reason-list">
-
-            {% if item.signal_type == "rate" %}
-
-            <div class="reason-item">
-
-                <div class="reason-number">
-                    1
-                </div>
-
-                <div>
-                    기준금리가 전년 동월보다
-                    <strong>
-                        {{ item.rate_change }}%p
-                    </strong>
-                    높아졌습니다.
-                </div>
-
-            </div>
-
-
-            <div class="reason-item">
-
-                <div class="reason-number">
-                    2
-                </div>
-
-                <div>
-                    같은 기간 아파트 ㎡당 중앙가격은
-                    <strong>
-                        {{ item.price_change }}%
-                    </strong>
-                    상승했습니다.
-                </div>
-
-            </div>
-
-
-            <div class="reason-item">
-
-                <div class="reason-number">
-                    3
-                </div>
-
-                <div>
-                    두 지표가 함께 상승한 사례 가운데
-                    해당 지역의 평소 가격 변동폭과 비교해
-                    상대적으로 이례성이 큰 구간이 선택됐습니다.
-                </div>
-
-            </div>
-
-
-            {% elif item.signal_type == "cross" %}
-
-            <div class="reason-item">
-
-                <div class="reason-number">
-                    1
-                </div>
-
-                <div>
-                    아파트 ㎡당 중앙가격은
-                    전년 동월보다
-                    <strong>
-                        {{ item.price_change }}%
-                    </strong>
-                    상승했습니다.
-                </div>
-
-            </div>
-
-
-            <div class="reason-item">
-
-                <div class="reason-number">
-                    2
-                </div>
-
-                <div>
-                    같은 기간 거래량은
-                    <strong>
-                        {{ item.transaction_change | abs }}%
-                    </strong>
-                    감소했습니다.
-                </div>
-
-            </div>
-
-
-            <div class="reason-item">
-
-                <div class="reason-number">
-                    3
-                </div>
-
-                <div>
-                    가격과 거래량이 서로 반대 방향으로 움직이면서
-                    해당 지역의 평소 변화와 비교해
-                    상대적으로 이례적인 패턴이 탐지됐습니다.
-                </div>
-
-            </div>
-
-            {% endif %}
-
+        <div style="margin-bottom:18px; font-size:13px;">
+            전체 후보 {{ "{:,}".format(candidate_count) }}건 중 Signal Score 상위 10건
         </div>
 
+        <table>
 
-        <div class="caution-box">
-            ⚠️ 이 분석은 인과관계를 의미하지 않습니다.
-            DATA TIP-OFF는 숫자의 이상 조합을 먼저 탐지하고,
-            그 원인은 기자가 추가 데이터와 현장 취재를 통해 확인하도록 설계했습니다.
-        </div>
+            <thead>
+                <tr>
+                    <th>RANK</th>
+                    <th>DATE</th>
+                    <th>REGION</th>
+                    <th>PRICE YoY</th>
+                    <th>TRANSACTION YoY</th>
+                    <th>RATE CHANGE</th>
+                    <th>SCORE</th>
+                    <th>LEVEL</th>
+                </tr>
+            </thead>
 
-    </section>
+            <tbody>
 
+                {% for row in table_rows %}
 
-    <section class="panel">
+                <tr>
+                    <td>{{ row.rank }}</td>
+                    <td>{{ row.date }}</td>
+                    <td>{{ row.region }}</td>
 
-        <div class="section-label">
-            DETECTED RANKING
-        </div>
-
-        <h2 class="section-title">
-            🧾 탐지 결과 TOP 10
-        </h2>
-
-
-        <div class="table-scroll">
-
-            <table>
-
-                <thead>
-
-                    <tr>
-                        <th>순위</th>
-                        <th>날짜</th>
-                        <th>지역</th>
-                        <th>가격 변화</th>
-
-                        {% if item.signal_type == "rate" %}
-
-                        <th>금리 변화</th>
-
+                    <td>
+                        {% if row.price_change is not none %}
+                            {{ "{:+.1f}".format(row.price_change) }}%
                         {% else %}
-
-                        <th>거래량 변화</th>
-
+                            -
                         {% endif %}
+                    </td>
 
-                        <th>Signal Score</th>
-                    </tr>
-
-                </thead>
-
-
-                <tbody>
-
-                    {% for row in table_rows %}
-
-                    <tr
-                        {% if row.rank == 1 %}
-                        class="top-row"
-                        {% endif %}
-                    >
-
-                        <td class="rank">
-                            #{{ row.rank }}
-                        </td>
-
-                        <td>
-                            {{ row.date }}
-                        </td>
-
-                        <td>
-                            {{ row.region }}
-                        </td>
-
-                        <td>
-                            {{ row.price_change }}%
-                        </td>
-
-
-                        {% if item.signal_type == "rate" %}
-
-                        <td>
-                            {{ row.second_change }}%p
-                        </td>
-
+                    <td>
+                        {% if row.transaction_change is not none %}
+                            {{ "{:+.1f}".format(row.transaction_change) }}%
                         {% else %}
-
-                        <td>
-                            {{ row.second_change }}%
-                        </td>
-
+                            -
                         {% endif %}
+                    </td>
 
+                    <td>
+                        {% if row.rate_change is not none %}
+                            {{ "{:+.2f}".format(row.rate_change) }}%p
+                        {% else %}
+                            -
+                        {% endif %}
+                    </td>
 
-                        <td>
-                            {{ row.score }}
-                        </td>
+                    <td>{{ row.score }}</td>
 
-                    </tr>
+                    <td>
+                        <span class="severity">
+                            {{ row.severity }}
+                        </span>
+                    </td>
+                </tr>
 
-                    {% endfor %}
+                {% endfor %}
 
-                </tbody>
+            </tbody>
 
-            </table>
-
-        </div>
+        </table>
 
     </section>
 
 
-    <section class="ai-section">
+    <section class="section">
 
-        <div
-            class="ai-start"
-            id="ai-start"
-        >
+        <div class="ai-box">
 
-            <div class="robot">
-                🤖
+            <div class="ai-top">
+
+                <div>
+                    <div class="ai-kicker">
+                        AI AGENT / REPORTING ASSISTANT
+                    </div>
+
+                    <div class="ai-title">
+                        데이터 다음의 취재를 제안합니다.
+                    </div>
+                </div>
+
+                <button
+                    id="ai-button"
+                    data-signal-type="{{ item.signal_type }}"
+                >
+                    AI 취재 브리핑 생성 →
+                </button>
+
             </div>
-
-            <h2>
-                AI Agent 취재 분석
-            </h2>
-
-            <p>
-                통계 알고리즘이 탐지한 숫자와 근거를 바탕으로
-                기사 아이디어, 주요 취재 질문,
-                추가로 확인해야 할 데이터를 정리합니다.
-                아래 버튼을 눌렀을 때 취재 브리핑이 생성됩니다.
-            </p>
-
-
-            <button
-                type="button"
-                class="ai-button"
-                id="ai-button"
-            >
-                🤖 AI 취재 브리핑 생성
-            </button>
 
 
             <div
-                class="loading"
-                id="ai-loading"
+                id="ai-result"
+                class="ai-result"
             >
-                ⏳ 취재 브리핑을 생성하고 있습니다...
-            </div>
 
-        </div>
-
-
-        <div
-            class="ai-result"
-            id="ai-result"
-        >
-
-            <div class="ai-result-header">
-
-                <div>
-
-                    <div class="section-label">
-                        AI AGENT REPORT
-                    </div>
-
-                    <div class="ai-result-title">
-                        🤖 기자용 AI 취재 인사이트 브리핑
-                    </div>
-
+                <div class="ai-section">
+                    <h3>EXECUTIVE BRIEFING</h3>
+                    <p id="briefing-text"></p>
                 </div>
 
-
-                <div class="complete-badge">
-                    ✓ 생성 완료
-                </div>
-
-            </div>
-
-
-            <div class="briefing">
-
-                <div class="briefing-label">
-                    EXECUTIVE BRIEFING
-                </div>
-
-                <div id="briefing-text"></div>
-
-            </div>
-
-
-            <div class="ai-grid">
-
-                <div class="ai-card">
-
-                    <div class="ai-card-icon">
-                        📰
-                    </div>
-
-                    <h3>
-                        기사 아이디어
-                    </h3>
-
+                <div class="ai-section">
+                    <h3>ARTICLE IDEAS</h3>
                     <ul id="article-ideas"></ul>
-
                 </div>
 
-
-                <div class="ai-card">
-
-                    <div class="ai-card-icon">
-                        ❓
-                    </div>
-
-                    <h3>
-                        주요 취재 질문
-                    </h3>
-
+                <div class="ai-section">
+                    <h3>REPORTING QUESTIONS</h3>
                     <ul id="questions"></ul>
-
                 </div>
 
-
-                <div class="ai-card">
-
-                    <div class="ai-card-icon">
-                        📂
-                    </div>
-
-                    <h3>
-                        추가 확인 필요 데이터
-                    </h3>
-
+                <div class="ai-section">
+                    <h3>VERIFICATION DATA</h3>
                     <ul id="verification-data"></ul>
-
                 </div>
 
             </div>
@@ -1127,223 +637,92 @@
         </div>
 
     </section>
-
-
-    <div class="footer-note">
-        ※ 가격 지표는 아파트 실거래 자료의 ㎡당 거래금액 중앙값을 사용한 분석용 지표입니다.
-        공식 주택가격지수와 동일한 지표가 아닙니다.
-        또한 탐지 결과는 원인이나 인과관계를 확정하는 것이 아니라
-        추가 취재가 필요한 패턴을 제시합니다.
-    </div>
 
 </div>
 
 
 <script>
+    const aiButton = document.getElementById("ai-button");
 
-    document.addEventListener(
-        "DOMContentLoaded",
-        function () {
+    aiButton.addEventListener("click", async function() {
 
-            const bars =
-                document.querySelectorAll(
-                    ".bar-fill"
-                );
+        const signalType = aiButton.dataset.signalType;
 
-            bars.forEach(
-                function (bar) {
+        aiButton.disabled = true;
+        aiButton.textContent = "생성 중...";
 
-                    const width =
-                        bar.getAttribute(
-                            "data-width"
-                        );
+        try {
 
-                    bar.style.width =
-                        width + "%";
-
+            const response = await fetch(
+                "/api/economy-report/" + signalType,
+                {
+                    method: "POST"
                 }
             );
 
-        }
-    );
+            const data = await response.json();
 
-
-    const aiButton =
-        document.getElementById(
-            "ai-button"
-        );
-
-    const aiLoading =
-        document.getElementById(
-            "ai-loading"
-        );
-
-    const aiStart =
-        document.getElementById(
-            "ai-start"
-        );
-
-    const aiResult =
-        document.getElementById(
-            "ai-result"
-        );
-
-
-    aiButton.addEventListener(
-        "click",
-        generateAIReport
-    );
-
-
-    function generateAIReport() {
-
-        const signalType =
-            "{{ item.signal_type }}";
-
-
-        aiButton.disabled =
-            true;
-
-        aiButton.textContent =
-            "분석 중...";
-
-        aiLoading.style.display =
-            "block";
-
-
-        fetch(
-            "/api/economy-report/" + signalType,
-            {
-                method: "POST"
-            }
-        )
-
-        .then(
-            function (response) {
-
-                if (!response.ok) {
-
-                    throw new Error(
-                        "리포트 요청 실패"
-                    );
-
-                }
-
-                return response.json();
-
-            }
-        )
-
-        .then(
-            function (data) {
-
-                document
-                    .getElementById(
-                        "briefing-text"
-                    )
-                    .innerHTML =
-                        data.briefing;
-
-
-                fillList(
-                    "article-ideas",
-                    data.article_ideas
+            if (!response.ok) {
+                throw new Error(
+                    data.error || "AI 브리핑 생성 실패"
                 );
-
-
-                fillList(
-                    "questions",
-                    data.questions
-                );
-
-
-                fillList(
-                    "verification-data",
-                    data.verification_data
-                );
-
-
-                aiLoading.style.display =
-                    "none";
-
-                aiStart.style.display =
-                    "none";
-
-                aiResult.style.display =
-                    "block";
-
-
-                aiResult.scrollIntoView({
-                    behavior: "smooth",
-                    block: "start"
-                });
-
             }
-        )
 
-        .catch(
-            function (error) {
-
-                console.error(
-                    error
-                );
-
-
-                aiLoading.style.display =
-                    "block";
-
-                aiLoading.textContent =
-                    "⚠️ 브리핑 생성에 실패했습니다. 다시 시도해주세요.";
-
-                aiButton.disabled =
-                    false;
-
-                aiButton.textContent =
-                    "🤖 다시 생성하기";
-
-            }
-        );
-
-    }
-
-
-    function fillList(
-        elementId,
-        values
-    ) {
-
-        const list =
             document.getElementById(
-                elementId
+                "briefing-text"
+            ).innerHTML = data.briefing;
+
+
+            function fillList(id, items) {
+
+                const target = document.getElementById(id);
+
+                target.innerHTML = "";
+
+                items.forEach(function(item) {
+
+                    const li = document.createElement("li");
+
+                    li.textContent = item;
+
+                    target.appendChild(li);
+                });
+            }
+
+
+            fillList(
+                "article-ideas",
+                data.article_ideas
+            );
+
+            fillList(
+                "questions",
+                data.questions
+            );
+
+            fillList(
+                "verification-data",
+                data.verification_data
             );
 
 
-        list.innerHTML =
-            "";
+            document.getElementById(
+                "ai-result"
+            ).style.display = "block";
 
+            aiButton.textContent = "브리핑 생성 완료";
 
-        values.forEach(
-            function (text) {
+        } catch (error) {
 
-                const li =
-                    document.createElement(
-                        "li"
-                    );
+            alert(error.message);
 
-                li.textContent =
-                    text;
+            aiButton.disabled = false;
 
-                list.appendChild(
-                    li
-                );
-
-            }
-        );
-
-    }
-
+            aiButton.textContent =
+                "AI 취재 브리핑 생성 →";
+        }
+    });
 </script>
 
 </body>
-
 </html>

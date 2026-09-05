@@ -9,7 +9,7 @@
         content="width=device-width, initial-scale=1.0"
     >
 
-    <title>DATA TIP-OFF | 경제 시그널</title>
+    <title>DATA TIP-OFF · 경제 시그널</title>
 
     <style>
         * {
@@ -18,486 +18,300 @@
 
         body {
             margin: 0;
-            background: #050505;
-            color: #f5f5f5;
-
+            background: #f4f4f1;
+            color: #111;
             font-family:
-                "Malgun Gothic",
-                "Apple SD Gothic Neo",
                 Arial,
+                "Noto Sans KR",
                 sans-serif;
         }
 
         a {
             color: inherit;
+            text-decoration: none;
         }
 
         .page {
-            width: min(1180px, calc(100% - 40px));
+            max-width: 1440px;
             margin: 0 auto;
-            padding: 36px 0 90px;
+            padding: 0 40px 80px;
         }
 
-        .topbar {
+        header {
+            height: 88px;
             display: flex;
+            align-items: center;
             justify-content: space-between;
-            align-items: center;
-
-            margin-bottom: 56px;
+            border-bottom: 1px solid #111;
         }
 
-        .brand-wrap {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .brand-mark {
-            width: 40px;
-            height: 40px;
-
-            border: 1px solid #4a4a4a;
-            border-radius: 11px;
-
-            display: grid;
-            place-items: center;
-
-            font-size: 13px;
+        .logo {
+            font-size: 22px;
             font-weight: 900;
-
-            background: #111111;
         }
 
-        .brand-name {
-            font-size: 17px;
-            font-weight: 900;
-            letter-spacing: 0.5px;
-        }
-
-        .brand-sub {
-            margin-top: 3px;
-            color: #8c8c8c;
+        .header-right {
             font-size: 12px;
-        }
-
-        .status-badge {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-
-            border: 1px solid #444444;
-            border-radius: 999px;
-
-            padding: 9px 13px;
-
-            color: #bcbcbc;
-            font-size: 12px;
-        }
-
-        .status-dot {
-            width: 7px;
-            height: 7px;
-
-            border-radius: 50%;
-            background: #f5f5f5;
+            letter-spacing: 1.5px;
         }
 
         .hero {
-            margin-bottom: 38px;
+            padding: 78px 0 60px;
+            border-bottom: 1px solid #111;
         }
 
-        .hero-label {
-            color: #929292;
-
+        .eyebrow {
+            margin-bottom: 22px;
             font-size: 12px;
-            font-weight: 900;
-            letter-spacing: 1.4px;
-
-            margin-bottom: 14px;
+            letter-spacing: 2px;
         }
 
-        .hero h1 {
+        h1 {
             margin: 0;
-
-            font-size: 52px;
-            line-height: 1.12;
-            letter-spacing: -2px;
+            max-width: 1050px;
+            font-size: clamp(48px, 7vw, 100px);
+            line-height: .93;
+            letter-spacing: -5px;
         }
 
-        .hero p {
-            margin: 18px 0 0;
-
-            max-width: 820px;
-
-            color: #a4a4a4;
-            font-size: 16px;
-            line-height: 1.8;
+        .hero-bottom {
+            display: flex;
+            justify-content: space-between;
+            gap: 40px;
+            margin-top: 45px;
         }
 
-        .summary-grid {
+        .description {
+            max-width: 560px;
+            font-size: 17px;
+            line-height: 1.7;
+        }
+
+        .stats {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 14px;
-
-            margin-bottom: 38px;
+            grid-template-columns:
+                repeat(4, minmax(110px, 1fr));
+            min-width: 540px;
+            border: 1px solid #111;
         }
 
-        .summary-card {
-            background: #0d0d0d;
-
-            border: 1px solid #292929;
-            border-radius: 16px;
-
-            padding: 21px;
+        .stat {
+            padding: 20px;
+            border-right: 1px solid #111;
         }
 
-        .summary-icon {
-            font-size: 22px;
-            margin-bottom: 12px;
+        .stat:last-child {
+            border-right: 0;
         }
 
-        .summary-label {
-            color: #878787;
-
-            font-size: 11px;
-            font-weight: 800;
-            letter-spacing: 1px;
-
-            margin-bottom: 8px;
-        }
-
-        .summary-value {
-            font-size: 26px;
+        .stat-number {
+            font-size: 32px;
             font-weight: 900;
         }
 
-        .summary-desc {
-            margin-top: 7px;
-
-            color: #858585;
-            font-size: 12px;
-            line-height: 1.6;
+        .stat-label {
+            margin-top: 8px;
+            font-size: 10px;
+            letter-spacing: 1.4px;
         }
 
         .section-head {
             display: flex;
             justify-content: space-between;
-            align-items: flex-end;
-
-            margin-bottom: 18px;
-        }
-
-        .section-label {
-            color: #888888;
-
-            font-size: 11px;
-            font-weight: 800;
-            letter-spacing: 1.2px;
-
-            margin-bottom: 7px;
+            padding: 45px 0 20px;
         }
 
         .section-title {
-            font-size: 24px;
-            font-weight: 900;
+            font-size: 13px;
+            font-weight: 800;
+            letter-spacing: 2px;
         }
 
-        .section-note {
-            color: #777777;
-            font-size: 12px;
-        }
-
-        .signal-list {
-            display: grid;
-            gap: 16px;
+        .signals {
+            border-top: 1px solid #111;
         }
 
         .signal-card {
             display: grid;
-
             grid-template-columns:
-                110px
-                minmax(0, 1fr)
-                160px
-                44px;
-
-            gap: 20px;
+                70px 170px 1fr 180px 110px 50px;
             align-items: center;
-
-            text-decoration: none;
-
-            padding: 24px 26px;
-
-            background: #0d0d0d;
-
-            border: 1px solid #292929;
-            border-radius: 18px;
-
-            transition: 0.2s ease;
+            gap: 20px;
+            min-height: 150px;
+            padding: 25px 10px;
+            border-bottom: 1px solid #111;
+            transition:
+                background .25s ease,
+                padding .25s ease;
         }
 
         .signal-card:hover {
-            background: #151515;
-            border-color: #555555;
-            transform: translateY(-2px);
+            background: #111;
+            color: #fff;
+            padding-left: 25px;
+            padding-right: 25px;
         }
 
-        .signal-left {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-
-        .high-badge {
-            width: fit-content;
-
-            background: #f4f4f4;
-            color: #050505;
-
-            border-radius: 999px;
-
-            padding: 7px 10px;
-
-            font-size: 11px;
-            font-weight: 900;
-        }
-
-        .signal-type {
-            color: #7f7f7f;
-            font-size: 11px;
-        }
-
-        .signal-main {
-            min-width: 0;
-        }
-
-        .signal-title {
-            font-size: 22px;
-            font-weight: 900;
-
-            margin-bottom: 8px;
-        }
-
-        .signal-meta {
-            color: #9b9b9b;
-            font-size: 13px;
-
-            margin-bottom: 11px;
-        }
-
-        .signal-desc {
-            color: #c3c3c3;
-
+        .rank {
             font-size: 14px;
-            line-height: 1.65;
+            opacity: .6;
         }
 
-        .score-box {
-            border-left: 1px solid #2e2e2e;
-            padding-left: 22px;
+        .meta {
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        .signal-name {
+            font-size: clamp(25px, 3vw, 44px);
+            font-weight: 900;
+            letter-spacing: -2px;
+        }
+
+        .reason {
+            margin-top: 9px;
+            max-width: 650px;
+            font-size: 13px;
+            line-height: 1.6;
+            opacity: .65;
         }
 
         .score-label {
-            color: #777777;
-
             font-size: 10px;
-            font-weight: 900;
-            letter-spacing: 1px;
-
-            margin-bottom: 7px;
+            letter-spacing: 1.4px;
+            opacity: .6;
         }
 
-        .score-value {
+        .score {
+            margin-top: 6px;
             font-size: 30px;
             font-weight: 900;
         }
 
-        .score-desc {
-            margin-top: 3px;
-
-            color: #747474;
-            font-size: 11px;
+        .severity {
+            display: inline-block;
+            border: 1px solid currentColor;
+            padding: 7px 10px;
+            font-size: 10px;
         }
 
         .arrow {
-            width: 42px;
-            height: 42px;
-
-            border: 1px solid #454545;
-            border-radius: 50%;
-
-            display: grid;
-            place-items: center;
-
-            font-size: 20px;
-            color: #d4d4d4;
+            text-align: right;
+            font-size: 26px;
         }
 
-        .method-box {
-            margin-top: 26px;
+        @media (max-width: 900px) {
 
-            padding: 20px 22px;
+            .page {
+                padding-left: 20px;
+                padding-right: 20px;
+            }
 
-            background: #090909;
+            .hero-bottom {
+                display: block;
+            }
 
-            border: 1px solid #282828;
-            border-radius: 15px;
-
-            color: #969696;
-
-            font-size: 13px;
-            line-height: 1.7;
-        }
-
-        .method-box strong {
-            color: #f0f0f0;
-        }
-
-        @media (max-width: 850px) {
-            .summary-grid {
-                grid-template-columns: 1fr;
+            .stats {
+                min-width: 0;
+                margin-top: 30px;
+                grid-template-columns:
+                    repeat(2, 1fr);
             }
 
             .signal-card {
-                grid-template-columns: 1fr;
+                grid-template-columns:
+                    40px 1fr 80px;
             }
 
-            .score-box {
-                border-left: none;
-                border-top: 1px solid #2e2e2e;
-                padding-left: 0;
-                padding-top: 18px;
-            }
-
+            .meta,
+            .reason,
             .arrow {
                 display: none;
-            }
-
-            .hero h1 {
-                font-size: 40px;
             }
         }
     </style>
 </head>
 
+
 <body>
 
 <div class="page">
 
-    <div class="topbar">
+    <header>
 
-        <div class="brand-wrap">
+        <a
+            href="/"
+            class="logo"
+        >
+            DATA TIP-OFF
+        </a>
 
-            <div class="brand-mark">
-                DT
-            </div>
-
-            <div>
-
-                <div class="brand-name">
-                    DATA TIP-OFF
-                </div>
-
-                <div class="brand-sub">
-                    숫자가 먼저 제보하는 취재 아이템 발굴 플랫폼
-                </div>
-
-            </div>
-
+        <div class="header-right">
+            ECONOMY SIGNAL MONITOR
         </div>
 
-
-        <div class="status-badge">
-
-            <span class="status-dot"></span>
-
-            경제 분석 완료
-
-        </div>
-
-    </div>
+    </header>
 
 
     <section class="hero">
 
-        <div class="hero-label">
-            📡 ECONOMY SIGNAL DESK
+        <div class="eyebrow">
+            ECONOMY / STATISTICAL SIGNAL DETECTION
         </div>
 
         <h1>
-            숫자가 먼저 포착한<br>
-            경제 이상 시그널
+            시장의 이상한 움직임을<br>
+            숫자에서 먼저 찾습니다.
         </h1>
 
-        <p>
-            아파트 실거래 가격, 거래량, 기준금리의 변화를 함께 비교해
-            평소 흐름과 다른 패턴을 탐지했습니다.
-            원인을 단정하지 않고, 기자가 추가 취재할 가치가 있는 지점을 먼저 보여줍니다.
-        </p>
+        <div class="hero-bottom">
 
-    </section>
-
-
-    <section class="summary-grid">
-
-        <div class="summary-card">
-
-            <div class="summary-icon">
-                🚨
+            <div class="description">
+                아파트 실거래, 거래량, 기준금리 데이터를 결합해
+                가격 급등·급락, 거래량 급변,
+                가격과 거래의 엇갈림 같은 패턴을 탐지합니다.
+                데이터는 원인을 설명하지 않습니다.
+                대신 취재가 필요한 지점을 먼저 보여줍니다.
             </div>
 
-            <div class="summary-label">
-                DETECTED SIGNALS
-            </div>
+            <div class="stats">
 
-            <div class="summary-value">
-                {{ items | length }}건
-            </div>
+                <div class="stat">
+                    <div class="stat-number">
+                        {{ stats.rules }}
+                    </div>
+                    <div class="stat-label">
+                        DETECTION RULES
+                    </div>
+                </div>
 
-            <div class="summary-desc">
-                현재 경제 분석에서 선택된 주요 취재 후보
-            </div>
+                <div class="stat">
+                    <div class="stat-number">
+                        {{ "{:,}".format(stats.total) }}
+                    </div>
+                    <div class="stat-label">
+                        CANDIDATES
+                    </div>
+                </div>
 
-        </div>
+                <div class="stat">
+                    <div class="stat-number">
+                        {{ stats.high }}
+                    </div>
+                    <div class="stat-label">
+                        HIGH
+                    </div>
+                </div>
 
+                <div class="stat">
+                    <div class="stat-number">
+                        {{ stats.medium }}
+                    </div>
+                    <div class="stat-label">
+                        MEDIUM
+                    </div>
+                </div>
 
-        <div class="summary-card">
-
-            <div class="summary-icon">
-                📅
-            </div>
-
-            <div class="summary-label">
-                ANALYSIS UNIT
-            </div>
-
-            <div class="summary-value">
-                시도 · 월
-            </div>
-
-            <div class="summary-desc">
-                지역별 전년 동월 변화를 기준으로 비교
-            </div>
-
-        </div>
-
-
-        <div class="summary-card">
-
-            <div class="summary-icon">
-                📊
-            </div>
-
-            <div class="summary-label">
-                DATA RANGE
-            </div>
-
-            <div class="summary-value">
-                2015–2023
-            </div>
-
-            <div class="summary-desc">
-                아파트 실거래 데이터와 기준금리 데이터 활용
             </div>
 
         </div>
@@ -507,83 +321,65 @@
 
     <div class="section-head">
 
-        <div>
-
-            <div class="section-label">
-                TOP SIGNALS
-            </div>
-
-            <div class="section-title">
-                📰 취재 우선 시그널
-            </div>
-
+        <div class="section-title">
+            DETECTED SIGNAL TYPES
         </div>
 
-
-        <div class="section-note">
-            자세히 보기를 눌러 근거와 AI 취재 브리핑을 확인하세요.
+        <div>
+            TOP RESULT FROM EACH RULE
         </div>
 
     </div>
 
 
-    <section class="signal-list">
+    <main class="signals">
 
         {% for item in items %}
 
         <a
-            href="/economy/detail/{{ item.signal_type }}"
             class="signal-card"
+            href="/economy/detail/{{ item.signal_type }}"
         >
 
-            <div class="signal-left">
+            <div class="rank">
+                {{ "%02d"|format(loop.index) }}
+            </div>
 
-                <div class="high-badge">
-                    HIGH SIGNAL
+            <div class="meta">
+                {{ item.region }}<br>
+                {{ item.date }}<br>
+                {{ item.count }} candidates
+            </div>
+
+            <div>
+
+                <div class="signal-name">
+                    {{ item.signal_name }}
                 </div>
 
-                <div class="signal-type">
-                    ECONOMY
+                <div class="reason">
+                    {{ item.reason }}
                 </div>
 
             </div>
 
-
-            <div class="signal-main">
-
-                <div class="signal-title">
-                    {{ item.title }}
-                </div>
-
-                <div class="signal-meta">
-                    📍 {{ item.region }}
-                    &nbsp;·&nbsp;
-                    🗓️ {{ item.date }}
-                </div>
-
-                <div class="signal-desc">
-                    {{ item.description }}
-                </div>
-
-            </div>
-
-
-            <div class="score-box">
+            <div>
 
                 <div class="score-label">
                     SIGNAL SCORE
                 </div>
 
-                <div class="score-value">
+                <div class="score">
                     {{ item.score }}
-                </div>
-
-                <div class="score-desc">
-                    이례성 탐지 점수
                 </div>
 
             </div>
 
+            <div>
+                <span class="severity">
+                    {{ item.severity }}
+                </span>
+            </div>
 
             <div class="arrow">
                 →
@@ -593,24 +389,9 @@
 
         {% endfor %}
 
-    </section>
-
-
-    <div class="method-box">
-
-        <strong>
-            🔎 탐지 기준
-        </strong>
-
-        <br>
-
-        단순히 가격이 올랐거나 거래량이 줄었다는 이유만으로 신호를 만들지 않습니다.
-        전년 동월 변화와 지역별 평소 변동폭을 함께 비교해 상대적으로 이례적인 패턴을 취재 후보로 선택합니다.
-
-    </div>
+    </main>
 
 </div>
 
 </body>
-
 </html>

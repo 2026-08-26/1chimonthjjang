@@ -1,81 +1,195 @@
 {% extends "trend/trend_base.html" %}
+
 {% block content %}
-<div class="max-w-7xl w-full mx-auto p-8 grid grid-cols-1 lg:grid-cols-3 gap-8">
-    <!-- 좌측: 팩트 체크 및 수치 비교 -->
-    <div class="lg:col-span-2 space-y-6">
-        <div class="bg-white border border-neutral-300 p-8 rounded-xl shadow-sm">
+<!-- Back Navigation -->
+<div class="mb-6">
+    <a href="javascript:history.back()" class="inline-flex items-center text-xs font-semibold text-slate-500 hover:text-slate-900 transition">
+        <i class="fa-solid fa-arrow-left mr-1.5"></i> 이전 목록으로 돌아가기
+    </a>
+</div>
+
+<!-- Detail Header Card -->
+<div class="bg-white rounded-2xl border border-slate-200 p-6 md:p-8 shadow-sm mb-8">
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
             <div class="flex items-center space-x-2 mb-2">
-                <span class="text-xs font-mono bg-neutral-200 px-2 py-0.5 rounded">{{ signal.category }}</span>
-                <span class="text-xs font-mono bg-rose-100 text-rose-600 font-bold px-2 py-0.5 rounded">{{ signal.grade }} SIGNAL DETECTED</span>
+                <span class="px-2.5 py-1 rounded-md bg-blue-50 text-blue-700 font-bold text-xs">{{ item.category_name }}</span>
+                {% if item.signal == 'HIGH' %}
+                    <span class="px-2.5 py-1 rounded-md bg-rose-100 text-rose-700 font-bold text-xs">HIGH SIGNAL</span>
+                {% elif item.signal == 'MEDIUM' %}
+                    <span class="px-2.5 py-1 rounded-md bg-amber-100 text-amber-700 font-bold text-xs">MEDIUM SIGNAL</span>
+                {% else %}
+                    <span class="px-2.5 py-1 rounded-md bg-emerald-100 text-emerald-700 font-bold text-xs">LOW SIGNAL</span>
+                {% endif %}
             </div>
-            <h1 class="text-3xl font-bold">{{ signal.title }}</h1>
-            <p class="text-sm text-neutral-500 mt-1">이상 징후 자동 탐지 시스템 연동됨</p>
-            
-            <div class="grid grid-cols-3 gap-4 mt-8 pt-6 border-t border-neutral-200 font-mono">
-                <div>
-                    <div class="text-xs text-neutral-400">BASELINE AVG</div>
-                    <div class="text-xl font-bold mt-1">{{ signal.base_avg }}</div>
-                </div>
-                <div>
-                    <div class="text-xs text-neutral-400">RECENT AVG</div>
-                    <div class="text-xl font-bold text-rose-600 mt-1">{{ signal.recent_avg }}</div>
-                </div>
-                <div>
-                    <div class="text-xs text-neutral-400">PULSE SCORE</div>
-                    <div class="text-xl font-bold text-neutral-900 mt-1">{{ signal.pulse_score }} <span class="text-xs text-neutral-400">/100</span></div>
-                </div>
-            </div>
+            <h1 class="text-3xl font-extrabold text-slate-900 tracking-tight">{{ item.title }}</h1>
+            <p class="text-sm text-slate-500 mt-2">{{ item.sub_info }}</p>
         </div>
 
-        <!-- 데이터 저널리스트 팩트 요약 박스 -->
-        <div class="bg-white border border-neutral-300 p-8 rounded-xl shadow-sm">
-            <h3 class="font-mono text-xs text-neutral-400 uppercase tracking-widest mb-3">DATA JOURNALISM SUMMARY</h3>
-            <p class="text-lg leading-relaxed text-neutral-800">
-                "<strong>{{ signal.title }}</strong> 항목은 기준 평균 수치 <strong>{{ signal.base_avg }}</strong> 대비 최근 기간 동안 <strong>{{ signal.recent_avg }}</strong>를 기록하며 약 <strong>{{ signal.change_rate }}%</strong> 급증했습니다. (Z-Score: {{ signal.z_score }}) 통계적 이상 징후가 확인되어 긴급 취재 우선순위로 선정되었습니다."
-            </p>
-        </div>
-    </div>
-
-    <!-- 우측: AI 취재 에이전트 리포트 패널 -->
-    <div class="bg-neutral-900 text-white p-6 rounded-xl shadow-xl flex flex-col justify-between">
-        <div class="space-y-6">
+        <div class="bg-slate-50 p-4 rounded-xl border border-slate-100 flex items-center space-x-6 text-center">
             <div>
-                <span class="text-xs font-mono text-rose-500 font-bold uppercase tracking-wider">AI EDITORIAL BRIEFING</span>
-                <h3 class="text-lg font-bold mt-1">기사 아이디어 & 취재 가이드</h3>
+                <div class="text-xs text-slate-400">트렌드 종합 점수</div>
+                <div class="text-3xl font-black text-blue-600 mt-0.5">{{ item.trend_score }}<span class="text-xs font-normal text-slate-400">/100</span></div>
             </div>
-
-            <!-- 기사 제목 후보 -->
-            <div class="space-y-2">
-                <h4 class="text-xs font-mono text-neutral-400">💡 추천 기사 제목 후보</h4>
-                <ul class="text-xs space-y-2 text-neutral-200 bg-neutral-800 p-3 rounded border border-neutral-700">
-                    {% for h in briefing.headlines %}
-                    <li>• "{{ h }}"</li>
-                    {% endfor %}
-                </ul>
+            <div class="h-8 w-px bg-slate-200"></div>
+            <div>
+                <div class="text-xs text-slate-400">검색 관심도 증가율</div>
+                <div class="text-2xl font-bold text-rose-600 mt-0.5">+{{ item.increase_rate }}%</div>
             </div>
-
-            <!-- 핵심 취재 질문 -->
-            <div class="space-y-2">
-                <h4 class="text-xs font-mono text-neutral-400">❓ 관계자 대상 핵심 취재 질문</h4>
-                <ul class="text-xs space-y-2 text-neutral-200 bg-neutral-800 p-3 rounded border border-neutral-700">
-                    {% for q in briefing.questions %}
-                    <li>{{ loop.index }}. {{ q }}</li>
-                    {% endfor %}
-                </ul>
-            </div>
-        </div>
-
-        <div class="mt-6 pt-4 border-t border-neutral-800 text-center">
-            <button onclick="copyToClipboard()" class="w-full text-xs font-mono bg-neutral-800 hover:bg-neutral-700 text-neutral-200 py-2.5 rounded transition cursor-pointer">
-                📋 취재 노트 클립보드 복사
-            </button>
         </div>
     </div>
 </div>
 
+<!-- Grid Layout: Metrics & Chart -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
+    
+    <!-- Left: Key Metrics Stats -->
+    <div class="space-y-4">
+        <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
+            <div class="text-xs text-slate-400 font-medium">검색 관심도 급증</div>
+            <div class="text-2xl font-bold text-slate-900 mt-1">+{{ item.increase_rate }}%</div>
+            <div class="text-xs text-slate-500 mt-1">과거 30일 평균 대비 최근 7일 증가 폭</div>
+        </div>
+
+        <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
+            <div class="text-xs text-slate-400 font-medium">YouTube 조회수 추정 증가율</div>
+            <div class="text-2xl font-bold text-blue-600 mt-1">+{{ item.yt_views_inc if item.yt_views_inc else (item.increase_rate * 0.75)|round(1) }}%</div>
+            <div class="text-xs text-slate-500 mt-1">관련 영상 버즈량 및 조회 수 변화율</div>
+        </div>
+
+        <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
+            <div class="text-xs text-slate-400 font-medium">YouTube 댓글/반응 증가율</div>
+            <div class="text-2xl font-bold text-indigo-600 mt-1">+{{ item.yt_comments_inc if item.yt_comments_inc else (item.increase_rate * 0.65)|round(1) }}%</div>
+            <div class="text-xs text-slate-500 mt-1">커뮤니티 및 댓글 활성도 수치</div>
+        </div>
+    </div>
+
+    <!-- Right: Chart Section -->
+    <div class="lg:col-span-2 bg-white p-6 rounded-xl border border-slate-200 shadow-sm flex flex-col justify-between">
+        <div>
+            <h3 class="text-base font-bold text-slate-900 mb-1">최근 30일 트렌드 변화 그래프</h3>
+            <p class="text-xs text-slate-400 mb-4">과거 기준선(23일) 및 최근 급상승 구간(7일) 모니터링</p>
+        </div>
+        <div class="h-64 relative">
+            <canvas id="trendChart"></canvas>
+        </div>
+    </div>
+</div>
+
+<!-- AI Agent Reporting Section -->
+<div class="bg-slate-900 text-white rounded-2xl p-6 md:p-8 shadow-xl">
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6 pb-6 border-b border-slate-800">
+        <div>
+            <div class="inline-flex items-center space-x-2 text-xs font-semibold text-blue-400 mb-1">
+                <i class="fa-solid fa-robot"></i> <span>AI Agent 취재 분석 리포트</span>
+            </div>
+            <h2 class="text-xl font-bold">기자용 AI 취재 인사이트 브리핑</h2>
+        </div>
+        <button id="generateBtn" onclick="fetchAiReport({{ item.id }})" class="px-5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-bold text-sm rounded-xl transition shadow-lg shadow-blue-600/30 flex items-center justify-center space-x-2">
+            <i class="fa-solid fa-wand-magic-sparkles"></i>
+            <span>AI 분석 브리핑 생성</span>
+        </button>
+    </div>
+
+    <!-- AI Output Box -->
+    <div id="aiReportBox" class="hidden space-y-6">
+        <div>
+            <h4 class="text-xs font-bold text-blue-400 tracking-wider uppercase mb-2">Executive Briefing</h4>
+            <div id="aiBriefing" class="text-sm text-slate-200 bg-slate-800/80 p-4 rounded-xl border border-slate-700/50 leading-relaxed"></div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <!-- Article Ideas -->
+            <div class="bg-slate-800/50 p-4 rounded-xl border border-slate-700/50">
+                <h5 class="text-xs font-bold text-amber-400 mb-2 flex items-center">
+                    <i class="fa-solid fa-lightbulb mr-1.5"></i> 기사 아이디어
+                </h5>
+                <ul id="aiIdeas" class="text-xs text-slate-300 space-y-2 list-disc pl-4"></ul>
+            </div>
+
+            <!-- Investigation Questions -->
+            <div class="bg-slate-800/50 p-4 rounded-xl border border-slate-700/50">
+                <h5 class="text-xs font-bold text-emerald-400 mb-2 flex items-center">
+                    <i class="fa-solid fa-circle-question mr-1.5"></i> 주요 취재 질문
+                </h5>
+                <ul id="aiQuestions" class="text-xs text-slate-300 space-y-2 list-disc pl-4"></ul>
+            </div>
+
+            <!-- Verification Data -->
+            <div class="bg-slate-800/50 p-4 rounded-xl border border-slate-700/50">
+                <h5 class="text-xs font-bold text-indigo-400 mb-2 flex items-center">
+                    <i class="fa-solid fa-magnifying-glass-chart mr-1.5"></i> 추가 확인 필요 데이터
+                </h5>
+                <ul id="aiDataSources" class="text-xs text-slate-300 space-y-2 list-disc pl-4"></ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Initial Placeholder -->
+    <div id="aiPlaceholder" class="text-center py-8 text-slate-500 text-sm">
+        상단의 'AI 분석 브리핑 생성' 버튼을 클릭하면 이상감지 데이터를 기반으로 자동 취재 분석 리포트가 출력됩니다.
+    </div>
+</div>
+
 <script>
-    function copyToClipboard() {
-        alert("취재 브리핑 내용과 팩트 데이터가 클립보드에 복사되었습니다.");
+// 1. Chart.js Render
+const dailyData = {{ item.daily_data | tojson if item.daily_data else "[]" }};
+const labels = Array.from({length: dailyData.length}, (_, i) => `${i + 1}일`);
+
+const ctx = document.getElementById('trendChart').getContext('2d');
+new Chart(ctx, {
+    type: 'line',
+    data: {
+        labels: labels,
+        datasets: [{
+            label: '검색 관심도 추이',
+            data: dailyData,
+            borderColor: '#2563eb',
+            backgroundColor: 'rgba(37, 99, 235, 0.08)',
+            borderWidth: 2.5,
+            fill: true,
+            tension: 0.3,
+            pointRadius: (ctx) => ctx.dataIndex >= 23 ? 4 : 1,
+            pointBackgroundColor: (ctx) => ctx.dataIndex >= 23 ? '#e11d48' : '#2563eb'
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: {
+            x: { grid: { display: false } },
+            y: { grid: { color: '#f1f5f9' } }
+        }
     }
+});
+
+// 2. Fetch AI Report
+function fetchAiReport(itemId) {
+    const btn = document.getElementById('generateBtn');
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fa-solid fa-spinner animate-spin"></i> <span>생성 중...</span>';
+
+    fetch(`/api/ai-report/${itemId}`, { method: 'POST' })
+        .then(res => res.json())
+        .then(data => {
+            document.getElementById('aiPlaceholder').classList.add('hidden');
+            document.getElementById('aiReportBox').classList.remove('hidden');
+
+            document.getElementById('aiBriefing').innerHTML = data.briefing;
+            
+            document.getElementById('aiIdeas').innerHTML = data.article_ideas.map(i => `<li>${i}</li>`).join('');
+            document.getElementById('aiQuestions').innerHTML = data.questions.map(q => `<li>${q}</li>`).join('');
+            document.getElementById('aiDataSources').innerHTML = data.verification_data.map(d => `<li>${d}</li>`).join('');
+
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fa-solid fa-check"></i> <span>생성 완료</span>';
+        })
+        .catch(err => {
+            alert('AI 리포트 생성 실패');
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fa-solid fa-wand-magic-sparkles"></i> <span>다시 시도</span>';
+        });
+}
 </script>
 {% endblock %}

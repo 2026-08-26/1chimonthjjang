@@ -1,0 +1,9 @@
+{
+  "latest_date": "2026-09-04",
+  "rows": 672906,
+  "signal_rows": 66816,
+  "latest_candidates": 142,
+  "source": "한국거래소 통계정보",
+  "source_url": "https://openapi.krx.co.kr/",
+  "note": "수정주가 미적용. 상장주식수 변동과 무거래 관측치가 최근 21개 관측치에 포함된 종목은 제외. 변동 원인은 별도 확인 필요."
+}

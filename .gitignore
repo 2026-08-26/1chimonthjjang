@@ -4,4 +4,8 @@ data/raw/Apart Deal.csv
 # Python 임시 파일
 __pycache__/
 *.pyc
-.env
+.envresult/stock/stock_daily.csv
+.DS_Store
+
+data/raw/stock/krx_all_stocks_1y.csv
+result/stock/stock_daily.csv

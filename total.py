@@ -26,12 +26,10 @@ from analysis.drama.mock_data import load_all_contents
 # ==================================================
 # 다른 팀 기능
 # ==================================================
-
 from web.economy_routes import economy_bp
 from web.home_v2_nav_routes import home_v2_nav_bp
 from web.social_routes import social_bp
-
-
+from web.stock_routes import stock_bp
 # ==================================================
 # Flask 서버 생성
 # ==================================================
@@ -49,7 +47,7 @@ app.register_blueprint(social_bp)
 
 app.register_blueprint(home_v2_nav_bp)
 
-
+app.register_blueprint(stock_bp)
 # ==================================================
 # AI Agent 생성
 # ==================================================
@@ -57,6 +55,7 @@ app.register_blueprint(home_v2_nav_bp)
 baseball_ai_agent = BaseballAIAgent()
 
 trend_ai_agent = TrendAIAgent()
+
 
 
 # ==================================================
@@ -135,6 +134,7 @@ def sort_trend_items(items):
 
         reverse=True
     )
+
 
 
 # ==================================================
@@ -541,9 +541,7 @@ def category_page(
 # K-CONTENTS 상세 페이지
 # ==================================================
 
-@app.route(
-    "/detail/<int:item_id>"
-)
+@app.route("/detail/<int:item_id>")
 def detail_page(
     item_id
 ):
@@ -684,6 +682,7 @@ def ai_agent_report(
 # ==================================================
 
 @app.route(
+    
     "/api/baseball-ai-report/<int:item_id>",
     methods=["POST"]
 )

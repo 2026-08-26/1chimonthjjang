@@ -1,6 +1,5 @@
 import pandas as pd
-from flask import Flask, render_template, jsonify
-
+from flask import Flask, render_template, jsonify, redirect, url_for
 # 야구
 from baseball_ai_agent import BaseballAIAgent
 
@@ -8,6 +7,8 @@ from baseball_ai_agent import BaseballAIAgent
 from analysis.drama.ai_agent import TrendAIAgent
 from analysis.drama.mock_data import load_all_contents
 from web.economy_routes import economy_bp
+from web.home_v2_nav_routes import home_v2_nav_bp
+from web.social_routes import social_bp
 # ==================================================
 # Flask 서버 생성
 # ==================================================
@@ -20,7 +21,9 @@ app = Flask(__name__)
 # ==================================================
 app.register_blueprint(economy_bp)
 baseball_ai_agent = BaseballAIAgent()
-
+# 사회 페이지와 확정한 메인 화면
+app.register_blueprint(social_bp)
+app.register_blueprint(home_v2_nav_bp)
 # K-Contents AI Agent
 trend_ai_agent = TrendAIAgent()
 # ==================================================
@@ -69,7 +72,7 @@ def load_baseball_signals():
 
 @app.route("/")
 def index():
-    return render_template("index.html")
+    return redirect(url_for("home_v2_nav.home_v2_nav"))
 
 
 # ==================================================
@@ -327,169 +330,4 @@ def baseball_ai_report_top():
 # ==================================================
 
 if __name__ == "__main__":
-    app.run(debug=True)
-# ==================================================
-# K-CONTENTS
-# ==================================================
-
-@app.route("/trend")
-def trend_dashboard():
-
-    all_items = load_all_contents()
-
-    stats = {
-        "total": len(all_items),
-        "high": sum(
-            1 for item in all_items
-            if item["signal"] == "HIGH"
-        ),
-        "medium": sum(
-            1 for item in all_items
-            if item["signal"] == "MEDIUM"
-        ),
-        "low": sum(
-            1 for item in all_items
-            if item["signal"] == "LOW"
-        ),
-    }
-
-    return render_template(
-        "trend/trend_index.html",
-        items=all_items,
-        stats=stats
-    )
-
-
-# ==================================================
-# K-CONTENTS 카테고리
-# ==================================================
-
-@app.route("/content/<category_type>")
-def category_page(category_type):
-
-    category_map = {
-        "music": "노래",
-        "drama": "드라마",
-        "webtoon": "웹툰"
-    }
-
-    cat_name = category_map.get(
-        category_type,
-        "콘텐츠"
-    )
-
-    all_items = load_all_contents()
-
-    filtered_items = [
-        item
-        for item in all_items
-        if item["category"] == category_type
-    ]
-
-    stats = {
-        "total": len(filtered_items),
-
-        "high": sum(
-            1 for item in filtered_items
-            if item["signal"] == "HIGH"
-        ),
-
-        "medium": sum(
-            1 for item in filtered_items
-            if item["signal"] == "MEDIUM"
-        ),
-
-        "low": sum(
-            1 for item in filtered_items
-            if item["signal"] == "LOW"
-        ),
-    }
-
-    return render_template(
-        "trend/trend_index.html",
-        items=filtered_items,
-        stats=stats,
-        category_type=category_type,
-        category_name=cat_name
-    )
-
-
-# ==================================================
-# K-CONTENTS 상세 페이지
-# ==================================================
-
-@app.route("/detail/<int:item_id>")
-def detail_page(item_id):
-
-    all_items = load_all_contents()
-
-    item = next(
-        (
-            i for i in all_items
-            if i["id"] == item_id
-        ),
-        None
-    )
-
-    if not item:
-        return "콘텐츠를 찾을 수 없습니다.", 404
-
-    return render_template(
-        "trend/trend_detail.html",
-        item=item
-    )
-
-
-# ==================================================
-# K-CONTENTS AI Agent
-# ==================================================
-
-@app.route(
-    "/api/ai-report/<int:item_id>",
-    methods=["POST"]
-)
-def ai_agent_report(item_id):
-
-    all_items = load_all_contents()
-
-    item = next(
-        (
-            i for i in all_items
-            if i["id"] == item_id
-        ),
-        None
-    )
-
-    if not item:
-        return jsonify({
-            "error": "Item not found"
-        }), 404
-
-    report = trend_ai_agent.generate_report(item)
-
-    return jsonify(report)
-# ==================================================
-# 가장 강한 야구 이상신호 AI 리포트
-# ==================================================
-
-@app.route("/api/baseball-ai-report/top", methods=["POST"])
-def baseball_ai_report_top():
-
-    # 기온 + 습도 + 강수 데이터 전부 가져오기
-    df = load_baseball_signals()
-
-    # 이상신호 절대값 계산
-    df["signal_strength"] = df["signal_score"].abs()
-
-    # 가장 강한 이상신호 1개 선택
-    top_item = (
-        df
-        .sort_values("signal_strength", ascending=False)
-        .iloc[0]
-        .to_dict()
-    )
-
-    # AI Agent 분석
-    report = baseball_ai_agent.generate_report(top_item)
-
-    return jsonify(report)
+    app.run(debug=True, port=5001)

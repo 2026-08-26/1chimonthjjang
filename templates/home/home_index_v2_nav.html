@@ -112,6 +112,31 @@
             font-size: 9px;
             font-weight: 700;
         }
+<<<<<<< HEAD
+=======
+        .blink-dot {
+    display: inline-block;
+    margin-right: 4px;
+    animation: blinkDot 1s ease-in-out infinite;
+}
+
+@keyframes blinkDot {
+    0% {
+        opacity: 0.2;
+        transform: scale(0.8);
+    }
+
+    50% {
+        opacity: 1;
+        transform: scale(1.2);
+    }
+
+    100% {
+        opacity: 0.2;
+        transform: scale(0.8);
+    }
+}
+>>>>>>> 6c2331b838531d07538ccc3980b29cf1e490b75b
         .live-dot { width: 6px; height: 6px; border-radius: 50%; background: white; }
 
         /* SIDEBAR */
@@ -591,7 +616,7 @@
         </nav>
 
         <div class="header-right">
-            <div class="live"><span class="live-dot"></span>탐지 시스템 활성화</div>
+            <div class="live"><span class="live-dot blink-dot"></span>탐지 시스템 활성화</div>
         </div>
     </header>
 

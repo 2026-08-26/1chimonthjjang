@@ -10,7 +10,18 @@ from flask import Blueprint, render_template
 from analysis.drama.mock_data import load_all_contents, generate_time_series
 from web.home_routes import load_dashboard_data
 
+<<<<<<< HEAD
 
+=======
+
+from analysis.drama.mock_data import load_all_contents
+
+import os
+import pandas as pd
+
+
+
+>>>>>>> 6c2331b838531d07538ccc3980b29cf1e490b75b
 # =========================================================
 # BLUEPRINT
 # =========================================================
@@ -1085,6 +1096,7 @@ def home_v2_nav():
         }
     ]
 
+<<<<<<< HEAD
     # -----------------------------------------------------
     # 각 팀 실제 데이터 연결
     # -----------------------------------------------------
@@ -1151,10 +1163,35 @@ def home_v2_nav():
     print(
         "전체 메인 시그널:",
         len(top_signals)
+=======
+    stock_signals = load_stock_home_signals(limit=5)
+    kcontent_signals = load_kcontent_home_signals(limit=5)
+    baseball_signals = load_baseball_home_signals(limit=5)
+
+    top_signals = list(base_top_signals)
+    top_signals.extend(stock_signals)
+    top_signals.extend(kcontent_signals)
+    top_signals.extend(baseball_signals)
+
+    print()
+    print("======================================")
+    print("[HOME] 메인페이지 데이터 확인")
+    print("전체 시그널:", len(top_signals))
+    print("K콘텐츠:", len(kcontent_signals))
+    print("주식:", len(stock_signals))
+    print("야구:", len(baseball_signals))
+
+    category_flow = build_category_flow(
+        base_top_signals
+>>>>>>> 6c2331b838531d07538ccc3980b29cf1e490b75b
     )
 
     print()
     print("[HOME] 분야별 시그널 흐름 연결")
+<<<<<<< HEAD
+=======
+
+>>>>>>> 6c2331b838531d07538ccc3980b29cf1e490b75b
 
     for key in (
         "social",

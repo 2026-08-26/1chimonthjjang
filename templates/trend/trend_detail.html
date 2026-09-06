@@ -615,6 +615,144 @@
         line-height: 1.7;
     }
 
+    .article-draft-section {
+        margin-top: 26px;
+        padding-top: 25px;
+        border-top: 1px solid #292929;
+    }
+    .article-draft-head {
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-between;
+        gap: 18px;
+        margin-bottom: 12px;
+    }
+    .article-draft-kicker {
+        color: #6f6f6f;
+        font-size: 8px;
+        font-weight: 900;
+        letter-spacing: 1.2px;
+    }
+    .article-draft-title {
+        margin-top: 5px;
+        color: #fff;
+        font-size: 16px;
+        font-weight: 900;
+        letter-spacing: -.5px;
+    }
+    .article-draft-desc {
+        margin-top: 5px;
+        color: #696969;
+        font-size: 9px;
+        line-height: 1.6;
+    }
+    .article-draft-actions {
+        display: flex;
+        gap: 7px;
+        flex: 0 0 auto;
+    }
+    .draft-action-button {
+        height: 35px;
+        padding: 0 12px;
+        border: 1px solid #393939;
+        border-radius: 7px;
+        background: #171717;
+        color: #fff;
+        cursor: pointer;
+        font-size: 8px;
+        font-weight: 900;
+        transition: .18s ease;
+    }
+    .draft-action-button:hover { background: #252525; }
+    .draft-action-button:disabled {
+        cursor: wait;
+        opacity: .6;
+    }
+    .draft-note {
+        margin-bottom: 12px;
+        padding: 10px 12px;
+        border: 1px solid #3a3a3a;
+        border-radius: 8px;
+        background: #151515;
+        color: #9a9a9a;
+        font-size: 8px;
+        line-height: 1.65;
+    }
+    .draft-note strong {
+        color: #fff;
+        margin-right: 5px;
+    }
+    .article-paper {
+        padding: 30px 32px;
+        background: #f5f4ef;
+        color: #111;
+        border-radius: 12px;
+    }
+    .article-status {
+        color: #777;
+        font-size: 8px;
+        font-weight: 900;
+        letter-spacing: 1px;
+    }
+    .article-headline {
+        max-width: 1100px;
+        margin: 10px 0 0;
+        font-size: 25px;
+        line-height: 1.35;
+        font-weight: 900;
+        letter-spacing: -1px;
+    }
+    .article-subheadline {
+        max-width: 1100px;
+        margin: 9px 0 0;
+        color: #696969;
+        font-size: 10px;
+        line-height: 1.75;
+        font-weight: 600;
+    }
+    .article-body {
+        max-width: 1120px;
+        margin-top: 23px;
+        padding-top: 20px;
+        border-top: 1px solid #d7d5cf;
+    }
+    .article-body p {
+        margin: 0;
+        color: #2b2b2b;
+        font-size: 11px;
+        line-height: 1.95;
+    }
+    .article-body p + p {
+        margin-top: 14px;
+    }
+    .article-verify {
+        margin-top: 24px;
+        padding: 16px 18px;
+        background: #eae8e1;
+        border-radius: 9px;
+    }
+    .article-verify-title {
+        color: #111;
+        font-size: 9px;
+        font-weight: 900;
+        letter-spacing: .6px;
+    }
+    .article-verify ul {
+        margin: 9px 0 0;
+        padding-left: 18px;
+        color: #4f4f4f;
+        font-size: 9px;
+        line-height: 1.8;
+    }
+    .article-verification-note {
+        margin-top: 11px;
+        padding-top: 10px;
+        border-top: 1px solid #d4d1c9;
+        color: #777;
+        font-size: 8px;
+        line-height: 1.65;
+    }
+
     .copy-toast {
         position: fixed;
         right: 25px;
@@ -673,6 +811,23 @@
         }
         .ai-button,
         .copy-button { width: 100%; }
+
+        .article-draft-head {
+            align-items: flex-start;
+            flex-direction: column;
+        }
+        .article-draft-actions {
+            width: 100%;
+        }
+        .draft-action-button {
+            flex: 1;
+        }
+        .article-paper {
+            padding: 22px;
+        }
+        .article-headline {
+            font-size: 21px;
+        }
     }
 </style>
 {% endblock %}
@@ -932,7 +1087,7 @@
 
                 <button id="generateBtn" class="ai-button" type="button">
                     <i class="fa-solid fa-wand-magic-sparkles"></i>
-                    취재 가설 생성
+                    취재 분석 생성
                 </button>
             </div>
         </div>
@@ -941,8 +1096,8 @@
             <div class="ai-placeholder-icon">
                 <i class="fa-solid fa-magnifying-glass-chart"></i>
             </div>
-            탐지된 이상 패턴을 세 가지 검증 축으로 나눠,
-            취재 가설·근거·확인 경로와 다음 액션을 제안합니다.
+            탐지된 이상 패턴을 세 가지 검증 축으로 나누고,
+            취재 가설·확인 경로·기사 아이디어와 취재 전 기사 초안까지 제안합니다.
         </div>
 
         <div id="aiError" class="ai-error"></div>
@@ -985,6 +1140,70 @@
                 </div>
             </div>
 
+            <section class="article-draft-section">
+                <div class="article-draft-head">
+                    <div>
+                        <div class="article-draft-kicker">ARTICLE DRAFT</div>
+                        <div class="article-draft-title">AI 기사 초안</div>
+                        <div class="article-draft-desc">
+                            탐지된 사실과 검증 가설을 기사 문장으로 구조화합니다.
+                            게시용 원고가 아니라 취재를 이어가기 위한 초안입니다.
+                        </div>
+                    </div>
+
+                    <div class="article-draft-actions">
+                        <button
+                            id="copyArticleBtn"
+                            class="draft-action-button"
+                            type="button"
+                        >
+                            <i class="fa-regular fa-copy"></i>
+                            초안 복사
+                        </button>
+
+                        <button
+                            id="regenerateArticleBtn"
+                            class="draft-action-button"
+                            type="button"
+                        >
+                            <i class="fa-solid fa-rotate"></i>
+                            초안 다시 생성
+                        </button>
+                    </div>
+                </div>
+
+                <div class="draft-note">
+                    <strong>DRAFT NOTE</strong>
+                    이상감지 결과를 바탕으로 작성된 취재 전 초안입니다.
+                    외부 사실관계 확인 전에는 게시용 기사로 사용하지 않습니다.
+                </div>
+
+                <article class="article-paper">
+                    <div id="articleDraftStatus" class="article-status">
+                        DRAFT · 취재 전
+                    </div>
+
+                    <h2 id="articleDraftHeadline" class="article-headline"></h2>
+
+                    <p id="articleDraftSubheadline" class="article-subheadline"></p>
+
+                    <div id="articleDraftBody" class="article-body"></div>
+
+                    <div class="article-verify">
+                        <div class="article-verify-title">
+                            기사화 전 반드시 확인
+                        </div>
+
+                        <ul id="articleDraftVerify"></ul>
+
+                        <div
+                            id="articleDraftVerificationNote"
+                            class="article-verification-note"
+                        ></div>
+                    </div>
+                </article>
+            </section>
+
             <div class="ai-warning">
                 ※ AI는 이상신호의 원인을 확정하지 않습니다.
                 각 취재 경로는 원자료·공식 일정·외부 검색·현장 취재를 통해 교차 검증해야 합니다.
@@ -994,7 +1213,7 @@
 </div>
 
 <div id="copyToast" class="copy-toast">
-    브리핑을 클립보드에 복사했습니다.
+    복사했습니다.
 </div>
 
 <!--
@@ -1201,6 +1420,84 @@
             .join("");
     }
 
+    function renderArticleDraft(draft) {
+        const safeDraft =
+            draft && typeof draft === "object"
+                ? draft
+                : {};
+
+        const status = document.getElementById("articleDraftStatus");
+        const headline = document.getElementById("articleDraftHeadline");
+        const subheadline = document.getElementById("articleDraftSubheadline");
+        const body = document.getElementById("articleDraftBody");
+        const verify = document.getElementById("articleDraftVerify");
+        const note = document.getElementById("articleDraftVerificationNote");
+
+        status.textContent =
+            safeDraft.status || "DRAFT · 취재 전";
+
+        headline.textContent =
+            safeDraft.headline || "기사 초안 제목을 생성하지 못했습니다.";
+
+        subheadline.textContent =
+            safeDraft.subheadline || "";
+
+        body.replaceChildren();
+
+        const paragraphs =
+            Array.isArray(safeDraft.body)
+                ? safeDraft.body
+                : [];
+
+        if (paragraphs.length === 0) {
+            const empty = document.createElement("p");
+            empty.textContent = "생성된 기사 본문이 없습니다.";
+            body.appendChild(empty);
+        } else {
+            paragraphs.slice(0, 6).forEach(value => {
+                const paragraph = document.createElement("p");
+                paragraph.textContent = String(value || "");
+                body.appendChild(paragraph);
+            });
+        }
+
+        verify.replaceChildren();
+
+        const mustVerify =
+            Array.isArray(safeDraft.must_verify)
+                ? safeDraft.must_verify
+                : [];
+
+        if (mustVerify.length === 0) {
+            const item = document.createElement("li");
+            item.textContent = "외부 원자료와 공식 자료를 통한 사실 확인";
+            verify.appendChild(item);
+        } else {
+            mustVerify.slice(0, 4).forEach(value => {
+                const item = document.createElement("li");
+                item.textContent = String(value || "");
+                verify.appendChild(item);
+            });
+        }
+
+        note.textContent =
+            safeDraft.verification_note ||
+            "기사 게시 전 외부 자료와 추가 취재를 통한 사실 확인이 필요합니다.";
+    }
+
+    function showCopyToast(message) {
+        const toast = document.getElementById("copyToast");
+        if (!toast) return;
+
+        toast.textContent = message;
+        toast.classList.add("show");
+
+        setTimeout(
+            () => toast.classList.remove("show"),
+            1800
+        );
+    }
+
     async function generateAiReport() {
         const button = document.getElementById("generateBtn");
         const copyButton = document.getElementById("copyBtn");
@@ -1280,10 +1577,11 @@
             renderList("aiIdeas", data.article_ideas);
             renderList("aiQuestions", data.questions);
             renderList("aiDataSources", data.verification_data);
+            renderArticleDraft(data.article_draft);
 
             button.innerHTML = `
                 <i class="fa-solid fa-check"></i>
-                가설 생성 완료
+                분석 생성 완료
             `;
 
             copyButton.style.display = "inline-flex";
@@ -1293,7 +1591,7 @@
 
             errorBox.style.display = "block";
             errorBox.textContent =
-                `취재 가설 생성에 실패했습니다. ${error.message}`;
+                `AI 취재 분석 생성에 실패했습니다. ${error.message}`;
 
             button.innerHTML = `
                 <i class="fa-solid fa-rotate-right"></i>
@@ -1377,12 +1675,137 @@
                 document.body.removeChild(textarea);
             }
 
-            const toast = document.getElementById("copyToast");
-            toast.classList.add("show");
-            setTimeout(() => toast.classList.remove("show"), 1800);
+            showCopyToast("브리핑을 클립보드에 복사했습니다.");
 
         } catch (error) {
             console.error("COPY ERROR:", error);
+        }
+    }
+
+    async function copyArticleDraft() {
+        if (!latestAiReport || !latestAiReport.article_draft) {
+            return;
+        }
+
+        const draft = latestAiReport.article_draft;
+        const body = Array.isArray(draft.body) ? draft.body : [];
+        const verify = Array.isArray(draft.must_verify)
+            ? draft.must_verify
+            : [];
+
+        const text = [
+            "[DATA TIP-OFF AI 기사 초안]",
+            draft.status || "DRAFT · 취재 전",
+            "",
+            draft.headline || "",
+            draft.subheadline || "",
+            "",
+            ...body,
+            "",
+            "[기사화 전 반드시 확인]",
+            ...verify.map(
+                (value, index) => `${index + 1}. ${value}`
+            ),
+            "",
+            draft.verification_note || "",
+        ].join("\n");
+
+        try {
+            if (navigator.clipboard && window.isSecureContext) {
+                await navigator.clipboard.writeText(text);
+            } else {
+                const textarea = document.createElement("textarea");
+                textarea.value = text;
+                textarea.style.position = "fixed";
+                textarea.style.opacity = "0";
+                document.body.appendChild(textarea);
+                textarea.select();
+                document.execCommand("copy");
+                document.body.removeChild(textarea);
+            }
+
+            showCopyToast("기사 초안을 클립보드에 복사했습니다.");
+
+        } catch (error) {
+            console.error("ARTICLE COPY ERROR:", error);
+        }
+    }
+
+    async function regenerateArticleDraft() {
+        const button = document.getElementById("regenerateArticleBtn");
+        const errorBox = document.getElementById("aiError");
+
+        if (!CURRENT_ITEM.id || CURRENT_ITEM.id < 1) {
+            return;
+        }
+
+        button.disabled = true;
+        errorBox.style.display = "none";
+
+        button.innerHTML = `
+            <i class="fa-solid fa-spinner fa-spin"></i>
+            생성 중...
+        `;
+
+        try {
+            const response = await fetch(
+                `/api/ai-report/${CURRENT_ITEM.id}`,
+                {
+                    method: "POST",
+                    headers: {
+                        "Accept": "application/json"
+                    },
+                    credentials: "same-origin"
+                }
+            );
+
+            let data = null;
+
+            try {
+                data = await response.json();
+            } catch (_) {
+                data = null;
+            }
+
+            if (!response.ok) {
+                throw new Error(
+                    data && data.error
+                        ? data.error
+                        : `HTTP ${response.status}`
+                );
+            }
+
+            if (
+                !data ||
+                typeof data !== "object" ||
+                !data.article_draft
+            ) {
+                throw new Error("기사 초안 응답이 없습니다.");
+            }
+
+            if (!latestAiReport) {
+                latestAiReport = {};
+            }
+
+            latestAiReport.article_draft = data.article_draft;
+            renderArticleDraft(data.article_draft);
+
+            showCopyToast("새 기사 초안을 생성했습니다.");
+
+        } catch (error) {
+            console.error("ARTICLE REGENERATE ERROR:", error);
+
+            errorBox.style.display = "block";
+            errorBox.textContent =
+                `기사 초안 생성에 실패했습니다. ${error.message}`;
+
+        } finally {
+            button.disabled = false;
+
+            button.innerHTML = `
+                <i class="fa-solid fa-rotate"></i>
+                초안 다시 생성
+            `;
         }
     }
 
@@ -1391,6 +1814,12 @@
 
     document.getElementById("copyBtn")
         .addEventListener("click", copyBriefing);
+
+    document.getElementById("copyArticleBtn")
+        .addEventListener("click", copyArticleDraft);
+
+    document.getElementById("regenerateArticleBtn")
+        .addEventListener("click", regenerateArticleDraft);
 
     drawTrendChart();
 </script>

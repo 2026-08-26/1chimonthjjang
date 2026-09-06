@@ -1,22 +1,20 @@
 import hashlib
 import os
+from urllib.parse import quote_plus, urlparse
 
 import numpy as np
 import pandas as pd
 
-from analysis.drama.anomaly import (
-    TrendAnomalyEngine
-)
+from analysis.drama.anomaly import TrendAnomalyEngine
 
 
 # =========================================================
-# 기본 경로
+# PATH
 # =========================================================
 
 BASE_DIR = os.path.dirname(
     os.path.abspath(__file__)
 )
-
 
 PROJECT_ROOT = os.path.abspath(
     os.path.join(
@@ -27,20 +25,18 @@ PROJECT_ROOT = os.path.abspath(
 )
 
 
+# =========================================================
+# ANOMALY ENGINE
+# =========================================================
+
 engine = TrendAnomalyEngine()
 
 
-# 서버 실행 중 반복 계산 방지
-_CONTENTS_CACHE = None
-
-
 # =========================================================
-# CSV 경로
+# CSV PATH
 # =========================================================
 
-def _get_file_path(
-    filename
-):
+def _get_file_path(filename):
 
     candidate_paths = [
 
@@ -72,9 +68,7 @@ def _get_file_path(
 
     for path in candidate_paths:
 
-        if os.path.exists(
-            path
-        ):
+        if os.path.exists(path):
 
             return path
 
@@ -83,12 +77,10 @@ def _get_file_path(
 
 
 # =========================================================
-# CSV 읽기
+# CSV READ
 # =========================================================
 
-def _read_csv(
-    path
-):
+def _read_csv(path):
 
     encodings = [
 
@@ -96,7 +88,7 @@ def _read_csv(
 
         "utf-8-sig",
 
-        "utf-8",
+        "utf-8"
     ]
 
 
@@ -109,77 +101,87 @@ def _read_csv(
                 encoding=encoding
             )
 
-
-        except UnicodeDecodeError:
+        except Exception:
 
             continue
 
 
-    return pd.read_csv(
-        path
-    )
+    return None
 
 
 # =========================================================
-# 콘텐츠별 고정 Seed
+# SAFE TEXT
 # =========================================================
 
-def _stable_seed(
-    text
-):
+def _clean_text(value):
 
-    """
-    같은 콘텐츠는 새로고침해도
-    같은 결과가 나오도록 합니다.
-    """
+    if value is None:
+
+        return ""
+
+
+    try:
+
+        if pd.isna(value):
+
+            return ""
+
+    except Exception:
+
+        pass
+
+
+    return str(
+        value
+    ).strip()
+
+
+# =========================================================
+# STABLE SEED
+# =========================================================
+
+def _stable_seed(text):
 
     digest = hashlib.sha256(
-
         text.encode(
             "utf-8"
         )
-
     ).hexdigest()
 
 
     return int(
-
         digest[:8],
-
         16
     )
 
 
 # =========================================================
-# 이상징후 프로필
+# PROFILE
 # =========================================================
 
-def _select_profile(
-    seed
-):
-
+def _select_profile(seed):
     """
-    데모용 이상신호 비율
+    같은 콘텐츠는 항상 같은 프로필을 갖게 합니다.
 
-    HIGH   약 8%
-    MEDIUM 약 20%
-    LOW    약 72%
-
-    실제 등급은 anomaly.py의
-    Z-score 판정 때문에 약간 달라질 수 있습니다.
+    약:
+    HIGH   40%
+    MEDIUM 30%
+    LOW    30%
     """
 
     bucket = (
-        seed % 100
+        seed
+        %
+        10
     )
 
 
-    if bucket < 8:
+    if bucket <= 3:
 
         return "HIGH"
 
 
-    if bucket < 28:
+    if bucket <= 6:
 
         return "MEDIUM"
 
@@ -188,7 +190,7 @@ def _select_profile(
 
 
 # =========================================================
-# 30일 관심도 데이터
+# 30-DAY SIMULATION
 # =========================================================
 
 def generate_time_series(
@@ -197,22 +199,16 @@ def generate_time_series(
     category="content",
     profile=None
 ):
-
     """
-    CSV에는 실제 30일 검색 관심도 시계열이 없으므로
+    CSV 콘텐츠 자체는 실제 데이터입니다.
 
-    콘텐츠 정보:
-        실제 CSV
+    단, 30일 관심도 시계열은
+    이상감지 알고리즘을 시연하기 위한
+    재현 가능한 시뮬레이션 지수입니다.
 
-    관심도 시계열:
-        고정 seed 기반 시뮬레이션
-
-    으로 사용합니다.
-
-    앞 23일 = 기준
-    뒤 7일  = 최근 관찰
+    앞 23일 = 기준 구간
+    뒤 7일  = 최근 구간
     """
-
 
     if seed is None:
 
@@ -224,10 +220,7 @@ def generate_time_series(
     )
 
 
-    # =====================================================
-    # 카테고리별 기본 관심도
-    # =====================================================
-
+    # 카테고리별 기본 관심도 지수
     base_level = {
 
         "music":
@@ -245,14 +238,11 @@ def generate_time_series(
     )
 
 
-    # =====================================================
-    # 이전 23일
-    # =====================================================
-
-    base_scale = max(
-
+    # 기준 구간의 평소 변동성
+    baseline_scale = max(
         base_level
-        * 0.22,
+        *
+        0.22,
 
         12
     )
@@ -260,14 +250,11 @@ def generate_time_series(
 
     baseline = rng.normal(
 
-        loc=
-            base_level,
+        loc=base_level,
 
-        scale=
-            base_scale,
+        scale=baseline_scale,
 
-        size=
-            23
+        size=23
     )
 
 
@@ -276,13 +263,13 @@ def generate_time_series(
         baseline,
 
         base_level
-        * 0.35,
+        *
+        0.35,
 
         None
     )
 
 
-    # 기존 호출 방식 호환
     if profile is None:
 
         profile = (
@@ -296,7 +283,7 @@ def generate_time_series(
 
 
     # =====================================================
-    # 최근 7일
+    # 최근 7일 패턴
     # =====================================================
 
     if profile == "HIGH":
@@ -305,9 +292,11 @@ def generate_time_series(
 
             base_level
 
-            * rng.uniform(
-                2.05,
-                2.45
+            *
+
+            rng.uniform(
+                2.15,
+                2.65
             )
         )
 
@@ -316,7 +305,8 @@ def generate_time_series(
 
             base_level
 
-            * 0.14
+            *
+            0.15
         )
 
 
@@ -326,9 +316,11 @@ def generate_time_series(
 
             base_level
 
-            * rng.uniform(
-                1.32,
-                1.50
+            *
+
+            rng.uniform(
+                1.38,
+                1.55
             )
         )
 
@@ -337,7 +329,8 @@ def generate_time_series(
 
             base_level
 
-            * 0.11
+            *
+            0.12
         )
 
 
@@ -347,9 +340,11 @@ def generate_time_series(
 
             base_level
 
-            * rng.uniform(
-                0.92,
-                1.16
+            *
+
+            rng.uniform(
+                0.95,
+                1.18
             )
         )
 
@@ -358,20 +353,18 @@ def generate_time_series(
 
             base_level
 
-            * 0.10
+            *
+            0.10
         )
 
 
     recent = rng.normal(
 
-        loc=
-            recent_center,
+        loc=recent_center,
 
-        scale=
-            recent_scale,
+        scale=recent_scale,
 
-        size=
-            7
+        size=7
     )
 
 
@@ -380,18 +373,14 @@ def generate_time_series(
         recent,
 
         base_level
-        * 0.35,
+        *
+        0.35,
 
         None
     )
 
 
-    # =====================================================
-    # 합치기
-    # =====================================================
-
     values = np.concatenate(
-
         [
             baseline,
             recent
@@ -411,19 +400,265 @@ def generate_time_series(
 
 
 # =========================================================
-# 전체 콘텐츠 로드
+# WEBTOON LINK SECURITY
+# =========================================================
+
+def _allowed_naver_webtoon_url(value):
+    """
+    CSV에 직접 URL이 있을 경우
+    네이버웹툰 주소만 허용합니다.
+    """
+
+    url = _clean_text(
+        value
+    )
+
+
+    if not url:
+
+        return ""
+
+
+    try:
+
+        parsed = urlparse(
+            url
+        )
+
+    except Exception:
+
+        return ""
+
+
+    if parsed.scheme not in {
+
+        "http",
+
+        "https"
+
+    }:
+
+        return ""
+
+
+    host = (
+        parsed.netloc
+        .lower()
+        .split(":")[0]
+    )
+
+
+    allowed_hosts = {
+
+        "comic.naver.com",
+
+        "m.comic.naver.com"
+    }
+
+
+    if host not in allowed_hosts:
+
+        return ""
+
+
+    return url
+
+
+# =========================================================
+# WEBTOON EXTERNAL LINK
+# =========================================================
+
+def _build_webtoon_link(
+    row,
+    title
+):
+    """
+    1순위:
+        CSV URL
+
+    2순위:
+        titleId
+
+    3순위:
+        네이버 제목 검색
+    """
+
+    # =====================================================
+    # URL 컬럼 찾기
+    # =====================================================
+
+    possible_url_columns = [
+
+        "url",
+
+        "URL",
+
+        "link",
+
+        "Link",
+
+        "webtoon_url",
+
+        "webtoonUrl",
+
+        "detail_url",
+
+        "href"
+    ]
+
+
+    for column in possible_url_columns:
+
+        if column not in row.index:
+
+            continue
+
+
+        url = _allowed_naver_webtoon_url(
+            row.get(
+                column
+            )
+        )
+
+
+        if url:
+
+            return {
+
+                "external_url":
+                    url,
+
+                "external_link_label":
+                    "네이버웹툰에서 보기",
+
+                "external_link_type":
+                    "direct"
+            }
+
+
+    # =====================================================
+    # titleId 컬럼 찾기
+    # =====================================================
+
+    possible_id_columns = [
+
+        "titleId",
+
+        "title_id",
+
+        "titleid"
+    ]
+
+
+    for column in possible_id_columns:
+
+        if column not in row.index:
+
+            continue
+
+
+        title_id = _clean_text(
+            row.get(
+                column
+            )
+        )
+
+
+        if title_id:
+
+            url = (
+
+                "https://comic.naver.com/"
+                "webtoon/list?titleId="
+                +
+                quote_plus(
+                    title_id
+                )
+            )
+
+
+            return {
+
+                "external_url":
+                    url,
+
+                "external_link_label":
+                    "네이버웹툰에서 보기",
+
+                "external_link_type":
+                    "direct"
+            }
+
+
+    # =====================================================
+    # titleId / URL 없으면 제목 검색
+    # =====================================================
+
+    query = quote_plus(
+        f"네이버웹툰 {title}"
+    )
+
+
+    search_url = (
+
+        "https://search.naver.com/"
+        "search.naver?query="
+        +
+        query
+    )
+
+
+    return {
+
+        "external_url":
+            search_url,
+
+        "external_link_label":
+            "웹툰 확인하기",
+
+        "external_link_type":
+            "search"
+    }
+
+
+# =========================================================
+# CATEGORY EXTERNAL LINK
+# =========================================================
+
+def _build_external_link(
+    category,
+    row,
+    title
+):
+
+    if category == "webtoon":
+
+        return _build_webtoon_link(
+            row,
+            title
+        )
+
+
+    return {
+
+        "external_url":
+            "",
+
+        "external_link_label":
+            "",
+
+        "external_link_type":
+            ""
+    }
+
+
+# =========================================================
+# ★ MAIN DATA LOADER
+#
+# total.py에서 이 함수를 import 합니다.
 # =========================================================
 
 def load_all_contents():
-
-    global _CONTENTS_CACHE
-
-
-    # 이미 계산했으면 재사용
-    if _CONTENTS_CACHE is not None:
-
-        return _CONTENTS_CACHE
-
 
     contents = []
 
@@ -431,7 +666,7 @@ def load_all_contents():
 
 
     # =====================================================
-    # CSV 설정
+    # CATEGORY SETTINGS
     # =====================================================
 
     categories = [
@@ -466,35 +701,40 @@ def load_all_contents():
 
 
     # =====================================================
-    # 카테고리 반복
+    # CSV LOOP
     # =====================================================
 
     for (
 
-        cat_key,
-        cat_name,
+        category_key,
+
+        category_name,
+
         csv_name,
-        col1,
-        col2,
-        col_sub
+
+        primary_column,
+
+        secondary_column,
+
+        info_column
 
     ) in categories:
 
 
-        csv_path = (
-            _get_file_path(
-                csv_name
-            )
+        # =================================================
+        # CSV 위치
+        # =================================================
+
+        csv_path = _get_file_path(
+            csv_name
         )
 
 
         if not csv_path:
 
             print(
-
-                "⚠️ CSV 파일을 "
-                f"찾을 수 없습니다: "
-                f"{csv_name}"
+                "[KCONTENT] CSV 없음:",
+                csv_name
             )
 
             continue
@@ -504,52 +744,49 @@ def load_all_contents():
         # CSV 읽기
         # =================================================
 
-        try:
-
-            df = _read_csv(
-                csv_path
-            )
+        df = _read_csv(
+            csv_path
+        )
 
 
-        except Exception as e:
+        if df is None:
 
             print(
-
-                f"⚠️ CSV 읽기 실패: "
-                f"{csv_name} / {e}"
+                "[KCONTENT] CSV 읽기 실패:",
+                csv_name
             )
 
             continue
 
 
         # =================================================
-        # 제목 컬럼 확인
+        # 필수 제목 컬럼 확인
         # =================================================
 
-        if col1 not in df.columns:
+        if primary_column not in df.columns:
 
             print(
-
-                f"⚠️ {csv_name}에 "
-                f"'{col1}' 컬럼이 없습니다."
+                "[KCONTENT] 제목 컬럼 없음:",
+                csv_name,
+                primary_column
             )
 
             continue
 
 
         # =================================================
-        # ★ CSV 전체 분석
-        #
-        # head(15) 사용 안 함
+        # 빈 제목 제거
         # =================================================
 
         df_clean = df.dropna(
-            subset=[col1]
+            subset=[
+                primary_column
+            ]
         )
 
 
         # =================================================
-        # 콘텐츠 반복
+        # 모든 콘텐츠 사용
         # =================================================
 
         for _, row in df_clean.iterrows():
@@ -559,108 +796,96 @@ def load_all_contents():
             # 제목
             # =============================================
 
-            if (
-
-                col2
-
-                and
-
-                col2 in df.columns
-
-                and
-
-                pd.notna(
-                    row.get(col2)
+            primary_value = _clean_text(
+                row.get(
+                    primary_column
                 )
+            )
+
+
+            if not primary_value:
+
+                continue
+
+
+            secondary_value = ""
+
+
+            if (
+                secondary_column
+                and
+                secondary_column in df.columns
             ):
+
+                secondary_value = _clean_text(
+                    row.get(
+                        secondary_column
+                    )
+                )
+
+
+            if secondary_value:
 
                 title = (
-
-                    f"{row[col1]}"
+                    f"{primary_value}"
                     f" - "
-                    f"{row[col2]}"
+                    f"{secondary_value}"
                 )
-
 
             else:
 
-                title = str(
-                    row[col1]
+                title = (
+                    primary_value
                 )
 
 
             # =============================================
-            # 부가 정보
+            # 보조 정보
             # =============================================
 
-            if (
+            info_value = ""
 
-                col_sub
 
-                and
+            if info_column in df.columns:
 
-                col_sub in df.columns
-
-                and
-
-                pd.notna(
-                    row.get(col_sub)
-                )
-            ):
-
-                sub_val = str(
-                    row.get(col_sub)
+                info_value = _clean_text(
+                    row.get(
+                        info_column
+                    )
                 )
 
 
-            else:
+            if not info_value:
 
-                sub_val = "N/A"
+                info_value = "N/A"
 
 
             sub_info = (
-
-                f"정보: "
-                f"{sub_val}"
+                f"정보: {info_value}"
             )
 
 
             # =============================================
-            # 고정 Seed
+            # 고정된 시뮬레이션 데이터 생성
             # =============================================
 
             seed = _stable_seed(
-
-                f"{cat_key}"
-                f"|{title}"
-                f"|{sub_val}"
+                f"{category_key}:{title}"
             )
 
 
-            profile = (
-                _select_profile(
-                    seed
-                )
+            profile = _select_profile(
+                seed
             )
 
 
-            # =============================================
-            # 30일 관심도
-            # =============================================
+            daily_data = generate_time_series(
 
-            daily_data = (
+                seed=seed,
 
-                generate_time_series(
+                category=category_key,
 
-                    seed=
-                        seed,
-
-                    category=
-                        cat_key,
-
-                    profile=
-                        profile
-                )
+                profile=profile
             )
 
 
@@ -669,9 +894,7 @@ def load_all_contents():
             # =============================================
 
             metrics = (
-
-                engine
-                .calculate_metrics(
+                engine.calculate_metrics(
                     daily_data
                 )
             )
@@ -683,48 +906,62 @@ def load_all_contents():
 
 
             # =============================================
-            # 결과
+            # 외부 링크
             # =============================================
 
+            external_link = (
+                _build_external_link(
+
+                    category=category_key,
+
+                    row=row,
+
+                    title=title
+                )
+            )
+
+
+            # =============================================
+            # CONTENT OBJECT
+            # =============================================
+
+            item = {
+
+                "id":
+                    item_id,
+
+                "category":
+                    category_key,
+
+                "category_name":
+                    category_name,
+
+                "title":
+                    title,
+
+                "sub_info":
+                    sub_info,
+
+                "daily_data":
+                    daily_data,
+
+                "data_source_note":
+                    (
+                        "CSV 콘텐츠 메타데이터 + "
+                        "재현 가능한 30일 시뮬레이션 관심도 지수"
+                    ),
+
+                "trend_profile":
+                    profile,
+
+                **external_link,
+
+                **metrics,
+            }
+
+
             contents.append(
-
-                {
-
-                    "id":
-                        item_id,
-
-                    "category":
-                        cat_key,
-
-                    "category_name":
-                        cat_name,
-
-                    "title":
-                        title,
-
-                    "sub_info":
-                        sub_info,
-
-                    "daily_data":
-                        daily_data,
-
-
-                    # 데이터의 성격 명시
-                    "data_source_note":
-                        (
-                            "콘텐츠 정보는 CSV, "
-                            "30일 관심도는 "
-                            "고정 seed 기반 "
-                            "시뮬레이션 데이터"
-                        ),
-
-
-                    "trend_profile":
-                        profile,
-
-
-                    **metrics,
-                }
+                item
             )
 
 
@@ -744,7 +981,7 @@ def load_all_contents():
             2,
 
         "LOW":
-            1,
+            1
     }
 
 
@@ -752,144 +989,96 @@ def load_all_contents():
 
         key=lambda item: (
 
-            signal_priority.get(
+            -signal_priority.get(
                 item.get(
                     "signal"
                 ),
                 0
             ),
 
-            item.get(
+            -item.get(
                 "trend_score",
                 0
             ),
 
-            item.get(
-                "increase_rate",
-                0
+            -item.get(
+                "anomaly_days",
+                item.get(
+                    "persistence_days",
+                    0
+                )
             ),
 
-            item.get(
+            -item.get(
                 "z_score",
                 0
             ),
 
             -item.get(
-                "id",
+                "increase_rate",
                 0
             ),
-        ),
 
-        reverse=True
+            item.get(
+                "id",
+                0
+            )
+        )
     )
 
 
-    # 캐시
-    _CONTENTS_CACHE = contents
-
-
-    return _CONTENTS_CACHE
-
-
-# =========================================================
-# 단독 실행 테스트
-# =========================================================
-
-if __name__ == "__main__":
-
-    items = load_all_contents()
-
+    # =====================================================
+    # DEBUG
+    # =====================================================
 
     print(
-        f"전체 분석 콘텐츠: "
-        f"{len(items)}개"
+        "[KCONTENT] 전체 콘텐츠:",
+        len(
+            contents
+        )
     )
 
 
     print(
-
-        "HIGH:",
-
+        "[KCONTENT] HIGH:",
         sum(
-
             1
-
-            for item in items
-
+            for item in contents
             if item.get(
                 "signal"
-            ) == "HIGH"
+            )
+            ==
+            "HIGH"
         )
     )
 
 
     print(
-
-        "MEDIUM:",
-
+        "[KCONTENT] MEDIUM:",
         sum(
-
             1
-
-            for item in items
-
+            for item in contents
             if item.get(
                 "signal"
-            ) == "MEDIUM"
+            )
+            ==
+            "MEDIUM"
         )
     )
 
 
     print(
-
-        "LOW:",
-
+        "[KCONTENT] LOW:",
         sum(
-
             1
-
-            for item in items
-
+            for item in contents
             if item.get(
                 "signal"
-            ) == "LOW"
+            )
+            ==
+            "LOW"
         )
     )
 
 
-    print()
-
-    print(
-        "취재 우선순위 TOP 10"
-    )
-
-
-    for rank, item in enumerate(
-
-        items[:10],
-
-        start=1
-    ):
-
-        print(
-
-            rank,
-
-            item.get(
-                "category_name"
-            ),
-
-            item.get(
-                "title"
-            ),
-
-            item.get(
-                "signal"
-            ),
-
-            item.get(
-                "trend_score"
-            ),
-
-            f"{item.get('increase_rate'):+.1f}%"
-        )
+    return contents

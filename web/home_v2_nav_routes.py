@@ -1,6 +1,7 @@
 from collections import Counter
 from pathlib import Path
 import hashlib
+import os
 from urllib.parse import quote
 
 import pandas as pd
@@ -9,14 +10,7 @@ from flask import Blueprint, render_template
 from analysis.drama.mock_data import load_all_contents, generate_time_series
 from web.home_routes import load_dashboard_data
 
-<<<<<<< HEAD
-from analysis.drama.mock_data import load_all_contents
 
-import os
-import pandas as pd
-=======
-
->>>>>>> 5a4176e (ㅎㅇ)
 # =========================================================
 # BLUEPRINT
 # =========================================================
@@ -282,73 +276,6 @@ def load_kcontent_home_signals(limit=5):
         })
 
     return result
-def load_stock_home_signals(limit=5):
-    try:
-        base_dir = os.path.dirname(
-            os.path.dirname(os.path.abspath(__file__))
-        )
-
-        stock_path = os.path.join(
-            base_dir,
-            "result",
-            "stock",
-            "all_stock_signals.csv"
-        )
-
-        df = pd.read_csv(stock_path)
-
-        # 점수가 높은 종목부터
-        df = df.sort_values(
-            "score",
-            ascending=False
-        ).head(limit)
-
-        result = []
-
-        for rank, (_, row) in enumerate(df.iterrows(), start=1):
-
-            # 어떤 시그널이 발생했는지 한글로 표시
-            signals = []
-
-            if row["volume_signal"]:
-                signals.append("거래량 급증")
-
-            if row["price_signal"]:
-                signals.append("가격 이상")
-
-            if row["concentration_signal"]:
-                signals.append("수급 집중")
-
-            signal_name = " + ".join(signals)
-
-            # 등급
-            score = float(row["score"])
-
-            if score >= 4:
-                severity = "HIGH"
-            elif score >= 2:
-                severity = "MEDIUM"
-            else:
-                severity = "LOW"
-
-            result.append({
-                "category": "주식",
-                "region": row["market"],
-                "signal_name": f"{row['name']} · {signal_name}",
-                "score": round(score, 2),
-                "severity": severity,
-                "signal_type": "stock",
-                "detail_url": f"/stock/detail/{row['code']}",
-                "category_rank": rank,
-                "code": row["code"],
-                "name": row["name"]
-            })
-
-        return result
-
-    except Exception as e:
-        print("[HOME ERROR] 주식 시그널 로딩 실패:", e)
-        return []
 def load_baseball_home_signals(limit=5):
     try:
         base_dir = os.path.dirname(
@@ -1143,82 +1070,91 @@ def home_v2_nav():
         top_signals or []
     )
 
-    # 사회/경제 등 기존 팀 데이터는 먼저 보존합니다.
+    # -----------------------------------------------------
+    # 기존 사회/경제 팀 데이터 보존
+    # -----------------------------------------------------
+    # 메인에서 별도로 다시 연결하는 K콘텐츠/주식/야구가
+    # 기존 데이터 안에 섞여 있더라도 중복되지 않도록 제외합니다.
     base_top_signals = [
         dict(item)
         for item in top_signals
-        if item.get("category") not in {"K콘텐츠", "주식"}
+        if item.get("category") not in {
+            "K콘텐츠",
+            "주식",
+            "야구",
+        }
     ]
 
+    # -----------------------------------------------------
+    # 각 팀 실제 데이터 연결
+    # -----------------------------------------------------
     stock_signals = load_stock_home_signals(
         limit=5
     )
 
-<<<<<<< HEAD
-    stock_signals = (
-        load_stock_home_signals(
-            limit=5
+    kcontent_signals = load_kcontent_home_signals(
+        limit=5
     )
-)
-    baseball_signals = load_baseball_home_signals(limit=5)
-    # =====================================================
-    # 기존 사회/경제는 유지
-    # 실제 K콘텐츠만 뒤에 추가
-    # =====================================================
+
+    baseball_signals = load_baseball_home_signals(
+        limit=5
+    )
+
+    # -----------------------------------------------------
+    # 메인 취재 우선순위 목록 통합
+    # -----------------------------------------------------
+    top_signals = list(
+        base_top_signals
+    )
+
+    top_signals.extend(
+        stock_signals
+    )
 
     top_signals.extend(
         kcontent_signals
     )
 
     top_signals.extend(
-    stock_signals
+        baseball_signals
     )
-    top_signals.extend(baseball_signals)
-    # =====================================================
-    # 터미널 확인
-    # =====================================================
 
+    # -----------------------------------------------------
+    # 02 분야별 시그널 흐름 데이터
+    # -----------------------------------------------------
+    category_flow = build_category_flow(
+        base_top_signals
+    )
+
+    # -----------------------------------------------------
+    # 터미널 확인 로그
+    # -----------------------------------------------------
     print()
+    print("========================================")
+    print("[HOME] 메인페이지 데이터 연결")
     print(
-        "======================================"
+        "기존 사회/경제:",
+        len(base_top_signals)
     )
-
     print(
-        "[HOME] 메인페이지 데이터 확인"
+        "주식:",
+        len(stock_signals)
     )
-
-    print(
-        "전체 시그널:",
-        len(top_signals)
-    )
-
     print(
         "K콘텐츠:",
         len(kcontent_signals)
     )
     print(
-        "주식:",
-        len(stock_signals)
-    )   
-    print("야구:", len(baseball_signals))
-    for item in kcontent_signals:
-=======
-    kcontent_signals = load_kcontent_home_signals(
-        limit=5
+        "야구:",
+        len(baseball_signals)
     )
-
-    top_signals = list(base_top_signals)
-    top_signals.extend(stock_signals)
-    top_signals.extend(kcontent_signals)
-
-    category_flow = build_category_flow(
-        base_top_signals
+    print(
+        "전체 메인 시그널:",
+        len(top_signals)
     )
 
     print()
-    print("========================================")
     print("[HOME] 분야별 시그널 흐름 연결")
->>>>>>> 5a4176e (ㅎㅇ)
 
     for key in (
         "social",
@@ -1227,12 +1163,16 @@ def home_v2_nav():
         "content",
         "baseball",
     ):
-        flow = category_flow[key]
+        flow = category_flow.get(
+            key,
+            {}
+        )
+
         print(
-            f"{flow['name']}:",
-            len(flow["series"]),
+            f"{flow.get('name', key)}:",
+            len(flow.get("series", [])),
             "개 프로필 /",
-            len(flow["breakdown"]),
+            len(flow.get("breakdown", [])),
             "개 분포"
         )
 

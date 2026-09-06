@@ -9,14 +9,14 @@ from flask import Blueprint, render_template
 from analysis.drama.mock_data import load_all_contents, generate_time_series
 from web.home_routes import load_dashboard_data
 
-<<<<<<< HEAD
+
 from analysis.drama.mock_data import load_all_contents
 
 import os
 import pandas as pd
-=======
 
->>>>>>> 5a4176e (ㅎㅇ)
+
+
 # =========================================================
 # BLUEPRINT
 # =========================================================
@@ -1150,66 +1150,22 @@ def home_v2_nav():
         if item.get("category") not in {"K콘텐츠", "주식"}
     ]
 
-    stock_signals = load_stock_home_signals(
-        limit=5
-    )
-
-<<<<<<< HEAD
-    stock_signals = (
-        load_stock_home_signals(
-            limit=5
-    )
-)
+    stock_signals = load_stock_home_signals(limit=5)
+    kcontent_signals = load_kcontent_home_signals(limit=5)
     baseball_signals = load_baseball_home_signals(limit=5)
-    # =====================================================
-    # 기존 사회/경제는 유지
-    # 실제 K콘텐츠만 뒤에 추가
-    # =====================================================
-
-    top_signals.extend(
-        kcontent_signals
-    )
-
-    top_signals.extend(
-    stock_signals
-    )
-    top_signals.extend(baseball_signals)
-    # =====================================================
-    # 터미널 확인
-    # =====================================================
-
-    print()
-    print(
-        "======================================"
-    )
-
-    print(
-        "[HOME] 메인페이지 데이터 확인"
-    )
-
-    print(
-        "전체 시그널:",
-        len(top_signals)
-    )
-
-    print(
-        "K콘텐츠:",
-        len(kcontent_signals)
-    )
-    print(
-        "주식:",
-        len(stock_signals)
-    )   
-    print("야구:", len(baseball_signals))
-    for item in kcontent_signals:
-=======
-    kcontent_signals = load_kcontent_home_signals(
-        limit=5
-    )
 
     top_signals = list(base_top_signals)
     top_signals.extend(stock_signals)
     top_signals.extend(kcontent_signals)
+    top_signals.extend(baseball_signals)
+
+    print()
+    print("======================================")
+    print("[HOME] 메인페이지 데이터 확인")
+    print("전체 시그널:", len(top_signals))
+    print("K콘텐츠:", len(kcontent_signals))
+    print("주식:", len(stock_signals))
+    print("야구:", len(baseball_signals))
 
     category_flow = build_category_flow(
         base_top_signals
@@ -1218,7 +1174,7 @@ def home_v2_nav():
     print()
     print("========================================")
     print("[HOME] 분야별 시그널 흐름 연결")
->>>>>>> 5a4176e (ㅎㅇ)
+
 
     for key in (
         "social",

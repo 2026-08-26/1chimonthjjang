@@ -1272,12 +1272,15 @@
             }
         }
     </style>
+{% include 'includes/desk_sidebar_styles.html' %}
 </head>
 
 <body>
 
 <header class="header">
     <div class="brand-wrap">
+            <button id="sidebar-toggle" class="desk-menu-toggle" type="button" aria-label="메뉴 열기" aria-controls="newsroom-sidebar" aria-expanded="false">☰</button>
+
         <a class="brand" href="/home-v2-nav">DATA TIP-OFF</a>
         <span class="header-line" aria-hidden="true"></span>
         <span class="header-sub">BASEBALL SIGNAL DESK / 야구 취재 신호</span>
@@ -2030,5 +2033,8 @@
     }
 </script>
 
+{% with sidebar_section = 'baseball' %}
+{% include 'includes/desk_sidebar.html' %}
+{% endwith %}
 </body>
 </html>

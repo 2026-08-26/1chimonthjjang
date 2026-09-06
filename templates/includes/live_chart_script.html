@@ -1,0 +1,118 @@
+(() => {
+    const data = {{ live_chart_data | tojson }};
+    const svg = document.getElementById('trend-chart');
+    const main = svg.closest('.chart-main');
+    const layout = main.closest('.chart-layout');
+    const side = layout.querySelector('.chart-side');
+    const tabs = [...document.querySelectorAll('[data-flow-category]')];
+    const ns = 'http://www.w3.org/2000/svg';
+    function shape(tag, attrs, text) {
+        const element = document.createElementNS(ns, tag);
+        Object.entries(attrs).forEach(([key, value]) => element.setAttribute(key, value));
+        if (text !== undefined) element.textContent = text;
+        svg.appendChild(element);
+        return element;
+    }
+    const order = tabs.map(tab => tab.dataset.flowCategory);
+    let currentKey = order[0];
+    let visibleCount = 0;
+    let holdTicks = 0;
+    let timer;
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+    function select(key, restart = true) {
+        if (restart) {
+            currentKey = key;
+            visibleCount = Math.min(3, data[key].series.length);
+            holdTicks = 0;
+        }
+        const selected = data[key];
+        tabs.forEach(tab => {
+            const active = tab.dataset.flowCategory === key;
+            tab.classList.toggle('active', active);
+            tab.setAttribute('aria-pressed', String(active));
+        });
+        main.querySelector('.sub-title').textContent = selected.title;
+        main.querySelector('.live-chart-description').textContent = selected.description.replace('최근 12', '최근 8');
+        const indicator = main.querySelector('.live-indicator');
+        indicator.replaceChildren();
+        const dot = document.createElement('span');
+        dot.className = 'live-indicator-dot';
+        dot.textContent = '●';
+        indicator.append(dot, document.createTextNode(' LIVE SIMULATION'));
+        indicator.title = '저장된 분석 데이터를 순서대로 재생합니다.';
+        svg.replaceChildren();
+        svg.setAttribute('role', 'img');
+        svg.setAttribute('aria-label', selected.title + '. ' + selected.description);
+        const available = selected.series.slice(-8);
+        const series = available.slice(0, visibleCount);
+        const labels = layout.querySelectorAll('.live-stat-label');
+        labels[0].textContent = selected.temporal ? 'CURRENT PERIOD' : 'CURRENT CATEGORY';
+        labels[1].textContent = 'DETECTED SIGNALS';
+        labels[2].textContent = selected.temporal ? 'CHANGE' : 'DATA BASIS';
+        const last = series.at(-1);
+        document.getElementById('livePeriod').textContent = last?.date || '데이터 없음';
+        document.getElementById('liveSignalCount').textContent = (last?.count || 0).toLocaleString('ko-KR');
+        const diff = series.length > 1 ? last.count - series.at(-2).count : null;
+        document.getElementById('liveChange').textContent = selected.temporal ? (diff === null ? '비교 자료 없음' : `${diff > 0 ? '▲ +' : diff < 0 ? '▼ ' : '─ '}${diff.toLocaleString('ko-KR')}건`) : '분류별 건수';
+        if (!series.length) shape('text', {x:450,y:135,'text-anchor':'middle',fill:'#777'}, '표시할 데이터가 없습니다');
+        const max = Math.max(1, ...available.map(row => row.count)) * 1.1;
+        for(let i=0;i<=4;i++) {
+            const y=18+i*57;
+            shape('line',{x1:38,x2:885,y1:y,y2:y,class:'grid-line'});
+        }
+        const points = series.map((row,index) => ({
+            x: series.length === 1 ? 461.5 : 38+847*index/(series.length-1),
+            y:246-row.count/max*228,
+            row
+        }));
+        if (points.length) {
+            const path = points.map((point,index) => `${index ? 'L' : 'M'} ${point.x} ${point.y}`).join(' ');
+            if(points.length > 1) {
+                shape('path',{d:`${path} L ${points.at(-1).x} 246 L ${points[0].x} 246 Z`,class:'chart-area'});
+                const line = shape('path',{d:path,class:'chart-line'});
+                if(!reducedMotion.matches) {
+                    const length = line.getTotalLength();
+                    line.animate([{strokeDasharray:`${length} ${length}`,strokeDashoffset:length},{strokeDasharray:`${length} ${length}`,strokeDashoffset:0}],{duration:650,easing:'ease-out'});
+                }
+            }
+            points.forEach((point,index) => {
+                const circle=shape('circle',{cx:point.x,cy:point.y,r:4,class:index===points.length-1?'chart-point latest-point':'chart-point'});
+                const title=document.createElementNS(ns,'title');
+                title.textContent=`${point.row.date}: ${point.row.count.toLocaleString('ko-KR')}건`;
+                circle.appendChild(title);
+            });
+        }
+        side.replaceChildren();
+        const heading=document.createElement('div');heading.className='sub-title';heading.textContent=key==='content'?'신호 등급별 분석 건수':selected.temporal?'규칙별 탐지량':'분류별 건수';side.appendChild(heading);
+        const maxBreakdown=Math.max(1,...selected.breakdown.map(row=>row.count));
+        selected.breakdown.forEach(row=>{
+            const rule=document.createElement('div');rule.className='rule';
+            const top=document.createElement('div');top.className='rule-top';
+            const label=document.createElement('span');label.textContent=row.date;
+            const count=document.createElement('strong');count.textContent=row.count.toLocaleString('ko-KR');top.append(label,count);
+            const track=document.createElement('div');track.className='rule-track';
+            const bar=document.createElement('div');bar.className='rule-bar';bar.style.width=`${row.count/maxBreakdown*100}%`;track.appendChild(bar);rule.append(top,track);side.appendChild(rule);
+        });
+    }
+    function startTimer() {
+        clearInterval(timer);
+        timer = setInterval(() => {
+            if (document.hidden) return;
+            const length = Math.min(8, data[currentKey].series.length);
+            if (visibleCount < length) {
+                visibleCount += 1;
+                select(currentKey, false);
+            } else if (++holdTicks >= 2) {
+                select(order[(order.indexOf(currentKey) + 1) % order.length]);
+            }
+        }, 2400);
+    }
+    tabs.forEach(tab => tab.addEventListener('click', () => {
+        select(tab.dataset.flowCategory);
+        startTimer();
+    }));
+    window.addEventListener('pagehide', () => clearInterval(timer));
+    window.addEventListener('pageshow', () => startTimer());
+    select(currentKey);
+    startTimer();
+})();

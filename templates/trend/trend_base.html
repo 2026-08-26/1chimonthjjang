@@ -523,6 +523,7 @@
     </style>
 
     {% block extra_head %}{% endblock %}
+{% include 'includes/desk_sidebar_styles.html' %}
 </head>
 
 <body>
@@ -538,6 +539,7 @@
 
             <button
                 id="sidebar-toggle"
+                aria-controls="newsroom-sidebar"
                 class="menu-toggle"
                 type="button"
                 aria-label="메뉴 열기"
@@ -618,169 +620,9 @@
          SIDEBAR
     ================================================== -->
 
-    <div
-        id="sidebar-overlay"
-        class="sidebar-overlay"
-    ></div>
-
-
-    <aside
-        id="newsroom-sidebar"
-        class="newsroom-sidebar"d">
-                <div class="sidebar-brand-name">
-                    DATA TIP-OFF
-                </div>
-
-                <div class="sidebar-brand-sub">
-                    데이터 취재 시그널 플랫폼
-                </div>
-            </div>
-
-
-            <div class="sidebar-section">
-
-                <div class="sidebar-label">
-                    전체
-                </div>
-
-                <a
-                    href="/home-v2-nav"
-                    class="sidebar-link"
-                >
-                    <span class="sidebar-link-left">
-                        <span class
-        aria-hidden="true"
-    >
-
-        <button
-            id="sidebar-close"
-            class="sidebar-close"
-            type="button"
-            aria-label="메뉴 닫기"
-        >
-            ×
-        </button>
-
-
-        <div class="sidebar-inner">
-
-            <div class="sidebar-bran="sidebar-icon">▦</span>
-                        전체 대시보드
-                    </span>
-
-                    <span class="sidebar-arrow">→</span>
-                </a>
-
-            </div>
-
-
-            <div class="sidebar-section">
-
-                <div class="sidebar-label">
-                    시그널 분야
-                </div>
-
-                <a
-                    href="/social"
-                    class="sidebar-link"
-                >
-                    <span class="sidebar-link-left">
-                        <span class="sidebar-icon">○</span>
-                        사회
-                    </span>
-                    <span class="sidebar-arrow">→</span>
-                </a>
-
-                <a
-                    href="/economy"
-                    class="sidebar-link"
-                >
-                    <span class="sidebar-link-left">
-                        <span class="sidebar-icon">○</span>
-                        경제
-                    </span>
-                    <span class="sidebar-arrow">→</span>
-                </a>
-
-                <a
-                    href="/stock"
-                    class="sidebar-link"
-                >
-                    <span class="sidebar-link-left">
-                        <span class="sidebar-icon">○</span>
-                        주식
-                    </span>
-                    <span class="sidebar-arrow">→</span>
-                </a>
-
-                <a
-                    href="/trend"
-                    class="sidebar-link active"
-                >
-                    <span class="sidebar-link-left">
-                        <span class="sidebar-icon">●</span>
-                        K콘텐츠
-                    </span>
-                    <span class="sidebar-arrow">→</span>
-                </a>
-
-                <a
-                    href="/baseball"
-                    class="sidebar-link"
-                >
-                    <span class="sidebar-link-left">
-                        <span class="sidebar-icon">○</span>
-                        야구
-                    </span>
-                    <span class="sidebar-arrow">→</span>
-                </a>
-
-            </div>
-
-
-            <div class="sidebar-section">
-
-                <div class="sidebar-label">
-                    K콘텐츠 바로가기
-                </div>
-
-                <a
-                    href="/trend"
-                    class="sidebar-link sidebar-sub-link"
-                >
-                    전체 K콘텐츠
-                    <span class="sidebar-arrow">→</span>
-                </a>
-
-                <a
-                    href="/content/music"
-                    class="sidebar-link sidebar-sub-link"
-                >
-                    노래
-                    <span class="sidebar-arrow">→</span>
-                </a>
-
-                <a
-                    href="/content/drama"
-                    class="sidebar-link sidebar-sub-link"
-                >
-                    드라마
-                    <span class="sidebar-arrow">→</span>
-                </a>
-
-                <a
-                    href="/content/webtoon"
-                    class="sidebar-link sidebar-sub-link"
-                >
-                    웹툰
-                    <span class="sidebar-arrow">→</span>
-                </a>
-
-            </div>
-
-        </div>
-
-    </aside>
+    {% with sidebar_section = 'trend' %}
+    {% include 'includes/desk_sidebar.html' %}
+    {% endwith %}
 
 
     <!-- ==================================================
@@ -805,110 +647,7 @@
     </footer>
 
 
-    <script>
-        (function () {
 
-            const toggle =
-                document.getElementById(
-                    "sidebar-toggle"
-                );
-
-            const sidebar =
-                document.getElementById(
-                    "newsroom-sidebar"
-                );
-
-            const overlay =
-                document.getElementById(
-                    "sidebar-overlay"
-                );
-
-            const closeButton =
-                document.getElementById(
-                    "sidebar-close"
-                );
-
-
-            function setSidebar(open) {
-
-                if (
-                    !sidebar
-                    ||
-                    !overlay
-                    ||
-                    !toggle
-                ) {
-                    return;
-                }
-
-                sidebar.classList.toggle(
-                    "open",
-                    open
-                );
-
-                overlay.classList.toggle(
-                    "open",
-                    open
-                );
-
-                document.body.classList.toggle(
-                    "sidebar-open",
-                    open
-                );
-
-                sidebar.setAttribute(
-                    "aria-hidden",
-                    open ? "false" : "true"
-                );
-
-                toggle.setAttribute(
-                    "aria-expanded",
-                    open ? "true" : "false"
-                );
-            }
-
-
-            if (toggle) {
-                toggle.addEventListener(
-                    "click",
-                    function () {
-                        setSidebar(true);
-                    }
-                );
-            }
-
-
-            if (closeButton) {
-                closeButton.addEventListener(
-                    "click",
-                    function () {
-                        setSidebar(false);
-                    }
-                );
-            }
-
-
-            if (overlay) {
-                overlay.addEventListener(
-                    "click",
-                    function () {
-                        setSidebar(false);
-                    }
-                );
-            }
-
-
-            document.addEventListener(
-                "keydown",
-                function (event) {
-                    if (event.key === "Escape") {
-                        setSidebar(false);
-                    }
-                }
-            );
-
-        })();
-    </script>
 
 
     <script>

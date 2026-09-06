@@ -1,0 +1,68 @@
+<style>
+
+        .sidebar-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,.42);
+            opacity: 0;
+            visibility: hidden;
+            transition: .2s ease;
+            z-index: 199;
+        }
+        .sidebar-overlay.open { opacity: 1; visibility: visible; }
+
+        .newsroom-sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: min(340px, 88vw);
+            height: 100vh;
+            background: #111;
+            color: white;
+            transform: translateX(-100%);
+            transition: transform .22s ease;
+            z-index: 200;
+            overflow-y: auto;
+        }
+        .newsroom-sidebar.open { transform: translateX(0); }
+
+        .sidebar-close {
+            position: absolute;
+            right: 20px;
+            top: 18px;
+            border: 0;
+            background: transparent;
+            color: #aaa;
+            font-size: 26px;
+        }
+
+        .sidebar-inner { padding: 54px 28px 32px; }
+        .sidebar-brand { padding-bottom: 26px; border-bottom: 1px solid #333; }
+        .sidebar-brand-name { font-family: Georgia, serif; font-size: 24px; font-weight: 900; }
+        .sidebar-brand-sub { margin-top: 8px; color: #777; font-size: 9px; }
+        .sidebar-section { padding: 22px 0; border-bottom: 1px solid #2c2c2c; }
+        .sidebar-label { margin-bottom: 9px; color: #666; font-size: 8px; font-weight: 900; letter-spacing: 1px; }
+        .sidebar-link {
+            min-height: 42px;
+            padding: 0 10px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            color: #bbb;
+            font-size: 11px;
+            font-weight: 700;
+        }
+        .sidebar-link:hover, .sidebar-link.active { background: #1d1d1d; color: white; }
+        .sidebar-link-left { display: flex; align-items: center; gap: 10px; }
+        .sidebar-icon { color: #777; }
+        .sidebar-arrow { color: #666; }
+        body.sidebar-open { overflow: hidden; }
+
+        
+.desk-menu-toggle { width:36px; height:36px; flex:0 0 36px; padding:0; border:1px solid #444; background:transparent; color:white; display:flex; align-items:center; justify-content:center; font-size:16px; cursor:pointer; }
+.desk-menu-toggle:hover { border-color:#777; }
+.desk-menu-toggle:focus-visible, .newsroom-sidebar :focus-visible { outline:2px solid white; outline-offset:3px; }
+.newsroom-sidebar { height:100dvh; }
+@media (max-width:1200px) { .stock-desk-name, .stock-divider, .header-sub, .header-line { display:none; } }
+@media (prefers-reduced-motion:reduce) { .newsroom-sidebar, .sidebar-overlay { transition:none; } }
+</style>

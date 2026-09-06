@@ -362,11 +362,14 @@
             }
         }
     </style>
+{% include 'includes/desk_sidebar_styles.html' %}
 </head>
 
 <body>
     <header class="stock-shell-header">
         <div class="stock-brand-wrap">
+            <button id="sidebar-toggle" class="desk-menu-toggle" type="button" aria-label="메뉴 열기" aria-controls="newsroom-sidebar" aria-expanded="false">☰</button>
+
             <a href="/" class="stock-brand">DATA TIP-OFF</a>
             <span class="stock-divider" aria-hidden="true"></span>
             <span class="stock-desk-name">STOCK SIGNAL DESK / 주식 취재 신호</span>
@@ -401,5 +404,8 @@
             실제 원인은 공시·뉴스·기업행사 등 추가 확인이 필요합니다.
         </span>
     </footer>
+{% with sidebar_section = 'stock' %}
+{% include 'includes/desk_sidebar.html' %}
+{% endwith %}
 </body>
 </html>

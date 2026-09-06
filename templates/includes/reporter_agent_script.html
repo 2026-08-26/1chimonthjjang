@@ -1,0 +1,99 @@
+<script>
+(() => {
+    const select = document.getElementById('aiSelect');
+    const button = document.getElementById('aiGenerate');
+    const empty = document.getElementById('aiEmpty');
+    const output = document.getElementById('aiOutput');
+    if (!select || !button || !empty || !output) return;
+    const notice = document.createElement('p');
+    notice.setAttribute('role', 'status');
+    notice.style.cssText = 'color:#bbb;font-size:12px;line-height:1.7;margin:12px 0 0;white-space:pre-line';
+    notice.hidden = true;
+    button.after(notice);
+    let controller, serial = 0;
+    const originalLabel = button.textContent.trim();
+    function message(text) { notice.textContent = text; notice.hidden = !text; }
+    function endpoint(option) {
+        const d = option.dataset, enc = encodeURIComponent;
+        if (d.category === '사회' || d.category === '경제') {
+            if (!d.signalType) throw Error('시그널 유형이 없습니다. 페이지를 새로고침해주세요.');
+            return `/api/${d.category === '사회' ? 'social' : 'economy'}-report/${enc(d.signalType)}?region=${enc(d.region || '')}`;
+        }
+        if (d.category === '주식') {
+            if (!d.stockMarket || !d.stockCode || !d.stockDate) throw Error('종목 정보가 없습니다. 페이지를 새로고침해주세요.');
+            return `/api/stock-report/${enc(d.stockMarket)}/${enc(d.stockCode)}/${enc(d.stockDate)}`;
+        }
+        if (d.category === 'K콘텐츠' || d.category === '야구') {
+            if (!/^\d+$/.test(d.itemId || '')) throw Error('분석 데이터 번호가 없습니다. 홈페이지 라우트 수정 파일도 적용해주세요.');
+            return `/api/${d.category === '야구' ? 'baseball-ai-report' : 'ai-report'}/${enc(d.itemId)}`;
+        }
+        throw Error('이 분야의 분석 경로를 찾을 수 없습니다.');
+    }
+    function fill(id, values) {
+        const target = document.getElementById(id); target.replaceChildren();
+        const list = Array.isArray(values) ? values : values ? [values] : [];
+        for (const value of list) {
+            const li = document.createElement('li');
+            li.textContent = typeof value === 'string' ? value : JSON.stringify(value);
+            target.appendChild(li);
+        }
+    }
+    async function analyse() {
+        const option = select.options[select.selectedIndex];
+        if (!option?.value) { message('분석할 시그널을 선택해주세요.'); select.focus(); return; }
+        controller?.abort();
+        const token = ++serial;
+        controller = new AbortController();
+        const currentController = controller;
+        const timeout = setTimeout(() => currentController.abort(), 90000);
+        button.disabled = true; button.textContent = '취재 분석 중...';
+        output.style.display = 'none'; empty.style.display = 'none';
+        message('선택한 시그널의 취재 분석을 불러오고 있습니다.');
+        try {
+            const response = await fetch(endpoint(option), {
+                method:'POST', signal:currentController.signal,
+                headers:{'Content-Type':'application/json','Accept':'application/json'},
+                body:JSON.stringify({include_news:false})
+            });
+            let data;
+            try { data = await response.json(); }
+            catch { throw Error(`분석 서버 응답을 읽을 수 없습니다. (HTTP ${response.status})`); }
+            if (!response.ok || data.error) throw Error(data.error || `분석 요청 실패 (HTTP ${response.status})`);
+            if (token !== serial) return;
+            if (!data.briefing) throw Error('분석 결과가 비어 있습니다. 다시 시도해주세요.');
+            document.getElementById('aiTitle').textContent = option.textContent.trim().replace(/\s+/g,' ');
+            document.getElementById('aiBriefing').textContent = data.briefing;
+            fill('aiIdeas', data.article_ideas || data.hypotheses);
+            fill('aiQuestions', data.questions);
+            fill('aiData', data.verification_data);
+            output.style.display = 'block'; message('');
+        } catch (error) {
+            if (token !== serial) return;
+            message((error.name === 'AbortError' ? '분석 요청 시간이 초과됐습니다.' : error.message) + '\n선택 항목 분석 버튼을 눌러 다시 시도해주세요.');
+        } finally {
+            clearTimeout(timeout);
+            if (token === serial) { button.disabled = false; button.textContent = originalLabel; }
+        }
+    }
+    select.addEventListener('change', () => {
+        serial++; controller?.abort(); button.disabled = false; button.textContent = originalLabel;
+        output.style.display = 'none'; empty.style.display = ''; message('');
+    });
+    button.addEventListener('click', analyse);
+    document.querySelectorAll('.analyse-button').forEach(rowButton => {
+        rowButton.addEventListener('click', () => {
+            const d = rowButton.dataset;
+            const index = [...select.options].findIndex(option => {
+                const o = option.dataset;
+                return o.category === d.category && o.region === d.region && option.value === d.signalName &&
+                    (o.itemId || '') === (d.itemId || '') && (o.stockCode || '') === (d.stockCode || '') &&
+                    (o.stockMarket || '') === (d.stockMarket || '') && (o.stockDate || '') === (d.stockDate || '');
+            });
+            if (index < 0) { message('선택한 시그널을 찾을 수 없습니다. 새로고침해주세요.'); return; }
+            select.selectedIndex = index;
+            analyse();
+            select.scrollIntoView({behavior:'smooth',block:'center'});
+        });
+    });
+})();
+</script>

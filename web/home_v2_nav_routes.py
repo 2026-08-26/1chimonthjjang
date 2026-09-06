@@ -346,7 +346,7 @@ def load_baseball_home_signals(limit=5):
         # 홈 화면 형식으로 변환
         # ==========================================
 
-        for rank, (_, row) in enumerate(
+        for rank, (source_index, row) in enumerate(
             baseball.iterrows(),
             start=1
         ):
@@ -389,6 +389,7 @@ def load_baseball_home_signals(limit=5):
                 "severity": severity,
 
                 "signal_type": "baseball",
+                "item_id": int(source_index),
 
                 # 일단 기존 야구 페이지로 연결
                 "detail_url": "/baseball",
@@ -1057,6 +1058,101 @@ def build_category_flow(base_top_signals):
 # HOME
 # =========================================================
 
+def build_live_chart_data():
+    """Use dated counts where available and explicit category counts otherwise."""
+    payload = {}
+    def rows(counter):
+        return [{"date": str(key), "count": int(value)} for key, value in sorted(counter.items())]
+    def entry(title, description, series, breakdown, temporal=False):
+        return dict(title=title, description=description, series=series,
+                    breakdown=breakdown, temporal=temporal)
+    for key, name in (("social", "사회"), ("economy", "경제")):
+        frame = pd.read_csv(PROJECT_ROOT / "result" / f"all_{key}_signals.csv")
+        dates = pd.to_datetime(frame["Date"], errors="coerce").dt.to_period("M")
+        counts = frame.groupby(dates).size()
+        if not counts.empty:
+            counts = counts.reindex(pd.period_range(counts.index.min(), counts.index.max(), freq="M"), fill_value=0)
+        breakdown = rows(frame["signal_name"].value_counts())
+        payload[key] = entry(f"{name} 월별 시그널 탐지량", "전체 원본 시그널의 월별 건수 · 최근 12개월 표시 · 직전 월 대비 변화", rows(counts), breakdown, True)
+    stock = _load_stock_signal_dataframe()
+    if "date" in stock:
+        dates = pd.to_datetime(stock["date"], errors="coerce").dt.strftime("%Y-%m-%d")
+        series = rows(stock.groupby(dates).size())
+    else:
+        series = []
+    latest, date = _latest_stock_rows()
+    breakdown = [{"date": name, "count": int(latest[col].map(_truthy).sum()) if col in latest else 0}
+                 for col, name in (("volume_signal", "거래량 급증"), ("price_signal", "가격 급변"), ("concentration_signal", "거래대금 쏠림"))]
+    payload["stock"] = entry("주식 거래일별 시그널 후보", "저장된 거래일별 전체 시장 후보 수 · 최근 12개 관측일 · 규칙별 건수는 최신 거래일 기준(중복 포함)", series, breakdown, True)
+    contents = load_all_contents()
+    content_counts = Counter(item.get("category_name", item.get("category", "기타")) for item in contents)
+    # Match the loader's category labels, without inventing dates for its simulated interest index.
+    content_series = rows(content_counts)
+    payload["content"] = entry("K콘텐츠 유형별 분석 건수", "노래·드라마·웹툰의 전체 분석 건수(LOW 포함) · 날짜별 탐지 이력이 없어 유형별로 표시", content_series, rows(Counter(item.get("signal", "미분류") for item in contents)))
+    baseball_series = []
+    for name, path in BASEBALL_FILES.items():
+        try:
+            frame = pd.read_csv(path)
+        except (OSError, ValueError, pd.errors.ParserError):
+            continue
+        baseball_series.append({"date": name, "count": len(frame)})
+    payload["baseball"] = entry("야구 날씨 조건별 시그널", "2019 시즌 선수·날씨 조건별 분석 행 수 · 같은 선수 중복 포함 · 날짜별 탐지 이력이 없어 조건별로 표시", baseball_series, baseball_series)
+    overview = [{"date": name, "count": sum(row["count"] for row in payload[key]["series"])}
+                for key, name in (("social", "사회"), ("economy", "경제"), ("stock", "주식"), ("content", "K콘텐츠"), ("baseball", "야구"))]
+    # Stocks in the overview use the latest trading date, like the summary card.
+    overview[2]["count"] = len(latest)
+    payload["all"] = entry("전체 분야별 시그널 현황", "분야별 집계 기준이 다릅니다: 사회·경제 전체 이력 / 주식 최신 거래일 / K콘텐츠 전체 분석 / 야구 선수·날씨 조건. 탭에서 세부 기준을 확인하세요.", overview, overview)
+    return payload
+
+
+def build_hero_live_data():
+    """Count full source data, never the five-item homepage shortlist."""
+    result = {}
+    for key, status in (("social", "SOCIAL"), ("economy", "ECONOMY")):
+        path = PROJECT_ROOT / "result" / f"all_{key}_signals.csv"
+        try:
+            frame = pd.read_csv(path)
+            result[key] = {
+                "candidates": len(frame),
+                "rules": int(frame["signal_type"].nunique()),
+                "status": status,
+                "basis": "전체 시그널 행 · 데이터에 포함된 탐지 규칙 종류",
+            }
+        except (OSError, ValueError, KeyError, pd.errors.ParserError):
+            result[key] = {"candidates": None, "rules": None, "status": status,
+                           "basis": "데이터를 불러올 수 없습니다"}
+
+    stock, date = _latest_stock_rows()
+    result["stock"] = {
+        "candidates": len(stock) if date else None,
+        "rules": 3,
+        "status": "STOCK",
+        "basis": f"{date or '기준일 없음'} · 전체 시장 · 거래량 급증/5거래일 가격 급변/거래대금 쏠림",
+    }
+    try:
+        contents = load_all_contents()
+        result["content"] = {
+            "candidates": len(contents), "rules": 1, "status": "K-CONTENTS",
+            "basis": "전체 콘텐츠 분석 건수(LOW 포함) · 관심도 변화·Z-score·지속성을 결합한 복합 탐지 규칙 1개",
+        }
+    except (OSError, ValueError, KeyError, pd.errors.ParserError):
+        result["content"] = {"candidates": None, "rules": 1, "status": "K-CONTENTS",
+                             "basis": "콘텐츠 데이터를 불러올 수 없습니다"}
+
+    baseball_count = 0
+    try:
+        for path in BASEBALL_FILES.values():
+            baseball_count += len(pd.read_csv(path))
+        result["baseball"] = {
+            "candidates": baseball_count, "rules": len(BASEBALL_FILES), "status": "BASEBALL",
+            "basis": "선수·날씨 조건별 전체 신호 행(같은 선수 중복 포함) · 기온/습도/강수 3종",
+        }
+    except (OSError, ValueError, pd.errors.ParserError):
+        result["baseball"] = {"candidates": None, "rules": len(BASEBALL_FILES),
+                              "status": "BASEBALL", "basis": "야구 데이터를 불러올 수 없습니다"}
+    return result
+
+
 @home_v2_nav_bp.route("/home-v2-nav")
 def home_v2_nav():
     (
@@ -1185,4 +1281,6 @@ def home_v2_nav():
         monthly_chart=monthly_chart,
         rule_chart=rule_chart,
         category_flow=category_flow,
+        hero_live_data=build_hero_live_data(),
+        live_chart_data=build_live_chart_data(),
     )

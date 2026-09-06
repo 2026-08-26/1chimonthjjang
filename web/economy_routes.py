@@ -1,7 +1,7 @@
 import os
 
 import pandas as pd
-from flask import Blueprint, jsonify, render_template
+from flask import Blueprint, jsonify, render_template, request
 
 
 economy_bp = Blueprint(
@@ -341,6 +341,10 @@ def economy_report(
         == signal_type
     ]
 
+
+    selected_region = request.args.get("region", "").strip()
+    if selected_region:
+        signal_df = signal_df[signal_df["Region"].astype(str).eq(selected_region)]
 
     if signal_df.empty:
 

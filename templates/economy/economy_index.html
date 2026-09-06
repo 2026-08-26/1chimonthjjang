@@ -1001,6 +1001,7 @@
 
     </style>
 
+{% include 'includes/desk_sidebar_styles.html' %}
 </head>
 
 
@@ -1014,7 +1015,10 @@
 <header class="header">
 
     <button
-        id="menuButton"
+        id="sidebar-toggle"
+        aria-label="메뉴 열기"
+        aria-controls="newsroom-sidebar"
+        aria-expanded="false"
         class="menu-button"
         type="button"
     >
@@ -1521,5 +1525,8 @@
 </div>
 
 
+{% with sidebar_section = 'economy' %}
+{% include 'includes/desk_sidebar.html' %}
+{% endwith %}
 </body>
 </html>

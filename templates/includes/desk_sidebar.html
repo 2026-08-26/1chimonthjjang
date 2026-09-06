@@ -1,0 +1,75 @@
+    <div id="sidebar-overlay" class="sidebar-overlay"></div>
+
+    <aside id="newsroom-sidebar" class="newsroom-sidebar" aria-hidden="true" role="dialog" aria-modal="true" aria-label="전체 메뉴" inert>
+        <button id="sidebar-close" class="sidebar-close" type="button" aria-label="메뉴 닫기">×</button>
+        <div class="sidebar-inner">
+            <div class="sidebar-brand">
+                <div class="sidebar-brand-name">DATA TIP-OFF</div>
+                <div class="sidebar-brand-sub">데이터 취재 시그널 플랫폼</div>
+            </div>
+
+            <div class="sidebar-section">
+                <div class="sidebar-label">전체</div>
+                <a href="/home-v2-nav" class="sidebar-link">
+                    <span class="sidebar-link-left"><span class="sidebar-icon">▦</span>전체 대시보드</span>
+                </a>
+            </div>
+
+            <div class="sidebar-section">
+                <div class="sidebar-label">시그널 분야</div>
+                <a href="/social" class="sidebar-link{% if sidebar_section == 'social' %} active{% endif %}"{% if sidebar_section == 'social' %} aria-current="page"{% endif %}><span class="sidebar-link-left"><span class="sidebar-icon">○</span>사회</span><span class="sidebar-arrow">→</span></a>
+                <a href="/economy" class="sidebar-link{% if sidebar_section == 'economy' %} active{% endif %}"{% if sidebar_section == 'economy' %} aria-current="page"{% endif %}><span class="sidebar-link-left"><span class="sidebar-icon">○</span>경제</span><span class="sidebar-arrow">→</span></a>
+                <a href="/stock" class="sidebar-link{% if sidebar_section == 'stock' %} active{% endif %}"{% if sidebar_section == 'stock' %} aria-current="page"{% endif %}><span class="sidebar-link-left"><span class="sidebar-icon">○</span>주식</span><span class="sidebar-arrow">→</span></a>
+                <a href="/trend" class="sidebar-link{% if sidebar_section == 'trend' %} active{% endif %}"{% if sidebar_section == 'trend' %} aria-current="page"{% endif %}><span class="sidebar-link-left"><span class="sidebar-icon">○</span>K콘텐츠</span><span class="sidebar-arrow">→</span></a>
+                <a href="/baseball" class="sidebar-link{% if sidebar_section == 'baseball' %} active{% endif %}"{% if sidebar_section == 'baseball' %} aria-current="page"{% endif %}><span class="sidebar-link-left"><span class="sidebar-icon">○</span>야구</span><span class="sidebar-arrow">→</span></a>
+            </div>
+
+            {% if sidebar_section == 'trend' %}
+            <div class="sidebar-section">
+                <div class="sidebar-label">K콘텐츠 바로가기</div>
+                <a href="/trend" class="sidebar-link">전체 K콘텐츠<span class="sidebar-arrow">→</span></a>
+                <a href="/content/music" class="sidebar-link">노래<span class="sidebar-arrow">→</span></a>
+                <a href="/content/drama" class="sidebar-link">드라마<span class="sidebar-arrow">→</span></a>
+                <a href="/content/webtoon" class="sidebar-link">웹툰<span class="sidebar-arrow">→</span></a>
+            </div>
+            {% else %}
+            <div class="sidebar-section">
+                <div class="sidebar-label">바로가기</div>
+                <a href="/home-v2-nav#signal-ranking" class="sidebar-link sidebar-scroll-link"><span class="sidebar-link-left"><span class="sidebar-icon">↳</span>취재 우선순위</span></a>
+                <a href="/home-v2-nav#ai-agent" class="sidebar-link sidebar-scroll-link"><span class="sidebar-link-left"><span class="sidebar-icon">✦</span>AI 취재 에이전트</span></a>
+            </div>
+            {% endif %}
+        </div>
+    </aside>
+
+<script>
+(() => {
+    const toggle = document.getElementById('sidebar-toggle');
+    const sidebar = document.getElementById('newsroom-sidebar');
+    const overlay = document.getElementById('sidebar-overlay');
+    const close = document.getElementById('sidebar-close');
+    function setOpen(open) {
+        sidebar.inert = !open;
+        sidebar.classList.toggle('open', open);
+        overlay.classList.toggle('open', open);
+        sidebar.setAttribute('aria-hidden', String(!open));
+        toggle.setAttribute('aria-expanded', String(open));
+        document.body.classList.toggle('sidebar-open', open);
+        (open ? close : toggle).focus();
+    }
+    toggle.addEventListener('click', () => setOpen(!sidebar.classList.contains('open')));
+    close.addEventListener('click', () => setOpen(false));
+    overlay.addEventListener('click', () => setOpen(false));
+    sidebar.querySelectorAll('a').forEach(link => link.addEventListener('click', () => setOpen(false)));
+    document.addEventListener('keydown', event => {
+        if (!sidebar.classList.contains('open')) return;
+        if (event.key === 'Escape') { event.preventDefault(); setOpen(false); }
+        if (event.key === 'Tab') {
+            const items = [...sidebar.querySelectorAll('button, a[href]')];
+            const first = items[0], last = items[items.length - 1];
+            if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); }
+            else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
+        }
+    });
+})();
+</script>

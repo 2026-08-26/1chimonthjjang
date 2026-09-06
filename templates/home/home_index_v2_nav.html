@@ -3104,9 +3104,7 @@
             <div
                 id="heroLiveCandidates"
                 class="hero-live-number"
-            >
-                1028
-            </div>
+            >{{ hero_live_data.social.candidates if hero_live_data.social.candidates is not none else '확인 불가' }}</div>
 
             <div class="hero-live-label">
                 시그널 후보
@@ -3120,9 +3118,7 @@
             <div
                 id="heroLiveRules"
                 class="hero-live-number"
-            >
-                5
-            </div>
+            >{{ hero_live_data.social.rules if hero_live_data.social.rules is not none else '확인 불가' }}</div>
 
             <div class="hero-live-label">
                 탐지 규칙
@@ -3624,11 +3620,7 @@
 
                 <div class="section-description">
 
-                    기존 사회·경제 탐지 데이터를
-
-                    월별 및 탐지 규칙별로
-
-                    확인합니다.
+                    사회·경제·주식·K콘텐츠·야구 데이터를 분야별로 확인합니다.
 
                 </div>
 
@@ -3651,42 +3643,42 @@
         </div>
         <div class="live-chart-tabs">
 
-    <button
+    <button data-flow-category="all"
         class="live-chart-tab active"
         type="button"
     >
         전체
     </button>
 
-    <button
+    <button data-flow-category="social"
         class="live-chart-tab"
         type="button"
     >
         사회
     </button>
 
-    <button
+    <button data-flow-category="economy"
         class="live-chart-tab"
         type="button"
     >
         경제
     </button>
 
-    <button
+    <button data-flow-category="stock"
         class="live-chart-tab"
         type="button"
     >
         주식
     </button>
 
-    <button
+    <button data-flow-category="content"
         class="live-chart-tab"
         type="button"
     >
         K콘텐츠
     </button>
 
-    <button
+    <button data-flow-category="baseball"
         class="live-chart-tab"
         type="button"
     >
@@ -4481,39 +4473,7 @@ const heroStatus =
     );
 
 
-const heroLiveData = {
-
-    social: {
-        candidates: "1028",
-        rules: "5",
-        status: "SOCIAL"
-    },
-
-    economy: {
-        candidates: "366",
-        rules: "6",
-        status: "ECONOMY"
-    },
-
-    stock: {
-        candidates: "-",
-        rules: "-",
-        status: "STOCK"
-    },
-
-    content: {
-        candidates: "-",
-        rules: "-",
-        status: "K-CONTENTS"
-    },
-
-    baseball: {
-        candidates: "-",
-        rules: "-",
-        status: "BASEBALL"
-    }
-
-};
+const heroLiveData = {{ hero_live_data | tojson }};
 
 
 const heroCategoryOrder = [
@@ -4577,10 +4537,13 @@ function changeHeroSummary(
         function () {
 
             heroCandidates.textContent =
-                data.candidates;
+                data.candidates == null ? "확인 불가" : Number(data.candidates).toLocaleString("ko-KR");
 
             heroRules.textContent =
-                data.rules;
+                data.rules == null ? "확인 불가" : Number(data.rules).toLocaleString("ko-KR");
+
+            heroCandidates.title = data.basis;
+            heroRules.title = data.basis;
 
             heroStatus.textContent =
                 data.status;
@@ -5202,719 +5165,8 @@ setInterval(
    LIVE CHART SIMULATION
 ================================================= */
 
-let monthlyData = [];
+{% include 'includes/live_chart_script.html' %}
 
-try {
-    monthlyData = JSON.parse(
-        document.getElementById("monthlyData").textContent || "[]"
-    );
-}
-catch (error) {
-    console.error("monthlyData parsing error:", error);
-}
-
-
-/* -------------------------------------------------
-   ELEMENTS
-------------------------------------------------- */
-
-const svg =
-    document.getElementById("trend-chart");
-
-const livePeriod =
-    document.getElementById("livePeriod");
-
-const liveSignalCount =
-    document.getElementById("liveSignalCount");
-
-const liveChange =
-    document.getElementById("liveChange");
-
-
-/* -------------------------------------------------
-   LIVE CHART DRAW
-------------------------------------------------- */
-
-function renderLiveChart(visibleData) {
-
-    if (
-        !svg ||
-        !Array.isArray(visibleData) ||
-        visibleData.length === 0
-    ) {
-        return;
-    }
-
-
-    /* 기존 그래프 지우기 */
-
-    svg.innerHTML = "";
-
-
-    /* SVG 크기 */
-
-    const W = 900;
-    const H = 270;
-
-    const LEFT = 38;
-    const RIGHT = 15;
-    const TOP = 18;
-    const BOTTOM = 24;
-
-    const plotW =
-        W - LEFT - RIGHT;
-
-    const plotH =
-        H - TOP - BOTTOM;
-
-
-    /* -------------------------------------------------
-       전체 데이터 기준 Y축 최대값
-    ------------------------------------------------- */
-
-    const maxValue =
-        Math.max(
-            ...monthlyData.map(function (item) {
-                return Number(item.count) || 0;
-            }),
-            1
-        );
-
-
-    /* -------------------------------------------------
-       GRID LINE
-    ------------------------------------------------- */
-
-    for (let i = 0; i <= 4; i++) {
-
-        const y =
-            TOP +
-            (
-                plotH *
-                i /
-                4
-            );
-
-        const line =
-            document.createElementNS(
-                "http://www.w3.org/2000/svg",
-                "line"
-            );
-
-        line.setAttribute(
-            "x1",
-            LEFT
-        );
-
-        line.setAttribute(
-            "x2",
-            W - RIGHT
-        );
-
-        line.setAttribute(
-            "y1",
-            y
-        );
-
-        line.setAttribute(
-            "y2",
-            y
-        );
-
-        line.setAttribute(
-            "class",
-            "grid-line"
-        );
-
-        svg.appendChild(line);
-    }
-
-
-    /* -------------------------------------------------
-       DATA POINT POSITION
-    ------------------------------------------------- */
-
-    const points =
-        visibleData.map(
-            function (item, index) {
-
-                const x =
-                    LEFT +
-                    (
-                        plotW *
-                        index /
-                        Math.max(
-                            visibleData.length - 1,
-                            1
-                        )
-                    );
-
-                const count =
-                    Number(item.count) || 0;
-
-                const y =
-                    TOP +
-                    plotH -
-                    (
-                        count /
-                        maxValue *
-                        plotH
-                    );
-
-                return {
-                    x: x,
-                    y: y
-                };
-            }
-        );
-
-
-    /* -------------------------------------------------
-       AREA
-    ------------------------------------------------- */
-
-    const area =
-        document.createElementNS(
-            "http://www.w3.org/2000/svg",
-            "path"
-        );
-
-    let areaPath =
-        `M ${points[0].x} ${TOP + plotH}`;
-
-    points.forEach(
-        function (point) {
-            areaPath +=
-                ` L ${point.x} ${point.y}`;
-        }
-    );
-
-    areaPath +=
-        ` L ${points[points.length - 1].x} ${TOP + plotH} Z`;
-
-    area.setAttribute(
-        "d",
-        areaPath
-    );
-
-    area.setAttribute(
-        "class",
-        "chart-area"
-    );
-
-    svg.appendChild(area);
-
-
-   /* -------------------------------------------------
-   기존 선 + 새로 탐지된 구간
-------------------------------------------------- */
-
-if (points.length > 1) {
-
-    /* 최신 포인트를 제외한 기존 선 */
-
-    const previousPoints =
-        points.slice(
-            0,
-            points.length - 1
-        );
-
-
-    if (previousPoints.length > 1) {
-
-        const trendLine =
-            document.createElementNS(
-                "http://www.w3.org/2000/svg",
-                "polyline"
-            );
-
-        trendLine.setAttribute(
-            "points",
-            previousPoints
-                .map(function (point) {
-                    return `${point.x},${point.y}`;
-                })
-                .join(" ")
-        );
-
-        trendLine.setAttribute(
-            "class",
-            "chart-line"
-        );
-
-        svg.appendChild(
-            trendLine
-        );
-    }
-
-
-    /* 마지막 기존 포인트 */
-
-    const previousPoint =
-        points[
-            points.length - 2
-        ];
-
-
-    /* 새로 들어온 최신 포인트 */
-
-    const latestPoint =
-        points[
-            points.length - 1
-        ];
-
-
-    /* 마지막 구간만 새롭게 그리기 */
-
-    const liveSegment =
-        document.createElementNS(
-            "http://www.w3.org/2000/svg",
-            "line"
-        );
-
-    liveSegment.setAttribute(
-        "x1",
-        previousPoint.x
-    );
-
-    liveSegment.setAttribute(
-        "y1",
-        previousPoint.y
-    );
-
-    liveSegment.setAttribute(
-        "x2",
-        latestPoint.x
-    );
-
-    liveSegment.setAttribute(
-        "y2",
-        latestPoint.y
-    );
-
-    liveSegment.setAttribute(
-        "class",
-        "live-segment"
-    );
-
-    svg.appendChild(
-        liveSegment
-    );
-}
-
-    /* -------------------------------------------------
-       POINT
-    ------------------------------------------------- */
-
-    points.forEach(
-        function (point, index) {
-
-            const circle =
-                document.createElementNS(
-                    "http://www.w3.org/2000/svg",
-                    "circle"
-                );
-
-            circle.setAttribute(
-                "cx",
-                point.x
-            );
-
-            circle.setAttribute(
-                "cy",
-                point.y
-            );
-
-            circle.setAttribute(
-                "r",
-                4
-            );
-
-
-            /* 가장 최근 포인트만 LIVE 효과 */
-
-            if (
-                index ===
-                points.length - 1
-            ) {
-                circle.setAttribute(
-                    "class",
-                    "chart-point latest-point"
-                );
-            }
-            else {
-                circle.setAttribute(
-                    "class",
-                    "chart-point"
-                );
-            }
-
-            svg.appendChild(circle);
-        }
-    );
-
-
-    /* -------------------------------------------------
-       CURRENT DATA
-    ------------------------------------------------- */
-
-    const latest =
-        visibleData[
-            visibleData.length - 1
-        ];
-
-    const previous =
-        visibleData.length > 1
-            ? visibleData[
-                visibleData.length - 2
-            ]
-            : null;
-
-
-    /* 현재 기간 */
-
-    if (livePeriod) {
-        livePeriod.textContent =
-            latest.date || "-";
-    }
-
-
-    /* 현재 탐지 건수 */
-
-    const currentCount =
-        Number(latest.count) || 0;
-
-    if (liveSignalCount) {
-        liveSignalCount.textContent =
-            currentCount;
-    }
-
-
-    /* 직전 기간 대비 변화 */
-
-    if (liveChange) {
-
-        if (previous) {
-
-            const previousCount =
-                Number(previous.count) || 0;
-
-            const difference =
-                currentCount -
-                previousCount;
-
-
-            if (difference > 0) {
-
-                liveChange.textContent =
-                    `▲ +${difference}건`;
-
-            }
-            else if (difference < 0) {
-
-                liveChange.textContent =
-                    `▼ ${difference}건`;
-
-            }
-            else {
-
-                liveChange.textContent =
-                    "─ 0건";
-
-            }
-
-        }
-        else {
-
-            liveChange.textContent =
-                "-";
-
-        }
-    }
-}
-
-
-/* =================================================
-   LIVE DATA PLAYBACK
-================================================= */
-
-/*
-   실제 API 실시간 데이터가 아니라
-   Flask에서 전달받은 monthly_chart 데이터를
-   순서대로 재생하는 LIVE 시뮬레이션입니다.
-*/
-
-if (
-    Array.isArray(monthlyData) &&
-    monthlyData.length > 0
-) {
-
-    /*
-       처음에는 4개 포인트 표시
-    */
-
-    let liveIndex =
-        Math.min(
-            4,
-            monthlyData.length
-        );
-
-
-    renderLiveChart(
-        monthlyData.slice(
-            0,
-            liveIndex
-        )
-    );
-
-
-    /*
-       데이터가 4개보다 많으면
-       2.4초마다 다음 데이터 표시
-    */
-
-    if (monthlyData.length > 4) {
-
-        setInterval(
-            function () {
-
-                liveIndex += 1;
-
-
-                /*
-                   마지막 데이터까지 도달하면
-                   다시 처음부터 재생
-                */
-
-                if (
-                    liveIndex >
-                    monthlyData.length
-                ) {
-
-                    liveIndex =
-                        Math.min(
-                            4,
-                            monthlyData.length
-                        );
-                }
-
-
-                /*
-                   최근 8개 포인트만 표시
-                */
-
-                const startIndex =
-                    Math.max(
-                        0,
-                        liveIndex - 8
-                    );
-
-                const visibleData =
-                    monthlyData.slice(
-                        startIndex,
-                        liveIndex
-                    );
-
-
-                renderLiveChart(
-                    visibleData
-                );
-
-            },
-            2400
-        );
-    }
-}
-
-        /* =================================================
-
-           각 행 AI로 분석 버튼
-
-        ================================================= */
-
-        document
-
-        .querySelectorAll(
-
-            ".analyse-button"
-
-        )
-
-        .forEach(
-
-            function (button) {
-
-                button.addEventListener(
-
-                    "click",
-
-                    function () {
-
-                        const category =
-
-                            button.dataset.category;
-
-                        const itemId =
-
-                            button.dataset.itemId
-
-                            ||
-
-                            "";
-
-                        const stockCode =
-
-                            button.dataset.stockCode
-
-                            ||
-
-                            "";
-
-                        const stockMarket =
-
-                            button.dataset.stockMarket
-
-                            ||
-
-                            "";
-
-                        const stockDate =
-
-                            button.dataset.stockDate
-
-                            ||
-
-                            "";
-
-                        const matching =
-
-                            Array.from(
-
-                                aiSelect.options
-
-                            )
-
-                            .find(
-
-                                function (option) {
-
-                                    if (
-
-                                        option.dataset.category
-
-                                        !==
-
-                                        category
-
-                                    ) {
-
-                                        return false;
-
-                                    }
-
-                                    if (
-
-                                        category
-
-                                        ===
-
-                                        "K콘텐츠"
-
-                                    ) {
-
-                                        return (
-
-                                            option.dataset.itemId
-
-                                            ===
-
-                                            itemId
-
-                                        );
-
-                                    }
-
-                                    if (
-
-                                        category
-
-                                        ===
-
-                                        "주식"
-
-                                    ) {
-
-                                        return (
-
-                                            option.dataset.stockCode
-
-                                            ===
-
-                                            stockCode
-
-                                            &&
-
-                                            option.dataset.stockMarket
-
-                                            ===
-
-                                            stockMarket
-
-                                            &&
-
-                                            option.dataset.stockDate
-
-                                            ===
-
-                                            stockDate
-
-                                        );
-
-                                    }
-
-                                    return (
-
-                                        option.value
-
-                                        ===
-
-                                        button.dataset.signalName
-
-                                    );
-
-                                }
-
-                            );
-
-                        if (matching) {
-
-                            aiSelect.value =
-
-                                matching.value;
-
-                            analyseSelected();
-
-                            aiSelect.scrollIntoView({
-
-                                behavior:
-
-                                    "smooth",
-
-                                block:
-
-                                    "center"
-
-                            });
-
-                        }
-
-                    }
-
-                );
-
-            }
-
-        );
 
     }
 
@@ -5922,6 +5174,7 @@ if (
 
 </script>
 
+{% include 'includes/reporter_agent_script.html' %}
 </body>
 
 </html>

@@ -62,6 +62,16 @@
         background: #eef9f4;
         border: 1px solid #ccebdc;
     }
+    .prototype-tag {
+        padding: 6px 10px;
+        border-radius: 999px;
+        background: #f5f5f5;
+        border: 1px dashed #c9c9c9;
+        color: #6f6f6f;
+        font-size: 8px;
+        font-weight: 900;
+        letter-spacing: .4px;
+    }
     .detail-title {
         margin: 0;
         color: #111;
@@ -125,6 +135,10 @@
         font-size: 7px;
         line-height: 1.45;
     }
+    .score-helper strong {
+        color: #6b6b6b;
+        font-weight: 900;
+    }
     .score-number {
         margin-top: 6px;
         color: #111;
@@ -170,6 +184,12 @@
         color: #ccc;
         font-size: 12px;
         line-height: 1.9;
+    }
+    .signal-reason-note {
+        margin-top: 8px;
+        color: #727272;
+        font-size: 8px;
+        line-height: 1.6;
     }
     .metrics-grid {
         margin-top: 25px;
@@ -292,6 +312,25 @@
         font-size: 9px;
         line-height: 1.65;
     }
+    .guide-rule {
+        margin-top: 4px;
+        color: #8a8a8a;
+        font-size: 8px;
+        line-height: 1.6;
+    }
+    .guide-rule strong {
+        color: #333;
+        font-weight: 900;
+    }
+    .guide-footnote {
+        margin-top: 13px;
+        padding: 11px 12px;
+        border-radius: 9px;
+        background: #f7f7f7;
+        color: #777;
+        font-size: 8px;
+        line-height: 1.7;
+    }
 
     .chart-card {
         margin-top: 20px;
@@ -337,6 +376,14 @@
         background: #111;
     }
     .legend-dot.recent { background: #d52b3f; }
+    .legend-line {
+        width: 18px;
+        height: 0;
+        border-top: 1.5px dashed #7a7a7a;
+    }
+    .legend-line.threshold {
+        border-top-color: #d52b3f;
+    }
     .chart-wrap {
         width: 100%;
         height: 330px;
@@ -694,6 +741,20 @@
         font-weight: 900;
         letter-spacing: 1px;
     }
+    .article-prototype-banner {
+        margin-top: 12px;
+        padding: 10px 12px;
+        border: 1px solid #d9d4c8;
+        border-radius: 8px;
+        background: #ece9e0;
+        color: #5f5a50;
+        font-size: 8px;
+        line-height: 1.65;
+    }
+    .article-prototype-banner strong {
+        color: #111;
+        margin-right: 6px;
+    }
     .article-headline {
         max-width: 1100px;
         margin: 10px 0 0;
@@ -855,6 +916,7 @@
         <div>
             <div class="detail-tags">
                 <span class="category-tag">{{ item.get('category_name', 'K콘텐츠') }}</span>
+                <span class="prototype-tag">PROTOTYPE · 시뮬레이션 지수</span>
 
                 {% if signal == "HIGH" %}
                     <span class="signal-tag high">HIGH · 우선 취재</span>
@@ -891,14 +953,14 @@
                     <span>/100</span>
                 </div>
                 <div class="score-helper">
-                    변화 크기·통계적 이례성·지속성을 종합한 내부 우선순위 점수
+                    변화 크기·통계적 이례성·지속성을 종합한 내부 우선순위 점수 · <strong>확률/정확도 아님</strong>
                 </div>
             </div>
 
             <div class="score-divider"></div>
 
             <div class="score-item">
-                <div class="score-label">최근 관심도 증감률</div>
+                <div class="score-label">최근 7일 시뮬레이션 지수 증감률</div>
                 <div class="score-number red">
                     {{ "%+.1f"|format(increase_rate) }}%
                 </div>
@@ -914,22 +976,25 @@
             {{
                 item.get(
                     'signal_reason',
-                    '최근 관심도에서 평소 패턴과 다른 움직임이 감지되었습니다.'
+                    '최근 시뮬레이션 관심도 지수에서 평소 패턴과 다른 움직임이 감지되었습니다.'
                 )
             }}
+        </div>
+        <div class="signal-reason-note">
+            ※ 이 문단의 관심도 수치는 실제 검색량·조회수가 아닌 프로토타입 시뮬레이션 지수입니다.
         </div>
 
         <div class="metrics-grid">
             <div class="metric-card">
-                <div class="metric-label">기준 23일 평균 관심도 지수</div>
+                <div class="metric-label">기준 23일 평균 시뮬레이션 지수</div>
                 <div class="metric-value">{{ baseline_avg }}<span class="score-unit"> pt</span></div>
-                <div class="metric-desc">최근 구간과 비교하기 위한 기준 관심도 지수입니다.</div>
+                <div class="metric-desc">최근 구간과 비교하기 위한 프로토타입 기준 지수입니다.</div>
             </div>
 
             <div class="metric-card">
-                <div class="metric-label">최근 7일 평균 관심도 지수</div>
+                <div class="metric-label">최근 7일 평균 시뮬레이션 지수</div>
                 <div class="metric-value red">{{ recent_avg }}<span class="score-unit"> pt</span></div>
-                <div class="metric-desc">최근 7일 시뮬레이션 관심도 지수의 평균값입니다.</div>
+                <div class="metric-desc">최근 7일 프로토타입 시뮬레이션 지수의 평균값입니다.</div>
             </div>
 
             <div class="metric-card">
@@ -988,11 +1053,24 @@
                         증감률, Z-score, 이상 지속일수, 취재 우선순위 점수
                     </div>
                 </div>
+                <div class="method-row">
+                    <div class="method-label">점수 구성</div>
+                    <div class="method-value">
+                        변화 크기 최대 40점 + Z-score 최대 35점 + 지속성 최대 25점, 최종 0~99점
+                    </div>
+                </div>
+
+                <div class="method-row">
+                    <div class="method-label">일별 관찰 기준선</div>
+                    <div class="method-value">
+                        기준 23일 평균 + 1σ. 최근 값이 이 선을 넘은 날을 ‘이상 일수’로 집계
+                    </div>
+                </div>
             </div>
 
             <div class="method-warning">
                 실제 네이버·구글 검색량이나 YouTube 조회수 자체가 아닙니다.
-                현재 30일 관심도는 프로젝트 이상감지 흐름을 설명하기 위한 시뮬레이션 값입니다.
+                현재 30일 관심도 지수는 프로젝트 이상감지 흐름을 설명하기 위한 시뮬레이션 값입니다.
             </div>
         </div>
 
@@ -1006,23 +1084,40 @@
                 <div class="guide-row">
                     <span class="guide-badge high">HIGH</span>
                     <div class="guide-text">
-                        평소 패턴에서 크게 벗어난 움직임. 우선 취재 확인을 권장합니다.
+                        우선 취재 확인을 권장하는 강한 복합 신호입니다.
+                        <div class="guide-rule">
+                            <strong>점수 75+</strong> · 이상 4일+ ·
+                            (증감률 +50%+ 또는 Z-score 2.5+)
+                        </div>
                     </div>
                 </div>
 
                 <div class="guide-row">
                     <span class="guide-badge medium">MEDIUM</span>
                     <div class="guide-text">
-                        평소보다 의미 있는 변화가 감지된 상태. 추가 관찰과 원인 확인을 권장합니다.
+                        추가 관찰과 원인 확인이 필요한 중간 단계 신호입니다.
+                        <div class="guide-rule">
+                            <strong>점수 45+</strong> · 이상 2일+ ·
+                            (증감률 +20%+ 또는 Z-score 1.5+)
+                        </div>
                     </div>
                 </div>
 
                 <div class="guide-row">
                     <span class="guide-badge low">LOW</span>
                     <div class="guide-text">
-                        현재 설정된 기준에서는 일반적인 변동 범위에 가까운 상태입니다.
+                        위 복합 조건을 충족하지 않은 상태입니다.
+                        <div class="guide-rule">
+                            현재 설정된 운영 규칙에서 일반 범위 또는 관찰 대기 후보로 처리
+                        </div>
                     </div>
                 </div>
+            </div>
+
+            <div class="guide-footnote">
+                ※ HIGH/MEDIUM/LOW는 기사 가치의 확률이나 통계적 유의성 판정이 아니라,
+                이상감지 결과의 취재 순서를 정하기 위한 프로젝트 운영 규칙입니다.
+                일별 기준선(평균 + 1σ) 역시 선별용 관찰 기준선입니다.
             </div>
         </div>
     </section>
@@ -1030,9 +1125,9 @@
     <section class="chart-card">
         <div class="chart-head">
             <div>
-                <div class="chart-title">최근 30일 관심도 변화</div>
+                <div class="chart-title">최근 30일 시뮬레이션 관심도 지수</div>
                 <div class="chart-description">
-                    앞 23일을 기준 구간으로 사용하고 마지막 7일의 움직임을 비교합니다.
+                    앞 23일을 기준 구간으로 사용하고 마지막 7일의 움직임을 비교합니다. 붉은 음영은 최근 7일입니다.
                 </div>
             </div>
 
@@ -1045,6 +1140,14 @@
                     <span class="legend-dot recent"></span>
                     최근 7일
                 </div>
+                <div class="legend">
+                    <span class="legend-line"></span>
+                    기준 평균
+                </div>
+                <div class="legend">
+                    <span class="legend-line threshold"></span>
+                    관찰 기준선(+1σ)
+                </div>
             </div>
         </div>
 
@@ -1053,8 +1156,9 @@
         </div>
 
         <div class="data-note">
-            ※ 콘텐츠 목록은 CSV 데이터를 사용하며, 30일 관심도 시계열은
-            이상감지 시연을 위한 재현 가능한 시뮬레이션 데이터입니다.
+            ※ 콘텐츠 제목·아티스트/제작사/작가 정보는 CSV 메타데이터를 사용합니다.
+            그래프의 30일 값은 실제 검색량·조회수가 아니라 이상감지 흐름을 시연하기 위한
+            재현 가능한 시뮬레이션 관심도 지수입니다.
         </div>
     </section>
 
@@ -1069,13 +1173,13 @@
                 <div class="ai-title">이상신호를 취재의 출발점으로 바꿉니다</div>
 
                 <div class="ai-description">
-                    탐지된 패턴을 검증 가능한 가설과 취재 경로로 전환합니다.
+                    시뮬레이션 이상지표를 검증 가능한 가설과 실제 외부 확인 경로로 전환합니다.
                 </div>
 
                 <div class="ai-guardrail">
                     <strong>AI NOTE</strong>
-                    원인을 확정하지 않습니다. 탐지 결과를 바탕으로 검증 가능한 취재 가설을 제안하며,
-                    최종 판단은 공식 자료와 추가 취재를 통해 확인해야 합니다.
+                    원인을 확정하지 않습니다. 현재 내부 관심도 값은 시뮬레이션 지수이며,
+                    AI는 이를 취재 가설로만 변환합니다. 실제 원인과 수치는 공식 자료·실측 데이터·추가 취재로 확인해야 합니다.
                 </div>
             </div>
 
@@ -1144,7 +1248,7 @@
                 <div class="article-draft-head">
                     <div>
                         <div class="article-draft-kicker">ARTICLE DRAFT</div>
-                        <div class="article-draft-title">AI 기사 초안</div>
+                        <div class="article-draft-title">AI 취재용 기사 초안</div>
                         <div class="article-draft-desc">
                             탐지된 사실과 검증 가설을 기사 문장으로 구조화합니다.
                             게시용 원고가 아니라 취재를 이어가기 위한 초안입니다.
@@ -1181,6 +1285,11 @@
                 <article class="article-paper">
                     <div id="articleDraftStatus" class="article-status">
                         DRAFT · 취재 전
+                    </div>
+
+                    <div class="article-prototype-banner">
+                        <strong>PROTOTYPE DATA</strong>
+                        이 초안의 내부 관심도 수치는 실제 검색량·조회수가 아닌 시뮬레이션 지수입니다.
                     </div>
 
                     <h2 id="articleDraftHeadline" class="article-headline"></h2>
@@ -1233,6 +1342,9 @@
         zScore: {{ z_score | tojson }},
         anomalyDays: {{ anomaly_days | tojson }},
         maxConsecutive: {{ max_consecutive | tojson }},
+        baselineAvg: {{ baseline_avg | tojson }},
+        baselineStd: {{ item.get('baseline_std', 0) | tojson }},
+        anomalyThreshold: {{ item.get('anomaly_threshold', 0) | tojson }},
         externalUrl: {{ item.get('external_url', '') | tojson }}
     };
 
@@ -1248,12 +1360,103 @@
             .replaceAll("'", "&#039;");
     }
 
+    const trendGuidePlugin = {
+        id: "trendGuidePlugin",
+
+        beforeDatasetsDraw(chart) {
+            const { ctx, chartArea, scales } = chart;
+
+            if (!chartArea || !scales.x) {
+                return;
+            }
+
+            const recentStartIndex = 23;
+            const previousX = scales.x.getPixelForValue(recentStartIndex - 1);
+            const firstRecentX = scales.x.getPixelForValue(recentStartIndex);
+            const recentX = (previousX + firstRecentX) / 2;
+
+            ctx.save();
+
+            // 최근 7일 구간을 은은한 붉은 배경으로 표시
+            ctx.fillStyle = "rgba(213, 43, 63, 0.045)";
+            ctx.fillRect(
+                recentX,
+                chartArea.top,
+                chartArea.right - recentX,
+                chartArea.bottom - chartArea.top
+            );
+
+            // 기준 23일 / 최근 7일 경계
+            ctx.strokeStyle = "rgba(213, 43, 63, 0.35)";
+            ctx.lineWidth = 1;
+            ctx.setLineDash([4, 4]);
+            ctx.beginPath();
+            ctx.moveTo(recentX, chartArea.top);
+            ctx.lineTo(recentX, chartArea.bottom);
+            ctx.stroke();
+
+            ctx.restore();
+        },
+
+        afterDatasetsDraw(chart) {
+            const { ctx, chartArea, scales } = chart;
+
+            if (!chartArea || !scales.y) {
+                return;
+            }
+
+            const drawGuide = (value, color, label) => {
+                const number = Number(value);
+
+                if (!Number.isFinite(number) || number <= 0) {
+                    return;
+                }
+
+                const y = scales.y.getPixelForValue(number);
+
+                if (y < chartArea.top || y > chartArea.bottom) {
+                    return;
+                }
+
+                ctx.save();
+                ctx.strokeStyle = color;
+                ctx.lineWidth = 1;
+                ctx.setLineDash([5, 4]);
+
+                ctx.beginPath();
+                ctx.moveTo(chartArea.left, y);
+                ctx.lineTo(chartArea.right, y);
+                ctx.stroke();
+
+                ctx.setLineDash([]);
+                ctx.fillStyle = color;
+                ctx.font = "700 9px sans-serif";
+                ctx.textAlign = "right";
+                ctx.textBaseline = "bottom";
+                ctx.fillText(label, chartArea.right - 4, y - 3);
+                ctx.restore();
+            };
+
+            drawGuide(
+                CURRENT_ITEM.baselineAvg,
+                "#777777",
+                `기준 평균 ${Number(CURRENT_ITEM.baselineAvg || 0).toFixed(1)}`
+            );
+
+            drawGuide(
+                CURRENT_ITEM.anomalyThreshold,
+                "#d52b3f",
+                `관찰 기준선 ${Number(CURRENT_ITEM.anomalyThreshold || 0).toFixed(1)}`
+            );
+        }
+    };
+
     function drawTrendChart() {
         const wrap = document.getElementById("chartWrap");
         const canvas = document.getElementById("trendChart");
 
         if (!Array.isArray(DAILY_DATA) || DAILY_DATA.length === 0) {
-            wrap.innerHTML = '<div class="chart-empty">표시할 30일 관심도 데이터가 없습니다.</div>';
+            wrap.innerHTML = '<div class="chart-empty">표시할 30일 시뮬레이션 지수 데이터가 없습니다.</div>';
             return;
         }
 
@@ -1269,7 +1472,7 @@
             data: {
                 labels,
                 datasets: [{
-                    label: "관심도",
+                    label: "시뮬레이션 관심도 지수",
                     data: DAILY_DATA,
                     borderColor: "#111111",
                     backgroundColor: "rgba(17,17,17,0.035)",
@@ -1282,6 +1485,7 @@
                     pointBorderColor: context => context.dataIndex >= 23 ? "#d52b3f" : "#111111"
                 }]
             },
+            plugins: [trendGuidePlugin],
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
@@ -1293,7 +1497,7 @@
                     legend: { display: false },
                     tooltip: {
                         callbacks: {
-                            label: context => `관심도: ${context.parsed.y}`
+                            label: context => `시뮬레이션 지수: ${context.parsed.y}`
                         }
                     }
                 },
@@ -1631,7 +1835,7 @@
             `카테고리: ${CURRENT_ITEM.category}`,
             `신호: ${CURRENT_ITEM.signal}`,
             `취재 우선순위 점수: ${CURRENT_ITEM.trendScore}/100`,
-            `관심도 증감률: ${signed(CURRENT_ITEM.increaseRate)}%`,
+            `시뮬레이션 지수 증감률: ${signed(CURRENT_ITEM.increaseRate)}%`,
             `Z-score: ${Number(CURRENT_ITEM.zScore).toFixed(2)}`,
             `이상 지속: ${CURRENT_ITEM.anomalyDays}/7일`,
             `최대 연속 이상: ${CURRENT_ITEM.maxConsecutive}일`,
@@ -1658,7 +1862,7 @@
             "[추가 확인 데이터]",
             numbered(verification),
             "",
-            "※ AI 제안은 취재 시작점이며 기사 작성 전 원자료·외부 자료·현장 취재를 통한 사실 검증이 필요합니다."
+            "※ 내부 관심도 수치는 시뮬레이션 지수입니다. AI 제안은 취재 시작점이며 기사 작성 전 원자료·실측 외부 자료·현장 취재를 통한 사실 검증이 필요합니다."
         ].join("\n");
 
         try {

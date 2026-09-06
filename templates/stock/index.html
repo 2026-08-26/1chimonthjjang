@@ -1,6 +1,887 @@
-{% extends 'stock/base.html' %}{% block content %}
-<h1>주식 데이터가 보내는 취재 신호</h1><p>거래량 급증 · 가격 급변 · 거래대금 쏠림</p>
-<form><label>기준일 <select name="date">{% for d in dates %}<option {% if d==selected %}selected{% endif %}>{{d}}</option>{% endfor %}</select></label><label>시장 <select name="market">{% for m in ['ALL','KOSPI','KOSDAQ'] %}<option {% if m==market %}selected{% endif %}>{{m}}</option>{% endfor %}</select></label><button>조회</button></form>
-<p>{{selected}} · 조건에 맞는 {{count}}종목 중 최대 10개 표시</p>
-{% for item in items %}<article><span class="muted">{{item.market}} · {{item.code}}</span><h2><a href="{{url_for('stock.detail',market=item.market,code=item.code,date=item.date)}}">{{item.name}}</a></h2>{% for label in item.labels %}<span class="tag">{{label}}</span>{% endfor %}<div class="metrics"><p>이전 20거래일 평균 대비 거래량<strong>{{'%.2f'|format(item.volume_ratio)}}배</strong></p><p>5거래일 가격 변화<strong>{{'%+.2f'|format(item.return5)}}%</strong></p><p>시장 거래대금 비중<strong>{{'%.2f'|format(item.share_pct)}}%</strong></p></div></article>{% else %}<article>이 날짜·시장에는 설정한 조건에 맞는 후보가 없습니다.</article>{% endfor %}
-<details class="panel"><summary>탐지 기준과 제외 조건</summary><p>당일 거래대금 10억 원 이상. 이전 20개 거래 관측치 평균 대비 거래량 3배 이상, 5거래일 가격 변화 절댓값 10% 이상, 또는 거래대금 비중 3배 이상이면서 시장 비중 0.1% 이상인 경우입니다.</p><p>여러 신호가 겹친 종목을 우선하고, 다음으로 기준 대비 변화 크기로 정렬합니다. 상장주식수 변동·무거래 관측치가 최근 21개 관측치에 포함된 종목 및 비교 기록이 부족한 종목은 제외합니다. 모든 기업행사를 식별하는 필터는 아닙니다.</p></details>{% endblock %}
+{% extends 'stock/base.html' %}
+
+{% block content %}
+
+<style>
+    .stock-index-page {
+        display: grid;
+        gap: 18px;
+    }
+
+    /* ==================================================
+       HERO
+       메인 대시보드와 같은 흑백 뉴스룸 톤이지만
+       우측 AI 패널/메인 순위표 구조는 복제하지 않음
+    ================================================== */
+
+    .stock-hero {
+        min-height: 300px;
+        display: grid;
+        grid-template-columns: minmax(0, 1.25fr) minmax(330px, .75fr);
+        background: var(--paper);
+        border: 1px solid var(--line);
+    }
+
+    .stock-hero-copy {
+        padding: 42px 42px 38px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+
+    .stock-eyebrow {
+        color: #8b8b86;
+        font-size: 9px;
+        font-weight: 900;
+        letter-spacing: 1.5px;
+    }
+
+    .stock-hero h1 {
+        max-width: 760px;
+        margin: 12px 0 14px;
+        font-family: Georgia, "Noto Serif KR", serif;
+        font-size: clamp(38px, 5vw, 64px);
+        line-height: 1.03;
+        letter-spacing: -2.6px;
+        word-break: keep-all;
+    }
+
+    .stock-hero-desc {
+        max-width: 680px;
+        color: #666662;
+        font-size: 11px;
+        line-height: 1.9;
+    }
+
+    .stock-hero-note {
+        margin-top: 28px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        color: #8b8b86;
+        font-size: 9px;
+        font-weight: 700;
+    }
+
+    .stock-hero-note::before {
+        content: "";
+        width: 38px;
+        height: 1px;
+        background: #b9b9b4;
+    }
+
+    .stock-hero-stats {
+        background: var(--black);
+        color: #fff;
+        display: grid;
+        grid-template-rows: repeat(3, 1fr);
+    }
+
+    .stock-hero-stat {
+        min-height: 100px;
+        padding: 24px 30px;
+        border-bottom: 1px solid #323232;
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-between;
+        gap: 18px;
+    }
+
+    .stock-hero-stat:last-child {
+        border-bottom: 0;
+    }
+
+    .stock-stat-label {
+        color: #777;
+        font-size: 8px;
+        font-weight: 900;
+        letter-spacing: 1px;
+    }
+
+    .stock-stat-value {
+        text-align: right;
+        font-family: Georgia, "Times New Roman", serif;
+        font-size: 29px;
+        line-height: 1;
+        font-weight: 900;
+        letter-spacing: -1px;
+    }
+
+    .stock-stat-value.small {
+        font-size: 21px;
+    }
+
+    /* ==================================================
+       FILTER BAR
+    ================================================== */
+
+    .stock-filter-panel {
+        background: var(--paper);
+        border: 1px solid var(--line);
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        align-items: center;
+        gap: 24px;
+        padding: 22px 26px;
+    }
+
+    .stock-filter-title {
+        font-family: Georgia, "Noto Serif KR", serif;
+        font-size: 20px;
+        font-weight: 900;
+        letter-spacing: -.7px;
+    }
+
+    .stock-filter-help {
+        margin-top: 5px;
+        color: #8b8b86;
+        font-size: 9px;
+        line-height: 1.6;
+    }
+
+    .stock-filter-form {
+        display: flex;
+        align-items: flex-end;
+        justify-content: flex-end;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+
+    .stock-filter-field {
+        display: grid;
+        gap: 6px;
+    }
+
+    .stock-filter-field span {
+        color: #777772;
+        font-size: 8px;
+        font-weight: 900;
+        letter-spacing: .6px;
+    }
+
+    .stock-filter-field select {
+        min-width: 150px;
+        height: 40px;
+        padding: 0 34px 0 12px;
+        border: 1px solid #cfcfca;
+        border-radius: 0;
+        background: #fff;
+        color: #222;
+        font-size: 11px;
+        font-weight: 700;
+        outline: none;
+    }
+
+    .stock-filter-field select:focus {
+        border-color: #111;
+    }
+
+    .stock-filter-button {
+        height: 40px;
+        min-width: 82px;
+        padding: 0 16px;
+        border: 1px solid var(--black);
+        border-radius: 0;
+        background: var(--black);
+        color: #fff;
+        font-size: 9px;
+        font-weight: 900;
+        letter-spacing: .4px;
+        transition: .16s ease;
+    }
+
+    .stock-filter-button:hover {
+        background: #fff;
+        color: #111;
+    }
+
+    /* ==================================================
+       SIGNAL SECTION
+    ================================================== */
+
+    .stock-signal-section {
+        background: var(--paper);
+        border: 1px solid var(--line);
+    }
+
+    .stock-section-head {
+        min-height: 132px;
+        padding: 28px 32px;
+        border-bottom: 1px solid var(--line);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 32px;
+    }
+
+    .stock-section-index {
+        margin-bottom: 9px;
+        color: #999994;
+        font-size: 8px;
+        font-weight: 800;
+    }
+
+    .stock-section-title {
+        font-family: Georgia, "Noto Serif KR", serif;
+        font-size: 29px;
+        line-height: 1.1;
+        font-weight: 900;
+        letter-spacing: -1.1px;
+    }
+
+    .stock-section-desc {
+        max-width: 450px;
+        color: #888883;
+        text-align: right;
+        font-size: 9px;
+        line-height: 1.8;
+    }
+
+    .stock-list-summary {
+        min-height: 48px;
+        padding: 0 32px;
+        border-bottom: 1px solid var(--line-soft);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 18px;
+        color: #777772;
+        font-size: 9px;
+        font-weight: 700;
+    }
+
+    .stock-list-summary strong {
+        color: #111;
+        font-weight: 900;
+    }
+
+    .stock-signal-head,
+    .stock-signal-row {
+        display: grid;
+        grid-template-columns:
+            76px
+            130px
+            minmax(190px, 1fr)
+            210px
+            140px
+            140px
+            140px
+            92px;
+        gap: 16px;
+        align-items: center;
+    }
+
+    .stock-signal-head {
+        min-height: 52px;
+        margin: 0 28px;
+        border-bottom: 1px solid var(--black);
+        color: #8d8d88;
+        font-size: 8px;
+        font-weight: 900;
+    }
+
+    .stock-signal-row {
+        min-height: 96px;
+        margin: 0 28px;
+        border-bottom: 1px solid var(--line-soft);
+        transition:
+            background .16s ease,
+            color .16s ease,
+            margin .16s ease,
+            padding .16s ease;
+    }
+
+    .stock-signal-row:last-of-type {
+        border-bottom: 0;
+    }
+
+    .stock-signal-row:hover {
+        margin-left: 0;
+        margin-right: 0;
+        padding-left: 28px;
+        padding-right: 28px;
+        background: var(--black);
+        color: #fff;
+    }
+
+    .stock-rank {
+        font-family: Georgia, serif;
+        font-size: 20px;
+        font-weight: 900;
+    }
+
+    .stock-market-code {
+        display: grid;
+        gap: 4px;
+    }
+
+    .stock-market {
+        font-size: 9px;
+        font-weight: 900;
+    }
+
+    .stock-code {
+        color: #8c8c87;
+        font-size: 9px;
+        font-variant-numeric: tabular-nums;
+    }
+
+    .stock-name {
+        min-width: 0;
+    }
+
+    .stock-name a {
+        display: inline-block;
+        max-width: 100%;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        font-family: Georgia, "Noto Serif KR", serif;
+        font-size: 21px;
+        font-weight: 900;
+        letter-spacing: -.6px;
+    }
+
+    .stock-name a:hover {
+        text-decoration: underline;
+        text-underline-offset: 4px;
+    }
+
+    .stock-tags {
+        display: flex;
+        gap: 5px;
+        flex-wrap: wrap;
+    }
+
+    .stock-row-tag {
+        min-height: 24px;
+        padding: 0 8px;
+        border: 1px solid #d8d8d3;
+        display: inline-flex;
+        align-items: center;
+        color: #555;
+        background: #fafaf8;
+        font-size: 8px;
+        font-weight: 900;
+        white-space: nowrap;
+    }
+
+    .stock-signal-row:hover .stock-row-tag {
+        border-color: #4a4a4a;
+        background: #1d1d1d;
+        color: #ddd;
+    }
+
+    .stock-metric {
+        min-width: 0;
+    }
+
+    .stock-metric-label {
+        color: #8b8b86;
+        font-size: 8px;
+        line-height: 1.45;
+    }
+
+    .stock-metric-value {
+        margin-top: 5px;
+        font-family: Georgia, serif;
+        font-size: 18px;
+        font-weight: 900;
+        line-height: 1.15;
+    }
+
+    .stock-detail-link {
+        min-height: 32px;
+        padding: 0 10px;
+        border: 1px solid #222;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 8px;
+        font-weight: 900;
+        white-space: nowrap;
+        transition: .16s ease;
+    }
+
+    .stock-signal-row:hover .stock-detail-link {
+        border-color: #fff;
+    }
+
+    .stock-detail-link:hover,
+    .stock-signal-row:hover .stock-detail-link:hover {
+        background: #fff;
+        color: #111;
+    }
+
+    .stock-empty {
+        padding: 70px 30px;
+        text-align: center;
+        color: #8b8b86;
+        font-size: 10px;
+        line-height: 1.8;
+    }
+
+    .stock-empty strong {
+        display: block;
+        margin-bottom: 8px;
+        color: #111;
+        font-family: Georgia, serif;
+        font-size: 20px;
+    }
+
+    /* ==================================================
+       METHOD
+    ================================================== */
+
+    .stock-method {
+        margin: 0;
+        background: var(--paper);
+        border: 1px solid var(--line);
+    }
+
+    .stock-method summary {
+        padding: 20px 24px;
+        list-style: none;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 18px;
+        font-family: Georgia, "Noto Serif KR", serif;
+        font-size: 17px;
+        font-weight: 900;
+    }
+
+    .stock-method summary::-webkit-details-marker { display: none; }
+
+    .stock-method summary::after {
+        content: "+";
+        font-family: Arial, sans-serif;
+        font-size: 18px;
+        font-weight: 400;
+    }
+
+    .stock-method[open] summary::after {
+        content: "−";
+    }
+
+    .stock-method-body {
+        padding: 0 24px 22px;
+        border-top: 1px solid var(--line-soft);
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 22px;
+    }
+
+    .stock-method-item {
+        padding-top: 19px;
+    }
+
+    .stock-method-label {
+        margin-bottom: 7px;
+        color: #8b8b86;
+        font-size: 8px;
+        font-weight: 900;
+        letter-spacing: .8px;
+    }
+
+    .stock-method-text {
+        color: #555550;
+        font-size: 10px;
+        line-height: 1.8;
+    }
+
+    @media (max-width: 1180px) {
+        .stock-signal-head,
+        .stock-signal-row {
+            grid-template-columns:
+                60px
+                105px
+                minmax(170px, 1fr)
+                185px
+                120px
+                120px
+                120px
+                80px;
+            gap: 11px;
+        }
+
+        .stock-row-tag:nth-child(n+3) {
+            display: none;
+        }
+    }
+
+    @media (max-width: 900px) {
+        .stock-hero {
+            grid-template-columns: 1fr;
+        }
+
+        .stock-hero-stats {
+            grid-template-columns: repeat(3, 1fr);
+            grid-template-rows: 1fr;
+        }
+
+        .stock-hero-stat {
+            min-height: 110px;
+            border-bottom: 0;
+            border-right: 1px solid #323232;
+        }
+
+        .stock-hero-stat:last-child {
+            border-right: 0;
+        }
+
+        .stock-filter-panel,
+        .stock-section-head {
+            grid-template-columns: 1fr;
+            display: grid;
+        }
+
+        .stock-filter-form {
+            justify-content: flex-start;
+        }
+
+        .stock-section-desc {
+            text-align: left;
+        }
+
+        .stock-signal-head {
+            display: none;
+        }
+
+        .stock-signal-row {
+            min-height: 0;
+            padding: 22px 0;
+            grid-template-columns: 52px 1fr 100px;
+            grid-template-areas:
+                "rank name action"
+                "market tags action"
+                "metric1 metric1 metric1"
+                "metric2 metric3 metric3"
+                "share share action";
+            gap: 12px 15px;
+        }
+
+        .stock-signal-row:hover {
+            margin: 0 28px;
+            padding: 22px 0;
+            background: transparent;
+            color: inherit;
+        }
+
+        .stock-rank { grid-area: rank; }
+        .stock-market-code { grid-area: market; }
+        .stock-name { grid-area: name; }
+        .stock-tags { grid-area: tags; }
+        .stock-metric.volume { grid-area: metric1; }
+        .stock-metric.return { grid-area: metric2; }
+        .stock-metric.share { grid-area: share; }
+        .stock-action { grid-area: action; align-self: end; justify-self: end; }
+
+        .stock-signal-row:hover .stock-row-tag {
+            border-color: #d8d8d3;
+            background: #fafaf8;
+            color: #555;
+        }
+
+        .stock-signal-row:hover .stock-detail-link {
+            border-color: #222;
+        }
+    }
+
+    @media (max-width: 620px) {
+        .stock-hero-copy {
+            padding: 30px 24px;
+        }
+
+        .stock-hero h1 {
+            font-size: 39px;
+        }
+
+        .stock-hero-stats {
+            grid-template-columns: 1fr;
+        }
+
+        .stock-hero-stat {
+            min-height: 82px;
+            padding: 18px 24px;
+            border-right: 0;
+            border-bottom: 1px solid #323232;
+        }
+
+        .stock-filter-panel,
+        .stock-section-head {
+            padding: 22px;
+        }
+
+        .stock-filter-form {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            width: 100%;
+        }
+
+        .stock-filter-field select {
+            width: 100%;
+            min-width: 0;
+        }
+
+        .stock-filter-button {
+            grid-column: 1 / -1;
+            width: 100%;
+        }
+
+        .stock-list-summary {
+            padding: 0 22px;
+            align-items: flex-start;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .stock-signal-row {
+            margin: 0 22px;
+            grid-template-columns: 42px 1fr;
+            grid-template-areas:
+                "rank name"
+                "market market"
+                "tags tags"
+                "metric1 metric1"
+                "metric2 metric3"
+                "share share"
+                "action action";
+        }
+
+        .stock-signal-row:hover {
+            margin: 0 22px;
+        }
+
+        .stock-action {
+            justify-self: stretch;
+        }
+
+        .stock-detail-link {
+            width: 100%;
+        }
+
+        .stock-method-body {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+
+<div class="stock-index-page">
+
+    <section class="stock-hero">
+        <div class="stock-hero-copy">
+            <div>
+                <div class="stock-eyebrow">01 / STOCK SIGNAL MONITOR</div>
+
+                <h1>
+                    시장의 움직임을<br>
+                    취재 신호로 읽습니다.
+                </h1>
+
+                <p class="stock-hero-desc">
+                    거래량 급증, 5거래일 가격 급변, 거래대금 쏠림을 기준으로
+                    평소와 다른 움직임이 포착된 국내 주식 후보를 정리합니다.
+                    이 화면은 원인을 확정하지 않고 기자가 먼저 확인할 종목을 좁히는 데 목적이 있습니다.
+                </p>
+            </div>
+
+            <div class="stock-hero-note">
+                KRX 데이터 기반 · 취재 후보 선별용 내부 시그널
+            </div>
+        </div>
+
+        <div class="stock-hero-stats">
+            <div class="stock-hero-stat">
+                <div class="stock-stat-label">SELECTED DATE</div>
+                <div class="stock-stat-value small">{{ selected }}</div>
+            </div>
+
+            <div class="stock-hero-stat">
+                <div class="stock-stat-label">MARKET</div>
+                <div class="stock-stat-value">{{ market }}</div>
+            </div>
+
+            <div class="stock-hero-stat">
+                <div class="stock-stat-label">DETECTED</div>
+                <div class="stock-stat-value">{{ count }}</div>
+            </div>
+        </div>
+    </section>
+
+
+    <section class="stock-filter-panel">
+        <div>
+            <div class="stock-filter-title">조회 조건</div>
+            <div class="stock-filter-help">
+                기준일과 시장을 선택하면 동일한 탐지 규칙으로 후보 목록을 다시 보여줍니다.
+            </div>
+        </div>
+
+        <form class="stock-filter-form" method="get">
+            <label class="stock-filter-field">
+                <span>기준일</span>
+                <select name="date">
+                    {% for d in dates %}
+                        <option value="{{ d }}" {% if d == selected %}selected{% endif %}>
+                            {{ d }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </label>
+
+            <label class="stock-filter-field">
+                <span>시장</span>
+                <select name="market">
+                    {% for m in ['ALL', 'KOSPI', 'KOSDAQ'] %}
+                        <option value="{{ m }}" {% if m == market %}selected{% endif %}>
+                            {{ m }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </label>
+
+            <button class="stock-filter-button" type="submit">
+                조회
+            </button>
+        </form>
+    </section>
+
+
+    <section class="stock-signal-section">
+        <div class="stock-section-head">
+            <div>
+                <div class="stock-section-index">02 / REPORTING CANDIDATES</div>
+                <div class="stock-section-title">오늘의 주식 취재 후보</div>
+            </div>
+
+            <div class="stock-section-desc">
+                여러 이상신호가 겹친 종목을 우선하고,
+                같은 조건에서는 기준 대비 변화가 큰 후보를 먼저 표시합니다.
+                각 종목을 선택하면 상세 수치와 후속 취재 포인트를 확인할 수 있습니다.
+            </div>
+        </div>
+
+        <div class="stock-list-summary">
+            <span>
+                <strong>{{ selected }}</strong>
+                · {{ market }} 시장 기준
+            </span>
+
+            <span>
+                조건에 맞는 <strong>{{ count }}종목</strong> 중 최대 10개 표시
+            </span>
+        </div>
+
+        {% if items %}
+            <div class="stock-signal-head">
+                <div>순위</div>
+                <div>시장 / 코드</div>
+                <div>종목</div>
+                <div>탐지 유형</div>
+                <div>거래량</div>
+                <div>가격 변화</div>
+                <div>거래대금 비중</div>
+                <div>상세</div>
+            </div>
+
+            {% for item in items %}
+                <article class="stock-signal-row">
+                    <div class="stock-rank">
+                        {{ "%02d"|format(loop.index) }}
+                    </div>
+
+                    <div class="stock-market-code">
+                        <div class="stock-market">{{ item.market }}</div>
+                        <div class="stock-code">{{ item.code }}</div>
+                    </div>
+
+                    <div class="stock-name">
+                        <a href="{{ url_for('stock.detail', market=item.market, code=item.code, date=item.date) }}">
+                            {{ item.name }}
+                        </a>
+                    </div>
+
+                    <div class="stock-tags">
+                        {% for label in item.labels %}
+                            <span class="stock-row-tag">{{ label }}</span>
+                        {% endfor %}
+                    </div>
+
+                    <div class="stock-metric volume">
+                        <div class="stock-metric-label">
+                            이전 20거래일 평균 대비
+                        </div>
+                        <div class="stock-metric-value">
+                            {{ "%.2f"|format(item.volume_ratio) }}배
+                        </div>
+                    </div>
+
+                    <div class="stock-metric return">
+                        <div class="stock-metric-label">
+                            5거래일 가격 변화
+                        </div>
+                        <div class="stock-metric-value">
+                            {{ "%+.2f"|format(item.return5) }}%
+                        </div>
+                    </div>
+
+                    <div class="stock-metric share">
+                        <div class="stock-metric-label">
+                            시장 거래대금 비중
+                        </div>
+                        <div class="stock-metric-value">
+                            {{ "%.2f"|format(item.share_pct) }}%
+                        </div>
+                    </div>
+
+                    <div class="stock-action">
+                        <a
+                            class="stock-detail-link"
+                            href="{{ url_for('stock.detail', market=item.market, code=item.code, date=item.date) }}"
+                        >
+                            분석 열기 →
+                        </a>
+                    </div>
+                </article>
+            {% endfor %}
+        {% else %}
+            <div class="stock-empty">
+                <strong>표시할 취재 후보가 없습니다.</strong>
+                이 날짜·시장에는 현재 설정한 탐지 조건에 맞는 종목이 없습니다.
+            </div>
+        {% endif %}
+    </section>
+
+
+    <details class="stock-method">
+        <summary>
+            탐지 기준과 제외 조건
+        </summary>
+
+        <div class="stock-method-body">
+            <div class="stock-method-item">
+                <div class="stock-method-label">DETECTION RULE</div>
+                <div class="stock-method-text">
+                    당일 거래대금 10억 원 이상을 대상으로 합니다.
+                    이전 20개 거래 관측치 평균 대비 거래량 3배 이상,
+                    5거래일 가격 변화 절댓값 10% 이상,
+                    또는 거래대금 비중 3배 이상이면서 시장 비중 0.1% 이상인 경우를 탐지합니다.
+                </div>
+            </div>
+
+            <div class="stock-method-item">
+                <div class="stock-method-label">EXCLUSION / PRIORITY</div>
+                <div class="stock-method-text">
+                    여러 신호가 겹친 종목을 우선하고 그다음 기준 대비 변화 크기로 정렬합니다.
+                    상장주식수 변동·무거래 관측치가 최근 21개 관측치에 포함된 종목 및
+                    비교 기록이 부족한 종목은 제외합니다.
+                    모든 기업행사를 식별하는 필터는 아닙니다.
+                </div>
+            </div>
+        </div>
+    </details>
+
+</div>
+
+{% endblock %}

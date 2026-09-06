@@ -207,6 +207,28 @@
             font-size: 9px;
 
         }
+        .blink-dot {
+    display: inline-block;
+    margin-right: 4px;
+    animation: blinkDot 1s ease-in-out infinite;
+}
+
+@keyframes blinkDot {
+    0% {
+        opacity: 0.2;
+        transform: scale(0.8);
+    }
+
+    50% {
+        opacity: 1;
+        transform: scale(1.2);
+    }
+
+    100% {
+        opacity: 0.2;
+        transform: scale(0.8);
+    }
+}
 
         /* ==================================================
 
@@ -1995,11 +2017,9 @@
     </nav>
 
     <div class="live">
-
-        ● 탐지 시스템 활성화
-
-    </div>
-
+    <span class="blink-dot">●</span>
+    탐지 시스템 활성화
+</div>
 </header>
 
 <!-- ==================================================

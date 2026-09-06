@@ -148,6 +148,18 @@ class TrendAIAgent:
             cat_type=cat_type
         )
 
+        article_draft = self._article_draft(
+            title=title,
+            category=category,
+            cat_type=cat_type,
+            signal=signal,
+            inc_rate=inc_rate,
+            score=score,
+            z_score=z_score,
+            anomaly_days=anomaly_days,
+            max_consecutive=max_consecutive,
+        )
+
         return {
             "title": title,
             "briefing": briefing,
@@ -157,6 +169,7 @@ class TrendAIAgent:
             "article_ideas": article_ideas,
             "questions": questions,
             "verification_data": verification_data,
+            "article_draft": article_draft,
             "summary_metrics": {
                 "increase_rate": round(inc_rate, 1),
                 "z_score": round(z_score, 2),
@@ -380,6 +393,122 @@ class TrendAIAgent:
             ),
         ]
 
+    def _article_draft(
+        self,
+        title,
+        category,
+        cat_type,
+        signal,
+        inc_rate,
+        score,
+        z_score,
+        anomaly_days,
+        max_consecutive,
+    ):
+        """
+        이상감지 결과를 기사 문장으로 구조화한 '취재 전 초안'.
+
+        확인된 내부 지표만 사실 문장에 사용하고,
+        실제 원인·사건·공식 발표·성과는 만들어내지 않습니다.
+        """
+
+        if signal == "HIGH":
+            headline = (
+                f"평소와 달라진 '{title}' 관심도…"
+                f"{anomaly_days}일 이어진 이상신호"
+            )
+        elif signal == "MEDIUM":
+            headline = (
+                f"'{title}'에서 포착된 관심도 변화…"
+                "추가 검증 필요한 신호"
+            )
+        else:
+            headline = (
+                f"'{title}' 관심도 흐름, "
+                "평소 패턴과 비교해보니"
+            )
+
+        subheadline = (
+            f"{category} 데이터에서 변화 크기·통계적 이례성·지속성을 종합 분석…"
+            "실제 원인은 공식 일정·플랫폼 노출·외부 화제 여부를 추가 확인해야"
+        )
+
+        if cat_type == "music":
+            cause_text = (
+                "신곡·컴백·방송·공식 영상 같은 활동 일정, "
+                "음원·영상 플랫폼 노출 변화, 뉴스·SNS·팬 커뮤니티 확산"
+            )
+            verify_items = [
+                "신곡·컴백·음악방송·공식 영상 공개 시점",
+                "Google Trends·음원 차트·YouTube/숏폼의 날짜별 변화",
+                "관련 뉴스·SNS·팬 커뮤니티 언급량 변화",
+            ]
+
+        elif cat_type == "drama":
+            cause_text = (
+                "최근 방송 회차·OTT 공개 같은 작품 이벤트, "
+                "OTT 순위·공식 클립 노출 변화, 출연진·작품 관련 외부 이슈"
+            )
+            verify_items = [
+                "방송 회차·OTT 공개·공식 클립 업로드 일정",
+                "Google Trends·OTT 순위·시청률·클립 조회 변화",
+                "출연진·작품 관련 뉴스와 커뮤니티 언급량 변화",
+            ]
+
+        else:
+            cause_text = (
+                "최근 회차 공개·휴재 복귀·완결 같은 작품 내부 변화, "
+                "추천·랭킹·프로모션 등 플랫폼 노출, 뉴스·SNS·커뮤니티 확산"
+            )
+            verify_items = [
+                "회차 공개·휴재·복귀·완결·작품 공지 시점",
+                "Google Trends·플랫폼 순위·댓글·관심등록 변화",
+                "작품 관련 뉴스·커뮤니티·SNS 언급량 변화",
+            ]
+
+        body = [
+            (
+                f"DATA TIP-OFF 프로토타입에서 '{title}'의 최근 관심도 흐름이 "
+                "평소 패턴과 다른 수준으로 나타났다. "
+                f"최근 7일 평균 관심도 지수는 기준 구간 대비 {inc_rate:+.1f}% 변했고, "
+                f"Z-score는 {z_score:.2f}로 계산됐다."
+            ),
+            (
+                f"이번 신호는 최근 7일 중 {anomaly_days}일이 설정된 이상 범위를 벗어났고, "
+                f"최대 {max_consecutive}일 연속으로 이상 움직임이 이어졌다. "
+                "시스템은 변화 크기와 통계적 이례성, 지속성을 종합해 "
+                f"취재 우선순위 {score}/100의 {signal} 후보로 분류했다."
+            ),
+            (
+                "다만 이 데이터만으로 관심도 변화의 실제 원인을 판단할 수는 없다. "
+                f"{cause_text}가 같은 시기에 있었는지 별도 확인이 필요하다."
+            ),
+            (
+                "취재 단계에서는 관심도 변화가 시작된 시점과 관련 일정·노출·외부 언급의 "
+                "발생 시점을 같은 타임라인에 놓고 비교할 필요가 있다. "
+                "시점이 맞지 않거나 관련 지표가 함께 움직이지 않았다면 해당 가설의 "
+                "우선순위를 낮추는 방식으로 교차 검증해야 한다."
+            ),
+            (
+                "현재 K콘텐츠의 30일 관심도 값은 이상감지 파이프라인을 시연하기 위해 만든 "
+                "재현 가능한 시뮬레이션 지수다. 따라서 실제 기사로 발전시키기 전에는 "
+                "공식 자료와 실측 검색·플랫폼·언급량 데이터를 확보해 수치와 원인을 "
+                "다시 검증해야 한다."
+            ),
+        ]
+
+        return {
+            "status": "DRAFT · 취재 전",
+            "headline": headline,
+            "subheadline": subheadline,
+            "body": body,
+            "must_verify": verify_items,
+            "verification_note": (
+                "이 초안은 이상감지 결과를 기사 문장 형태로 구조화한 취재용 초안입니다. "
+                "확인되지 않은 원인을 사실로 단정하지 않으며, 게시 전 외부 자료와 추가 취재가 필요합니다."
+            ),
+        }
+
     def _reporting_questions(self, cat_type, title):
         if cat_type == "music":
             return [
@@ -497,6 +626,12 @@ class TrendAIAgent:
 8. link_type은 source, trends, news 중 하나만 사용하세요.
 9. HTML 태그를 출력하지 마세요.
 10. 기사 아이디어는 확인 전 사실을 제목처럼 확정하지 마세요.
+11. article_draft는 실제 기사처럼 읽히는 4~6문단의 '취재 전 초안'으로 작성하세요.
+12. article_draft에는 입력으로 주어진 이상감지 수치만 사실로 사용할 수 있습니다.
+13. 실제 사건·인물 발언·공식 발표·성과·원인은 제공되지 않았으므로 절대 만들어내지 마세요.
+14. article_draft 본문에서 이 수치는 실제 검색량이 아니라 DATA TIP-OFF 프로토타입의 관심도 지수임을 명확히 밝히세요.
+15. 제목과 부제는 흥미를 주되 원인을 확정하거나 과장하지 마세요.
+16. 기사 본문은 '탐지된 사실 → 지속성 해석 → 가능한 검증 방향 → 교차 검증 필요 → 데이터 한계' 순서로 구성하세요.
 
 분석 데이터:
 {json.dumps(payload, ensure_ascii=False)}
@@ -545,7 +680,25 @@ class TrendAIAgent:
     "추가 확인 데이터 1",
     "추가 확인 데이터 2",
     "추가 확인 데이터 3"
-  ]
+  ],
+  "article_draft": {
+    "status": "DRAFT · 취재 전",
+    "headline": "검증 전 원인을 단정하지 않는 기사형 제목",
+    "subheadline": "데이터에서 확인된 변화와 추가 검증 필요성을 설명하는 부제",
+    "body": [
+      "기사 본문 1문단",
+      "기사 본문 2문단",
+      "기사 본문 3문단",
+      "기사 본문 4문단",
+      "기사 본문 5문단"
+    ],
+    "must_verify": [
+      "기사화 전 확인할 자료 1",
+      "기사화 전 확인할 자료 2",
+      "기사화 전 확인할 자료 3"
+    ],
+    "verification_note": "게시 전 사실 확인이 필요하다는 짧은 안내"
+  }
 }}
 """
 
@@ -619,7 +772,48 @@ class TrendAIAgent:
                 report.get("verification_data"),
                 fallback["verification_data"]
             ),
+            "article_draft": self._clean_article_draft(
+                report.get("article_draft"),
+                fallback["article_draft"]
+            ),
             "summary_metrics": fallback["summary_metrics"],
+        }
+
+    def _clean_article_draft(self, value, fallback):
+        if not isinstance(value, dict):
+            return fallback
+
+        body = self._clean_string_list(
+            value.get("body"),
+            fallback["body"],
+            max_items=6
+        )
+
+        must_verify = self._clean_string_list(
+            value.get("must_verify"),
+            fallback["must_verify"],
+            max_items=4
+        )
+
+        return {
+            "status": self._clean_output_text(
+                value.get("status"),
+                fallback["status"]
+            ),
+            "headline": self._clean_output_text(
+                value.get("headline"),
+                fallback["headline"]
+            ),
+            "subheadline": self._clean_output_text(
+                value.get("subheadline"),
+                fallback["subheadline"]
+            ),
+            "body": body,
+            "must_verify": must_verify,
+            "verification_note": self._clean_output_text(
+                value.get("verification_note"),
+                fallback["verification_note"]
+            ),
         }
 
     def _clean_reporting_paths(
@@ -768,5 +962,13 @@ class TrendAIAgent:
             "article_ideas": [],
             "questions": [],
             "verification_data": [],
+            "article_draft": {
+                "status": "DRAFT · 생성 불가",
+                "headline": "",
+                "subheadline": "",
+                "body": [],
+                "must_verify": [],
+                "verification_note": message,
+            },
             "summary_metrics": {},
         }

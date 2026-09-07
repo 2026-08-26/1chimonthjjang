@@ -32,6 +32,7 @@ from web.home_v2_nav_routes import home_v2_nav_bp
 from web.kcontent_media_routes import kcontent_media_bp
 from web.social_routes import social_bp
 from web.stock_routes import stock_bp
+from web.baseball_desk import baseball_desk_bp
 
 # ==================================================
 # Flask 서버 생성
@@ -53,6 +54,8 @@ app.register_blueprint(home_v2_nav_bp)
 app.register_blueprint(kcontent_media_bp)
 
 app.register_blueprint(stock_bp)
+
+app.register_blueprint(baseball_desk_bp)
 
 
 # ==================================================

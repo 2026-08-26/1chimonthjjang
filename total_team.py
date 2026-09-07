@@ -35,6 +35,11 @@ from web.stock_routes import stock_bp
 # ==================================================
 
 app = Flask(__name__)
+
+# K콘텐츠 썸네일 엔드포인트 등록
+from web.kcontent_media_routes import kcontent_media_bp
+app.register_blueprint(kcontent_media_bp)
+
 from web.baseball_desk import baseball_desk_bp
 app.register_blueprint(baseball_desk_bp)
 

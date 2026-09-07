@@ -665,6 +665,28 @@
             grid-template-columns: 1fr;
         }
     }
+
+    /* Keep the newspaper palette and make direction readable without relying on hover. */
+    .stock-change.is-up{color:#bd302b}
+    .stock-change.is-down{color:#245faa}
+    .stock-change.is-flat{color:#555}
+    .stock-market,.stock-code{font-size:12px}
+    .stock-name a{font-size:26px;white-space:normal;line-height:1.35}
+    .stock-metric-label{font-size:12px;color:#666;line-height:1.6}
+    .stock-metric-value{font-size:26px;font-family:Arial,sans-serif;font-variant-numeric:tabular-nums;white-space:nowrap}
+    .stock-metric.return{background:#f5f3eb;padding:12px;border-top:2px solid #b9b5a8}
+    .stock-row-tag{font-size:11px;padding:5px 8px}
+    .stock-detail-link{font-size:12px;min-height:42px}
+    .stock-signal-head{font-size:12px;color:#555}
+    .stock-list-summary,.stock-section-desc{font-size:13px;line-height:1.8}
+    .stock-signal-row{padding-top:18px;padding-bottom:18px}
+    .stock-signal-row:hover{margin-left:28px;margin-right:28px;padding-left:0;padding-right:0;background:#faf9f5;color:#222}
+    .stock-signal-row:hover .stock-row-tag{background:#f4f2eb;color:#444;border-color:#d8d8d3}
+    .stock-signal-row:hover .stock-detail-link{border-color:#222;color:#222}
+    .stock-signal-row a:focus-visible{outline:3px solid #986c28;outline-offset:4px}
+    @media(min-width:1101px){.stock-signal-head,.stock-signal-row{grid-template-columns:42px 85px minmax(130px,1.4fr) minmax(100px,1.1fr) minmax(95px,1fr) minmax(125px,1fr) minmax(90px,.8fr) 92px;gap:12px}}
+    @media(max-width:1100px){.stock-signal-head{display:none}.stock-rank{grid-area:rank}.stock-market-code{grid-area:market}.stock-name{grid-area:name}.stock-tags{grid-area:tags}.stock-metric.volume{grid-area:metric1}.stock-metric.return{grid-area:metric2}.stock-metric.share{grid-area:share}.stock-action{grid-area:action}.stock-signal-row{grid-template-columns:44px minmax(0,1fr) 100px;grid-template-areas:"rank name action" "market tags tags" "metric2 metric2 metric2" "metric1 metric1 share"}.stock-signal-row:hover{padding:22px 0}.stock-metric.return{padding:16px}.stock-metric-value{font-size:26px}}
+    @media(max-width:620px){.stock-signal-row{grid-template-columns:minmax(0,1fr) minmax(0,1fr);grid-template-areas:"rank name" "market market" "tags tags" "metric2 metric2" "metric1 share" "action action";gap:16px 12px}.stock-signal-row:hover{margin:0 22px}.stock-name a{font-size:24px}.stock-metric-value{font-size:24px}}
 </style>
 
 <div class="stock-index-page">
@@ -821,7 +843,7 @@
                         <div class="stock-metric-label">
                             5거래일 가격 변화
                         </div>
-                        <div class="stock-metric-value">
+                        <div class="stock-metric-value stock-change {% if item.return5 > 0 %}is-up{% elif item.return5 < 0 %}is-down{% else %}is-flat{% endif %}">
                             {{ "%+.2f"|format(item.return5) }}%
                         </div>
                     </div>

@@ -1,0 +1,35 @@
+<style>
+.stock-draft{margin-top:28px;padding:24px;border:1px solid #e3eaf2;border-radius:16px;background:#fff}.stock-draft h2{font-size:25px;line-height:1.45;margin:14px 0}.stock-draft p{font-size:16px;line-height:1.9;color:#4e5968;overflow-wrap:anywhere}.stock-draft .draft-status,.stock-draft small{font-size:13px;color:#6b7684}.stock-draft-actions{display:flex;gap:10px;flex-wrap:wrap;margin:20px 0}.stock-draft button,.stock-news-select button{background:#2475e9;color:white;border:0;padding:12px 18px;border-radius:10px;font:600 14px system-ui;cursor:pointer}.stock-draft button:disabled,.stock-news-select button:disabled{opacity:.55;cursor:wait}.stock-news-select{margin-top:24px;border-top:1px solid #e6eaf0;padding-top:20px}.stock-news-select .brief-news{display:flex;gap:12px;align-items:flex-start}.stock-news-select input{margin-top:6px;width:18px;height:18px;flex-shrink:0;accent-color:#2475e9}.stock-news-select label{font-size:14px;line-height:1.7;cursor:pointer}.stock-news-select small{display:block}.stock-draft details{border-top:1px solid #e6eaf0;padding:16px 0}.stock-draft summary{cursor:pointer}.stock-draft textarea{width:100%;min-height:230px;font:16px/1.8 system-ui}.stock-draft:focus{outline:3px solid #8dbdff;outline-offset:3px}@media(max-width:640px){.stock-draft{padding:16px}.stock-draft h2{font-size:22px}}
+</style>
+{% raw %}
+<script>
+function renderStockDraft(report,out,reportButton){
+ const node=(tag,text,parent,cls)=>{const e=document.createElement(tag);e.textContent=text;if(cls)e.className=cls;parent.append(e);return e;};
+ const link=(a,parent)=>{try{const url=new URL(a.url);if(url.protocol!=='https:')return;const e=node('a',a.title,parent);e.href=url.href;e.target='_blank';e.rel='noopener noreferrer';}catch{}};
+ const section=node('article','',out,'stock-draft');section.tabIndex=-1;
+ const status=node('p','',section,'draft-status');status.setAttribute('role','status');
+ const body=node('div','',section,'stock-draft-current');
+ const actions=node('div','',section,'stock-draft-actions');
+ const copy=node('button','초안 복사',actions),retry=node('button','초안 다시 작성',actions);copy.type=retry.type='button';
+ const history=node('div','',section,'stock-draft-history');
+ let current=report.draft,version=1,applied=[],checks=[],apply=null;
+ function render(){body.replaceChildren();node('small',`기사 초안 · 버전 ${version} · ${applied.length ? '선택 기사 '+applied.length+'건 반영' : '데이터 기반'}`,body);node('h2',current.title,body);current.paragraphs.forEach(p=>node('p',p,body));if(current.sources.length){node('h3','반영한 출처',body);current.sources.forEach(a=>{const row=node('p',`[${a.id}] ${a.date || ''} · ${a.publisher || ''} `,body);link(a,row);});}status.textContent=current.status;}
+ render();
+ copy.onclick=async()=>{const text=[current.title,...current.paragraphs,...current.sources.map(a=>`[${a.id}] ${a.title} ${a.url}`)].join('\n\n');try{await navigator.clipboard.writeText(text);status.textContent='초안을 복사했습니다.';}catch{const area=node('textarea',text,section);area.readOnly=true;area.setAttribute('aria-label','복사할 초안');area.focus();area.select();status.textContent='선택된 내용을 복사해주세요.';}};
+ async function rewrite(indexes){
+  reportButton.disabled=true;retry.disabled=true;if(apply)apply.disabled=true;checks.forEach(c=>c.disabled=true);section.setAttribute('aria-busy','true');status.textContent=indexes.length ? `선택 기사 ${indexes.length}건으로 초안을 다시 작성하고 있어요…` : '데이터로 초안을 다시 작성하고 있어요…';
+  const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),55000);
+  try{const response=await fetch('/api/stock-draft',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({draft_token:report.draft_token,selected_articles:indexes}),signal:controller.signal});const data=await response.json();if(!response.ok||data.error)throw Error(data.error||'초안 재작성 실패');
+   const old=node('details','',history);node('summary',`이전 초안 · 버전 ${version} · 기사 ${applied.length}건 반영`,old);node('h3',current.title,old);current.paragraphs.forEach(p=>node('p',p,old));current.sources.forEach(a=>link({...a,title:`[${a.id}] ${a.title}`},node('p','',old)));
+   current=data.draft;applied=[...indexes];version++;render();section.focus({preventScroll:true});section.scrollIntoView({behavior:'smooth',block:'center'});
+  }catch(e){status.textContent=(e.name==='AbortError'?'작성 시간이 초과됐어요.':e.message)+' 기존 초안은 유지됩니다. 다시 시도해주세요.';}
+  finally{clearTimeout(timer);reportButton.disabled=false;retry.disabled=false;if(apply)apply.disabled=false;checks.forEach(c=>c.disabled=false);section.setAttribute('aria-busy','false');}
+ }
+ retry.onclick=()=>rewrite(applied);
+ const news=node('section','',out,'stock-news-select');node('h3','관련 기사 선택 · 초안에 반영',news);node('p',report.news_status,news,'brief-note');
+ report.articles.forEach((a,i)=>{const row=node('div','',news,'brief-news'),check=node('input','',row);check.type='checkbox';check.id='stock-article-'+i;checks.push(check);const content=node('div','',row);const label=node('label',`${a.date} · ${a.publisher} · 초안에 반영`,content);label.htmlFor=check.id;link(a,node('p','',content));check.setAttribute('aria-label',a.title+' 선택');});
+ if(checks.length){apply=node('button','선택 기사로 초안 다시 작성 (0)',news);apply.type='button';checks.forEach(c=>c.onchange=()=>{const n=checks.filter(c=>c.checked).length;apply.textContent=n?`선택 기사로 초안 다시 작성 (${n})`:'기사 제외하고 초안 다시 작성';});apply.onclick=()=>rewrite(checks.flatMap((c,i)=>c.checked?[i]:[]));}
+ node('p','기사 조합을 선택하고 적용하면 새 초안이 작성됩니다. 기사 제목·출처를 참고하며 본문은 별도 확인이 필요합니다. 새로고침·브리핑 재생성 시 초안 기록은 초기화됩니다.',news,'brief-note');
+}
+</script>
+{% endraw %}

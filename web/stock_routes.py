@@ -609,4 +609,18 @@ def stock_report(
         ),
     )
 
-    return jsonify(report)
+    from web.article_draft import attach_draft
+    import re
+    metrics=[]
+    for fact in report['facts']:
+        match=re.match(r'^(.*?)\s+([+-]?[\d,.]+(?:%|원|배|주))$',fact)
+        if match:
+            metrics.append({'label':match[1],'value':match[2]})
+    report.update(region=item['name'],period=item['date'],metrics=metrics)
+    return jsonify(attach_draft(report, '주가·거래량 변화'))
+
+
+@stock_bp.post('/api/stock-draft')
+def stock_draft():
+    from web.article_draft import draft_response
+    return draft_response()

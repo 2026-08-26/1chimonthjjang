@@ -1,0 +1,27 @@
+<style>
+@media(prefers-reduced-motion:no-preference){
+.stock-signal-row,.player-open,.stock-detail-link,.bb-metric,.brief-metric{transition:background .2s ease,box-shadow .2s ease,transform .2s ease}
+.bb-metric:hover,.brief-metric:hover{transform:translateY(-3px);box-shadow:0 6px 18px #18243112}
+.player-open:hover{transform:translateX(4px)}
+}
+</style>
+<script>
+(()=>{
+ const preference=matchMedia('(prefers-reduced-motion: reduce)');
+ if(!('IntersectionObserver' in window)||!Element.prototype.animate)return;
+ const seen=new WeakSet(),animations=new Set();
+ const selector='.stock-hero,.stock-filter-panel,.stock-section-head,.stock-signal-row,.baseball-hero,.signal-summary,.section-head,.weather-panel-title,.baseball-table tbody tr,.temp-chart-row,.bb-toolbar,.brief-metric,.bb-metric,.stock-draft,.bb-draft';
+ const observer=new IntersectionObserver(entries=>entries.forEach(entry=>{
+  if(!entry.isIntersecting||preference.matches)return;
+  const el=entry.target;if(seen.has(el))return;seen.add(el);observer.unobserve(el);
+  const peers=[...el.parentElement.children];const delay=Math.min(peers.indexOf(el)%5,4)*45;
+  const animation=el.animate([{opacity:.25,transform:'translateY(14px)'},{opacity:1,transform:'translateY(0)'}],{duration:500,delay,easing:'cubic-bezier(.2,.7,.2,1)',fill:'backwards'});
+  animations.add(animation);animation.finished.catch(()=>{}).finally(()=>animations.delete(animation));
+ }),{threshold:.08});
+ function scan(root){if(preference.matches)return;if(root.matches?.(selector))observer.observe(root);root.querySelectorAll?.(selector).forEach(el=>{if(!seen.has(el))observer.observe(el);});}
+ scan(document);
+ const mutation=new MutationObserver(records=>records.forEach(record=>record.addedNodes.forEach(n=>{if(n.nodeType===1)scan(n);})));mutation.observe(document.body,{childList:true,subtree:true});
+ preference.addEventListener('change',()=>{if(preference.matches){observer.disconnect();animations.forEach(a=>a.cancel());animations.clear();}else scan(document);});
+ addEventListener('pagehide',()=>{observer.disconnect();mutation.disconnect();animations.forEach(a=>a.cancel());},{once:true});
+})();
+</script>

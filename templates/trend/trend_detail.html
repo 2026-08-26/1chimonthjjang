@@ -2955,6 +2955,140 @@
         }
     }
 
+
+    /* ==================================================
+       DETAIL HERO THUMBNAIL
+       목록과 동일한 이미지 흐름을 상세 상단에도 적용
+       - 아이돌: 멤버 사진 우선, 없으면 그룹 사진
+       - 드라마: 포스터
+       - 웹툰: 작품 썸네일/포스터
+    ================================================== */
+
+    .detail-identity {
+        min-width: 0;
+        flex: 1 1 auto;
+        display: flex;
+        align-items: center;
+        gap: 24px;
+    }
+
+    .detail-thumb {
+        width: 124px;
+        height: 124px;
+        flex: 0 0 124px;
+        overflow: hidden;
+        position: relative;
+        border: 1px solid #e1ded9;
+        border-radius: 19px;
+        background: #f3f1ef;
+        box-shadow: 0 7px 18px rgba(0, 0, 0, .055);
+    }
+
+    .detail-thumb[data-category="drama"],
+    .detail-thumb[data-category="webtoon"] {
+        width: 92px;
+        height: 128px;
+        flex-basis: 92px;
+        border-radius: 15px;
+    }
+
+    .detail-thumb-img {
+        width: 100%;
+        height: 100%;
+        display: block;
+        object-fit: cover;
+        object-position: center top;
+        opacity: 1 !important;
+        transform: none !important;
+    }
+
+    .detail-copy {
+        min-width: 0;
+        flex: 1 1 auto;
+    }
+
+    .detail-copy .detail-tags {
+        margin-bottom: 14px;
+    }
+
+    .detail-copy .detail-title {
+        max-width: 860px;
+    }
+
+    .detail-copy .detail-sub {
+        margin-top: 12px;
+    }
+
+    @media (max-width: 1080px) {
+        .detail-header {
+            align-items: stretch;
+            flex-direction: column;
+        }
+
+        .detail-identity {
+            width: 100%;
+        }
+
+        .headline-score {
+            width: 100%;
+            justify-content: center;
+        }
+    }
+
+    @media (max-width: 680px) {
+        .detail-header {
+            padding: 27px 24px;
+        }
+
+        .detail-identity {
+            align-items: flex-start;
+            gap: 16px;
+        }
+
+        .detail-thumb {
+            width: 82px;
+            height: 82px;
+            flex-basis: 82px;
+            border-radius: 14px;
+        }
+
+        .detail-thumb[data-category="drama"],
+        .detail-thumb[data-category="webtoon"] {
+            width: 68px;
+            height: 92px;
+            flex-basis: 68px;
+            border-radius: 12px;
+        }
+
+        .detail-copy .detail-title {
+            font-size: clamp(26px, 8vw, 38px);
+            letter-spacing: -1.4px;
+        }
+
+        .headline-score {
+            align-items: stretch;
+        }
+    }
+
+    @media (max-width: 500px) {
+        .detail-identity {
+            flex-direction: column;
+        }
+
+        .detail-thumb {
+            width: 94px;
+            height: 94px;
+            flex-basis: 94px;
+        }
+
+        .detail-thumb[data-category="drama"],
+        .detail-thumb[data-category="webtoon"] {
+            width: 72px;
+            height: 100px;
+            flex-basis: 72px;
+        }
+    }
+
 </style>
 {% endblock %}
 
@@ -2978,36 +3112,75 @@
     </a>
 
     <section class="detail-header">
-        <div>
-            <div class="detail-tags">
-                <span class="category-tag">{{ item.get('category_name', 'K콘텐츠') }}</span>
-                <span class="prototype-tag">PROTOTYPE · 시뮬레이션 지수</span>
+        <div class="detail-identity">
 
-                {% if signal == "HIGH" %}
-                    <span class="signal-tag high">HIGH · 우선 취재</span>
-                {% elif signal == "MEDIUM" %}
-                    <span class="signal-tag medium">MEDIUM · 관찰 필요</span>
+            <div
+                class="detail-thumb thumbnail-wrap"
+                data-category="{{ item.get('category', '') }}"
+                data-title="{{ item.get('title', '')|e }}"
+            >
+                {% if item.get('category') == 'music' %}
+
+                    <img
+                        class="detail-thumb-img idol-thumbnail"
+                        src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240' viewBox='0 0 240 240'%3E%3Crect width='240' height='240' rx='30' fill='%23f2edf0'/%3E%3Ctext x='120' y='110' text-anchor='middle' font-size='48' font-family='Arial,sans-serif' fill='%23555'%3E%E2%97%89%3C/text%3E%3Ctext x='120' y='150' text-anchor='middle' font-size='18' font-weight='700' font-family='Arial,sans-serif' fill='%23555'%3EIDOL%3C/text%3E%3C/svg%3E"
+                        alt="{{ item.get('title', '아이돌')|e }} 아이돌 이미지"
+                        loading="eager"
+                        decoding="async"
+                    >
+
                 {% else %}
-                    <span class="signal-tag low">LOW · 일반 범위</span>
+
+                    <img
+                        class="detail-thumb-img"
+                        src="{{
+                            url_for(
+                                'kcontent_media.thumbnail',
+                                category=item.get('category', ''),
+                                title=item.get('title', ''),
+                                external_url=item.get('external_url', ''),
+                                v='detail-v1'
+                            )
+                        }}"
+                        alt="{{ item.get('title', '콘텐츠')|e }} 썸네일"
+                        loading="eager"
+                        decoding="async"
+                    >
+
                 {% endif %}
             </div>
 
-            <h1 class="detail-title">{{ item.get('title', '콘텐츠') }}</h1>
-            <div class="detail-sub">{{ item.get('sub_info', '') }}</div>
+            <div class="detail-copy">
+                <div class="detail-tags">
+                    <span class="category-tag">{{ item.get('category_name', 'K콘텐츠') }}</span>
+                    <span class="prototype-tag">PROTOTYPE · 시뮬레이션 지수</span>
 
-            {% if item.get('category') == 'webtoon' and item.get('external_url') %}
-                <div class="detail-links">
-                    <a
-                        class="detail-external-link"
-                        href="{{ item.get('external_url') }}"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                    >
-                        <i class="fa-solid fa-arrow-up-right-from-square"></i>
-                        {{ item.get('external_link_label', '웹툰 확인하기') }}
-                    </a>
+                    {% if signal == "HIGH" %}
+                        <span class="signal-tag high">HIGH · 우선 취재</span>
+                    {% elif signal == "MEDIUM" %}
+                        <span class="signal-tag medium">MEDIUM · 관찰 필요</span>
+                    {% else %}
+                        <span class="signal-tag low">LOW · 일반 범위</span>
+                    {% endif %}
                 </div>
-            {% endif %}
+
+                <h1 class="detail-title">{{ item.get('title', '콘텐츠') }}</h1>
+                <div class="detail-sub">{{ item.get('sub_info', '') }}</div>
+
+                {% if item.get('category') == 'webtoon' and item.get('external_url') %}
+                    <div class="detail-links">
+                        <a
+                            class="detail-external-link"
+                            href="{{ item.get('external_url') }}"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                        >
+                            <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                            {{ item.get('external_link_label', '웹툰 확인하기') }}
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
         </div>
 
         <div class="headline-score">
@@ -4430,6 +4603,793 @@
         .addEventListener("click", regenerateArticleDraft);
 
     drawTrendChart();
+</script>
+
+<script>
+(function () {
+    "use strict";
+
+    const nodes = Array.from(
+        document.querySelectorAll(
+            '.thumbnail-wrap[data-category="music"][data-title]'
+        )
+    );
+
+    if (!nodes.length) {
+        return;
+    }
+
+    const CACHE_PREFIX =
+        "data-tipoff-idol-photo-v5:";
+
+
+    function norm(value) {
+        return String(value || "")
+            .normalize("NFKC")
+            .toLowerCase()
+            .replace(/[’'"`]/g, "")
+            .replace(/[^0-9a-z가-힣]+/g, " ")
+            .replace(/\s+/g, " ")
+            .trim();
+    }
+
+
+    function aliases(value) {
+        const raw =
+            String(value || "")
+                .trim();
+
+        if (!raw) {
+            return [];
+        }
+
+        const result = [
+            raw
+        ];
+
+        const compact =
+            raw.replace(
+                /\s+/g,
+                ""
+            );
+
+        const plain =
+            raw.replace(
+                /[^0-9A-Za-z가-힣]+/g,
+                ""
+            );
+
+        for (const candidate of [
+            compact,
+            plain
+        ]) {
+            if (
+                candidate
+                && !result.some(
+                    value =>
+                        value.toLowerCase()
+                        === candidate.toLowerCase()
+                )
+            ) {
+                result.push(
+                    candidate
+                );
+            }
+        }
+
+        return result;
+    }
+
+
+    function splitTitle(title) {
+        const parts =
+            String(title || "")
+                .split(
+                    /\s*[-–—]\s*/
+                )
+                .map(
+                    value =>
+                        value.trim()
+                )
+                .filter(Boolean);
+
+        if (parts.length >= 2) {
+            return {
+                group:
+                    parts[0],
+
+                member:
+                    parts
+                        .slice(1)
+                        .join(" ")
+            };
+        }
+
+        return {
+            group:
+                String(title || "")
+                    .trim(),
+
+            member:
+                ""
+        };
+    }
+
+
+    function containsAny(
+        text,
+        values
+    ) {
+        const haystack =
+            norm(text);
+
+        return values.some(
+            value => {
+                const needle =
+                    norm(value);
+
+                return (
+                    needle
+                    && haystack.includes(
+                        needle
+                    )
+                );
+            }
+        );
+    }
+
+
+    function cacheKey(title) {
+        return (
+            CACHE_PREFIX
+            + title
+        );
+    }
+
+
+    function getCache(title) {
+        try {
+            return (
+                localStorage.getItem(
+                    cacheKey(title)
+                )
+                || ""
+            );
+        }
+        catch (_) {
+            return "";
+        }
+    }
+
+
+    function setCache(
+        title,
+        url
+    ) {
+        try {
+            if (url) {
+                localStorage.setItem(
+                    cacheKey(title),
+                    url
+                );
+            }
+        }
+        catch (_) {
+            /* ignore */
+        }
+    }
+
+
+    async function wikiCandidates(
+        query,
+        lang
+    ) {
+        const params =
+            new URLSearchParams({
+                action:
+                    "query",
+
+                format:
+                    "json",
+
+                origin:
+                    "*",
+
+                generator:
+                    "search",
+
+                gsrsearch:
+                    query,
+
+                gsrnamespace:
+                    "0",
+
+                gsrlimit:
+                    "8",
+
+                prop:
+                    "pageimages|extracts",
+
+                piprop:
+                    "thumbnail|original",
+
+                pithumbsize:
+                    "500",
+
+                exintro:
+                    "1",
+
+                explaintext:
+                    "1",
+
+                exchars:
+                    "1000"
+            });
+
+        const controller =
+            new AbortController();
+
+        const timer =
+            setTimeout(
+                () =>
+                    controller.abort(),
+                4500
+            );
+
+        try {
+            const response =
+                await fetch(
+                    `https://${lang}.wikipedia.org/w/api.php?${params.toString()}`,
+                    {
+                        signal:
+                            controller.signal,
+
+                        mode:
+                            "cors"
+                    }
+                );
+
+            if (!response.ok) {
+                return [];
+            }
+
+            const data =
+                await response.json();
+
+            const pages =
+                data
+                && data.query
+                && data.query.pages
+                    ? Object.values(
+                        data.query.pages
+                    )
+                    : [];
+
+            return pages
+                .map(
+                    page => ({
+                        title:
+                            page.title
+                            || "",
+
+                        extract:
+                            page.extract
+                            || "",
+
+                        image:
+                            (
+                                page.thumbnail
+                                && page.thumbnail.source
+                            )
+                            || (
+                                page.original
+                                && page.original.source
+                            )
+                            || ""
+                    })
+                )
+                .filter(
+                    item =>
+                        Boolean(
+                            item.image
+                        )
+                );
+        }
+        catch (_) {
+            return [];
+        }
+        finally {
+            clearTimeout(
+                timer
+            );
+        }
+    }
+
+
+    async function commonsCandidates(
+        query
+    ) {
+        const params =
+            new URLSearchParams({
+                action:
+                    "query",
+
+                format:
+                    "json",
+
+                origin:
+                    "*",
+
+                generator:
+                    "search",
+
+                gsrsearch:
+                    query,
+
+                gsrnamespace:
+                    "6",
+
+                gsrlimit:
+                    "12",
+
+                prop:
+                    "imageinfo",
+
+                iiprop:
+                    "url|extmetadata",
+
+                iiurlwidth:
+                    "500"
+            });
+
+        const controller =
+            new AbortController();
+
+        const timer =
+            setTimeout(
+                () =>
+                    controller.abort(),
+                4500
+            );
+
+        try {
+            const response =
+                await fetch(
+                    `https://commons.wikimedia.org/w/api.php?${params.toString()}`,
+                    {
+                        signal:
+                            controller.signal,
+
+                        mode:
+                            "cors"
+                    }
+                );
+
+            if (!response.ok) {
+                return [];
+            }
+
+            const data =
+                await response.json();
+
+            const pages =
+                data
+                && data.query
+                && data.query.pages
+                    ? Object.values(
+                        data.query.pages
+                    )
+                    : [];
+
+            return pages
+                .map(
+                    page => {
+                        const info =
+                            Array.isArray(
+                                page.imageinfo
+                            )
+                            && page.imageinfo.length
+                                ? page.imageinfo[0]
+                                : null;
+
+                        if (!info) {
+                            return null;
+                        }
+
+                        const meta =
+                            info.extmetadata
+                            || {};
+
+                        const description = [
+                            meta.ObjectName
+                                && meta.ObjectName.value,
+
+                            meta.ImageDescription
+                                && meta.ImageDescription.value,
+
+                            meta.Categories
+                                && meta.Categories.value
+                        ]
+                            .filter(Boolean)
+                            .join(" ");
+
+                        return {
+                            title:
+                                page.title
+                                || "",
+
+                            extract:
+                                description,
+
+                            image:
+                                info.thumburl
+                                || info.url
+                                || ""
+                        };
+                    }
+                )
+                .filter(
+                    item =>
+                        item
+                        && item.image
+                );
+        }
+        catch (_) {
+            return [];
+        }
+        finally {
+            clearTimeout(
+                timer
+            );
+        }
+    }
+
+
+    function memberScore(
+        candidate,
+        group,
+        member
+    ) {
+        const body =
+            `${candidate.title || ""} ${candidate.extract || ""}`;
+
+        const memberAliases =
+            aliases(member);
+
+        const groupAliases =
+            aliases(group);
+
+        if (
+            !containsAny(
+                body,
+                memberAliases
+            )
+        ) {
+            return -1;
+        }
+
+        let score = 50;
+
+        if (
+            containsAny(
+                candidate.title,
+                memberAliases
+            )
+        ) {
+            score += 45;
+        }
+
+        if (
+            containsAny(
+                body,
+                groupAliases
+            )
+        ) {
+            score += 35;
+        }
+
+        if (
+            /singer|rapper|idol|member|vocalist|가수|래퍼|아이돌|멤버|보컬/i
+                .test(body)
+        ) {
+            score += 10;
+        }
+
+        return score;
+    }
+
+
+    function groupScore(
+        candidate,
+        group
+    ) {
+        const body =
+            `${candidate.title || ""} ${candidate.extract || ""}`;
+
+        const groupAliases =
+            aliases(group);
+
+        if (
+            !containsAny(
+                body,
+                groupAliases
+            )
+        ) {
+            return -1;
+        }
+
+        let score = 35;
+
+        if (
+            containsAny(
+                candidate.title,
+                groupAliases
+            )
+        ) {
+            score += 55;
+        }
+
+        if (
+            /group|band|girl group|boy band|k-pop|kpop|그룹|걸그룹|보이그룹/i
+                .test(body)
+        ) {
+            score += 10;
+        }
+
+        return score;
+    }
+
+
+    function pickBest(
+        candidates,
+        scorer
+    ) {
+        let best = null;
+        let bestScore = -1;
+
+        for (
+            const candidate
+            of candidates
+        ) {
+            const score =
+                scorer(
+                    candidate
+                );
+
+            if (
+                score > bestScore
+            ) {
+                best =
+                    candidate;
+
+                bestScore =
+                    score;
+            }
+        }
+
+        return (
+            bestScore >= 0
+                ? best
+                : null
+        );
+    }
+
+
+    async function searchSource(
+        queries,
+        scorer
+    ) {
+        for (
+            const query
+            of queries
+        ) {
+            for (
+                const lang
+                of ["ko", "en"]
+            ) {
+                const candidates =
+                    await wikiCandidates(
+                        query,
+                        lang
+                    );
+
+                const best =
+                    pickBest(
+                        candidates,
+                        scorer
+                    );
+
+                if (
+                    best
+                    && best.image
+                ) {
+                    return best.image;
+                }
+            }
+
+            const commons =
+                await commonsCandidates(
+                    query
+                );
+
+            const commonsBest =
+                pickBest(
+                    commons,
+                    scorer
+                );
+
+            if (
+                commonsBest
+                && commonsBest.image
+            ) {
+                return commonsBest.image;
+            }
+        }
+
+        return "";
+    }
+
+
+    async function resolveIdolPhoto(
+        title
+    ) {
+        const cached =
+            getCache(
+                title
+            );
+
+        if (cached) {
+            return cached;
+        }
+
+        const {
+            group,
+            member
+        } = splitTitle(
+            title
+        );
+
+        /*
+         * 개인 멤버 이미지 우선.
+         */
+        if (
+            group
+            && member
+        ) {
+            const memberQueries = [
+                `"${member}" "${group}" K-pop`,
+                `"${member}" "${group}" singer`,
+                `${member} ${group} idol`
+            ];
+
+            const memberImage =
+                await searchSource(
+                    memberQueries,
+                    candidate =>
+                        memberScore(
+                            candidate,
+                            group,
+                            member
+                        )
+                );
+
+            if (memberImage) {
+                setCache(
+                    title,
+                    memberImage
+                );
+
+                return memberImage;
+            }
+        }
+
+        /*
+         * 개인 사진이 없으면 해당 그룹 이미지.
+         */
+        if (group) {
+            const groupQueries = [
+                `"${group}" K-pop group`,
+                `"${group}" idol group`,
+                group
+            ];
+
+            const groupImage =
+                await searchSource(
+                    groupQueries,
+                    candidate =>
+                        groupScore(
+                            candidate,
+                            group
+                        )
+                );
+
+            if (groupImage) {
+                setCache(
+                    title,
+                    groupImage
+                );
+
+                return groupImage;
+            }
+        }
+
+        return "";
+    }
+
+
+    function applyImage(
+        node,
+        url
+    ) {
+        if (!url) {
+            return;
+        }
+
+        const image =
+            node.querySelector(
+                ".idol-thumbnail"
+            );
+
+        if (!image) {
+            return;
+        }
+
+        image.src =
+            url;
+    }
+
+
+    async function loadOne(
+        node
+    ) {
+        const title =
+            node.dataset.title
+            || "";
+
+        const url =
+            await resolveIdolPhoto(
+                title
+            );
+
+        applyImage(
+            node,
+            url
+        );
+    }
+
+
+    async function run() {
+        const queue =
+            [...nodes];
+
+        const worker =
+            async () => {
+                while (
+                    queue.length
+                ) {
+                    const node =
+                        queue.shift();
+
+                    if (!node) {
+                        continue;
+                    }
+
+                    await loadOne(
+                        node
+                    );
+                }
+            };
+
+        await Promise.all([
+            worker(),
+            worker(),
+            worker()
+        ]);
+    }
+
+
+    run();
+})();
 </script>
 
 {% endblock %}

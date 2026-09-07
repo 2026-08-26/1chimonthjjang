@@ -391,7 +391,7 @@ def load_all_contents():
     categories = [
         (
             "music",
-            "노래",
+            "아이돌",
             "kpopidolsv3.csv",
             "Group",
             "Stage Name",

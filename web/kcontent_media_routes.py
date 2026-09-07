@@ -137,21 +137,30 @@ def _http_json(
 
 
 # =========================================================
-# MUSIC
-# 실제 "앨범 커버" 전용
+# MUSIC KEY = K-POP IDOL DATA
 #
-# 현재 CSV는 곡명/앨범명이 아니라
-# Group + Stage Name 구조이므로:
+# 중요:
+# kpopidolsv3.csv는 "노래 목록"이 아닙니다.
+# Stage Name / Full Name / Group / Company 등의 아이돌 멤버 메타데이터입니다.
 #
-# 1) 그룹명으로 실제 앨범 검색
-# 2) 없으면 멤버명으로 실제 앨범 검색
-# 3) Deezer 우선
-# 4) iTunes fallback
+# 그래서 category 내부 키는 기존 호환 때문에 "music"을 유지하지만,
+# 썸네일은 앨범 커버가 아니라 다음 순서로 찾습니다.
 #
-# 사람 사진은 사용하지 않습니다.
+# 1) 해당 멤버 프로필 이미지
+# 2) 멤버 이미지가 없으면 해당 그룹 이미지
+# 3) 둘 다 없으면 IDOL 기본 타일
 # =========================================================
 
 def _split_music_title(title):
+    """
+    현재 제목 형식:
+    Group - Stage Name
+
+    예:
+    After School - Raina
+    ZE:A - Minwoo
+    NCT - Taeil
+    """
     parts = [
         part.strip()
         for part in re.split(
@@ -173,305 +182,80 @@ def _split_music_title(title):
     )
 
 
-def _artist_exact_score(
-    artist_name,
-    wanted,
-):
-    artist_norm = _norm(
-        artist_name
+def _name_aliases(value):
+    """
+    띄어쓰기/기호 차이 보정.
+
+    예:
+    New Sun -> Newsun
+    ZE:A -> ZEA
+    After School -> Afterschool
+    """
+    value = _clean(
+        value,
+        300,
     )
 
-    wanted_norm = _norm(
-        wanted
-    )
-
-    if not artist_norm or not wanted_norm:
-        return -1
-
-    if artist_norm == wanted_norm:
-        return 100
-
-    artist_tokens = _tokens(
-        artist_name
-    )
-
-    wanted_tokens = _tokens(
-        wanted
-    )
-
-    matched = sum(
-        1
-        for token in wanted_tokens
-        if token in artist_norm
-    )
-
-    if not wanted_tokens:
-        return -1
-
-    if matched == len(
-        wanted_tokens
-    ):
-        return (
-            70
-            + min(
-                len(artist_tokens),
-                5,
-            )
-        )
-
-    # 너무 느슨한 동명이인 매칭은 사용하지 않습니다.
-    return -1
-
-
-# ---------------------------------------------------------
-# DEEZER
-# ---------------------------------------------------------
-
-def _deezer_album_rows(
-    artist_name,
-):
-    if not artist_name:
+    if not value:
         return []
 
-    queries = [
-        (
-            "https://api.deezer.com/search/album?q="
-            + quote_plus(
-                f'artist:"{artist_name}"'
-            )
-            + "&limit=25"
-        ),
-        (
-            "https://api.deezer.com/search?q="
-            + quote_plus(
-                f'artist:"{artist_name}"'
-            )
-            + "&limit=25"
-        ),
+    aliases = [
+        value,
     ]
 
-    result = []
-
-    for url in queries:
-        try:
-            data = _http_json(
-                url,
-                timeout=5.0,
-            )
-        except Exception as exc:
-            print(
-                "[KCONTENT DEEZER]",
-                type(exc).__name__,
-                artist_name,
-            )
-            continue
-
-        if not isinstance(
-            data,
-            dict,
-        ):
-            continue
-
-        rows = data.get(
-            "data",
-            [],
-        )
-
-        if not isinstance(
-            rows,
-            list,
-        ):
-            continue
-
-        result.extend(
-            row
-            for row in rows
-            if isinstance(
-                row,
-                dict,
-            )
-        )
-
-        if result:
-            break
-
-    return result
-
-
-def _deezer_album_info(
-    row,
-):
-    """
-    search/album 결과와 일반 search 결과를 모두 처리합니다.
-    반환:
-    (artist_name, album_title, cover_url)
-    """
-
-    artist = (
-        row.get("artist")
-        or {}
+    compact = re.sub(
+        r"\s+",
+        "",
+        value,
     )
 
-    artist_name = _clean(
-        (
-            artist.get("name")
-            if isinstance(
-                artist,
-                dict,
-            )
-            else ""
-        ),
-        300,
+    plain = re.sub(
+        r"[^0-9A-Za-z가-힣]+",
+        "",
+        value,
     )
 
-    # search/album:
-    # row 자체가 앨범
-    album_title = _clean(
-        row.get("title"),
-        300,
-    )
-
-    cover = _clean(
-        (
-            row.get("cover_xl")
-            or row.get("cover_big")
-            or row.get("cover_medium")
-            or row.get("cover")
-            or ""
-        ),
-        1500,
-    )
-
-    # 일반 track search:
-    # row["album"] 안에 앨범 커버가 있음
-    nested_album = (
-        row.get("album")
-        or {}
-    )
-
-    if (
-        not cover
-        and isinstance(
-            nested_album,
-            dict,
-        )
+    for candidate in (
+        compact,
+        plain,
     ):
-        album_title = _clean(
-            (
-                nested_album.get("title")
-                or album_title
-            ),
-            300,
-        )
+        if (
+            candidate
+            and candidate.lower()
+            not in {
+                item.lower()
+                for item in aliases
+            }
+        ):
+            aliases.append(
+                candidate
+            )
 
-        cover = _clean(
-            (
-                nested_album.get("cover_xl")
-                or nested_album.get("cover_big")
-                or nested_album.get("cover_medium")
-                or nested_album.get("cover")
-                or ""
-            ),
-            1500,
-        )
-
-    return (
-        artist_name,
-        album_title,
-        cover,
-    )
+    return aliases
 
 
-def _resolve_deezer_album(
-    artist_name,
+def _wikipedia_candidates(
+    query,
+    language,
 ):
-    rows = _deezer_album_rows(
-        artist_name
-    )
-
-    best_url = ""
-    best_score = -1
-
-    for row in rows:
-        (
-            candidate_artist,
-            album_title,
-            cover,
-        ) = _deezer_album_info(
-            row
-        )
-
-        if not cover:
-            continue
-
-        score = _artist_exact_score(
-            candidate_artist,
-            artist_name,
-        )
-
-        if score < 0:
-            continue
-
-        # 앨범 제목이 있으면 실제 앨범 결과라는 뜻이므로 약간 가산
-        if album_title:
-            score += 5
-
-        if score > best_score:
-            best_score = score
-            best_url = cover
-
-    return best_url
-
-
-# ---------------------------------------------------------
-# iTunes fallback
-# ---------------------------------------------------------
-
-def _itunes_artwork(row):
-    return _clean(
-        row.get("artworkUrl100")
-        or row.get("artworkUrl60")
-        or "",
-        1500,
-    )
-
-
-def _upgrade_artwork(url):
-    if not url:
-        return ""
-
-    url = re.sub(
-        r"/\d+x\d+bb\.",
-        "/600x600bb.",
-        url,
-    )
-
-    url = re.sub(
-        r"\d+x\d+bb",
-        "600x600bb",
-        url,
-    )
-
-    return url
-
-
-def _itunes_album_search(
-    artist_name,
-):
-    if not artist_name:
-        return []
-
     params = urlencode({
-        "term": artist_name,
-        "media": "music",
-        "entity": "album",
-        "attribute": "artistTerm",
-        "limit": 50,
-        "country": "KR",
+        "action": "query",
+        "format": "json",
+        "generator": "search",
+        "gsrsearch": query,
+        "gsrnamespace": "0",
+        "gsrlimit": 8,
+        "prop": "pageimages|extracts",
+        "piprop": "thumbnail|original",
+        "pithumbsize": 500,
+        "exintro": 1,
+        "explaintext": 1,
+        "exchars": 1000,
+        "origin": "*",
     })
 
     url = (
-        "https://itunes.apple.com/search?"
+        f"https://{language}.wikipedia.org/w/api.php?"
         + params
     )
 
@@ -482,9 +266,10 @@ def _itunes_album_search(
         )
     except Exception as exc:
         print(
-            "[KCONTENT ITUNES]",
+            "[KCONTENT IDOL WIKI]",
             type(exc).__name__,
-            artist_name,
+            language,
+            query,
         )
         return []
 
@@ -494,128 +279,484 @@ def _itunes_album_search(
     ):
         return []
 
-    rows = data.get(
-        "results",
-        [],
+    pages = (
+        data.get("query", {})
+        .get("pages", {})
     )
 
-    return (
-        rows
-        if isinstance(
-            rows,
-            list,
-        )
-        else []
-    )
+    if not isinstance(
+        pages,
+        dict,
+    ):
+        return []
 
+    result = []
 
-def _resolve_itunes_album(
-    artist_name,
-):
-    rows = _itunes_album_search(
-        artist_name
-    )
-
-    best_url = ""
-    best_score = -1
-
-    for row in rows:
+    for page in pages.values():
         if not isinstance(
-            row,
+            page,
             dict,
         ):
             continue
 
-        artwork = _upgrade_artwork(
-            _itunes_artwork(
-                row
+        thumbnail = (
+            page.get("thumbnail")
+            or {}
+        )
+
+        original = (
+            page.get("original")
+            or {}
+        )
+
+        image = _clean(
+            thumbnail.get("source")
+            or original.get("source")
+            or "",
+            1800,
+        )
+
+        if not image:
+            continue
+
+        result.append({
+            "title": _clean(
+                page.get("title"),
+                300,
+            ),
+            "extract": _clean(
+                page.get("extract"),
+                1500,
+            ),
+            "image": image,
+        })
+
+    return result
+
+
+def _idol_member_score(
+    candidate,
+    group,
+    member,
+):
+    """
+    멤버 이미지 판정.
+
+    - 멤버 이름이 반드시 후보 제목/설명에 있어야 함
+    - 그룹 이름도 설명에 확인되면 높은 점수
+    - 가수/아이돌/멤버 관련 표현 가산
+    """
+    page_title = _norm(
+        candidate.get("title")
+    )
+
+    body = _norm(
+        (
+            candidate.get("title", "")
+            + " "
+            + candidate.get("extract", "")
+        )
+    )
+
+    member_aliases = _name_aliases(
+        member
+    )
+
+    group_aliases = _name_aliases(
+        group
+    )
+
+    member_hit = any(
+        _norm(alias)
+        and _norm(alias) in body
+        for alias in member_aliases
+    )
+
+    if not member_hit:
+        return -1
+
+    score = 40
+
+    if any(
+        _norm(alias)
+        and _norm(alias) in page_title
+        for alias in member_aliases
+    ):
+        score += 40
+
+    group_hit = any(
+        _norm(alias)
+        and _norm(alias) in body
+        for alias in group_aliases
+    )
+
+    if group_hit:
+        score += 30
+
+    if re.search(
+        r"\b(singer|rapper|idol|member|vocalist)\b|가수|래퍼|아이돌|멤버|보컬",
+        body,
+    ):
+        score += 8
+
+    return score
+
+
+def _idol_group_score(
+    candidate,
+    group,
+):
+    page_title = _norm(
+        candidate.get("title")
+    )
+
+    body = _norm(
+        (
+            candidate.get("title", "")
+            + " "
+            + candidate.get("extract", "")
+        )
+    )
+
+    aliases = _name_aliases(
+        group
+    )
+
+    group_hit = any(
+        _norm(alias)
+        and _norm(alias) in body
+        for alias in aliases
+    )
+
+    if not group_hit:
+        return -1
+
+    score = 30
+
+    if any(
+        _norm(alias)
+        and _norm(alias) in page_title
+        for alias in aliases
+    ):
+        score += 50
+
+    if re.search(
+        r"\b(group|band|girl group|boy band|k-pop|kpop)\b|그룹|걸그룹|보이그룹",
+        body,
+    ):
+        score += 10
+
+    return score
+
+
+def _best_wikipedia_image(
+    queries,
+    scorer,
+):
+    best_url = ""
+    best_score = -1
+
+    for query in queries:
+        for language in (
+            "ko",
+            "en",
+        ):
+            candidates = (
+                _wikipedia_candidates(
+                    query,
+                    language,
+                )
+            )
+
+            for candidate in candidates:
+                score = scorer(
+                    candidate
+                )
+
+                if score > best_score:
+                    best_score = score
+                    best_url = (
+                        candidate.get("image")
+                        or ""
+                    )
+
+            if (
+                best_url
+                and best_score >= 70
+            ):
+                return best_url
+
+    return (
+        best_url
+        if best_score >= 0
+        else ""
+    )
+
+
+def _commons_candidates(query):
+    params = urlencode({
+        "action": "query",
+        "format": "json",
+        "generator": "search",
+        "gsrsearch": query,
+        "gsrnamespace": "6",
+        "gsrlimit": 12,
+        "prop": "imageinfo",
+        "iiprop": "url|extmetadata",
+        "iiurlwidth": 500,
+        "origin": "*",
+    })
+
+    url = (
+        "https://commons.wikimedia.org/w/api.php?"
+        + params
+    )
+
+    try:
+        data = _http_json(
+            url,
+            timeout=5.0,
+        )
+    except Exception as exc:
+        print(
+            "[KCONTENT IDOL COMMONS]",
+            type(exc).__name__,
+            query,
+        )
+        return []
+
+    if not isinstance(
+        data,
+        dict,
+    ):
+        return []
+
+    pages = (
+        data.get("query", {})
+        .get("pages", {})
+    )
+
+    if not isinstance(
+        pages,
+        dict,
+    ):
+        return []
+
+    result = []
+
+    for page in pages.values():
+        if not isinstance(
+            page,
+            dict,
+        ):
+            continue
+
+        infos = page.get(
+            "imageinfo"
+        )
+
+        if not isinstance(
+            infos,
+            list,
+        ) or not infos:
+            continue
+
+        info = infos[0]
+
+        if not isinstance(
+            info,
+            dict,
+        ):
+            continue
+
+        metadata = (
+            info.get("extmetadata")
+            or {}
+        )
+
+        meta_text = []
+
+        if isinstance(
+            metadata,
+            dict,
+        ):
+            for key in (
+                "ObjectName",
+                "ImageDescription",
+                "Categories",
+            ):
+                node = metadata.get(
+                    key
+                )
+
+                if (
+                    isinstance(
+                        node,
+                        dict,
+                    )
+                    and node.get("value")
+                ):
+                    meta_text.append(
+                        str(
+                            node.get("value")
+                        )
+                    )
+
+        image = _clean(
+            info.get("thumburl")
+            or info.get("url")
+            or "",
+            1800,
+        )
+
+        if not image:
+            continue
+
+        result.append({
+            "title": _clean(
+                page.get("title"),
+                500,
+            ),
+            "extract": " ".join(
+                meta_text
+            ),
+            "image": image,
+        })
+
+    return result
+
+
+def _best_commons_image(
+    queries,
+    scorer,
+):
+    best_url = ""
+    best_score = -1
+
+    for query in queries:
+        candidates = (
+            _commons_candidates(
+                query
             )
         )
 
-        if not artwork:
-            continue
+        for candidate in candidates:
+            score = scorer(
+                candidate
+            )
 
-        candidate_artist = _clean(
-            row.get("artistName"),
-            300,
-        )
+            if score > best_score:
+                best_score = score
+                best_url = (
+                    candidate.get("image")
+                    or ""
+                )
 
-        score = _artist_exact_score(
-            candidate_artist,
-            artist_name,
-        )
+        if (
+            best_url
+            and best_score >= 70
+        ):
+            return best_url
 
-        if score < 0:
-            continue
-
-        collection = _clean(
-            row.get("collectionName"),
-            300,
-        )
-
-        if collection:
-            score += 5
-
-        if score > best_score:
-            best_score = score
-            best_url = artwork
-
-    return best_url
+    return (
+        best_url
+        if best_score >= 0
+        else ""
+    )
 
 
 def _resolve_music(title):
+    """
+    기존 내부 category='music'은 유지하지만
+    CSV 성격에 맞춰 '아이돌 멤버/그룹 이미지'를 반환합니다.
+    """
     group, member = (
         _split_music_title(
             title
         )
     )
 
-    # 1순위: 그룹의 실제 앨범 커버
-    if group:
-        image = _resolve_deezer_album(
-            group
+    # -----------------------------------------------------
+    # 1순위: 정확한 멤버 이미지
+    # -----------------------------------------------------
+    if group and member:
+        member_queries = [
+            f'"{member}" "{group}" K-pop',
+            f'"{member}" "{group}" singer',
+            f'{member} {group} idol',
+        ]
+
+        member_scorer = (
+            lambda candidate:
+                _idol_member_score(
+                    candidate,
+                    group,
+                    member,
+                )
+        )
+
+        image = (
+            _best_wikipedia_image(
+                member_queries,
+                member_scorer,
+            )
         )
 
         if image:
             return image
 
-        image = _resolve_itunes_album(
-            group
+        image = (
+            _best_commons_image(
+                member_queries,
+                member_scorer,
+            )
         )
 
         if image:
             return image
 
-    # 2순위: 멤버의 실제 솔로 앨범 커버
-    if member:
-        image = _resolve_deezer_album(
-            member
-        )
-
-        if image:
-            return image
-
-        image = _resolve_itunes_album(
-            member
-        )
-
-        if image:
-            return image
-
-    # 3순위: 전체 제목으로 마지막 재시도
-    image = _resolve_deezer_album(
-        title
+    # -----------------------------------------------------
+    # 2순위: 정확한 그룹 이미지
+    # -----------------------------------------------------
+    group_name = (
+        group
+        or title
     )
 
-    if image:
-        return image
+    if group_name:
+        group_queries = [
+            f'"{group_name}" K-pop group',
+            f'"{group_name}" idol group',
+            group_name,
+        ]
 
-    image = _resolve_itunes_album(
-        title
-    )
+        group_scorer = (
+            lambda candidate:
+                _idol_group_score(
+                    candidate,
+                    group_name,
+                )
+        )
 
-    if image:
-        return image
+        image = (
+            _best_wikipedia_image(
+                group_queries,
+                group_scorer,
+            )
+        )
+
+        if image:
+            return image
+
+        image = (
+            _best_commons_image(
+                group_queries,
+                group_scorer,
+            )
+        )
+
+        if image:
+            return image
 
     return ""
 
@@ -1024,8 +1165,8 @@ def _resolve_webtoon(
 
 def _placeholder_svg(category):
     if category == "music":
-        label = "ALBUM"
-        symbol = "♪"
+        label = "IDOL"
+        symbol = "★"
         bg = "#f2edf0"
 
     elif category == "drama":

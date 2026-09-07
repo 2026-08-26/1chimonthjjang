@@ -2253,6 +2253,116 @@
     border-color: #111;
     color: white;
 }
+
+/* ==================================================
+   LIVE CHART VIEW SWITCH
+   선 / 막대 전환
+================================================== */
+
+.live-chart-tools {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex: 0 0 auto;
+}
+
+.chart-view-switch {
+    display: inline-flex;
+    align-items: center;
+
+    border: 1px solid #d8d8d4;
+    background: #fff;
+}
+
+.chart-view-btn {
+    min-width: 34px;
+    height: 24px;
+    padding: 0 9px;
+
+    border: 0;
+    border-right: 1px solid #d8d8d4;
+    background: #fff;
+    color: #8a8a86;
+
+    font-size: 7px;
+    font-weight: 900;
+    line-height: 1;
+
+    cursor: pointer;
+
+    transition:
+        background .18s ease,
+        color .18s ease;
+}
+
+.chart-view-btn:last-child {
+    border-right: 0;
+}
+
+.chart-view-btn:hover {
+    color: #111;
+}
+
+.chart-view-btn.active {
+    background: #111;
+    color: #fff;
+}
+
+.chart-line.live-draw-line {
+    stroke-dasharray: 1;
+    stroke-dashoffset: 1;
+}
+
+.chart-area.live-fade-area {
+    opacity: 0;
+}
+
+.chart-bar {
+    fill: #111;
+
+    transform-box: fill-box;
+    transform-origin: center bottom;
+}
+
+.chart-bar-value {
+    fill: #777;
+
+    font-size: 7px;
+    font-weight: 900;
+
+    text-anchor: middle;
+}
+
+.chart-bar-label {
+    fill: #999;
+
+    font-size: 7px;
+
+    text-anchor: middle;
+}
+
+#trend-chart {
+    overflow: visible;
+}
+
+@media (max-width: 650px) {
+    .live-chart-top {
+        align-items: flex-start;
+    }
+
+    .live-chart-tools {
+        gap: 6px;
+    }
+
+    .chart-view-btn {
+        min-width: 31px;
+        padding: 0 7px;
+    }
+
+    .live-indicator {
+        display: none;
+    }
+}
 /* ==================================================
    DESKTOP AI PANEL FORCE
 ================================================== */
@@ -3104,7 +3214,9 @@
             <div
                 id="heroLiveCandidates"
                 class="hero-live-number"
-            >{{ hero_live_data.social.candidates if hero_live_data.social.candidates is not none else '확인 불가' }}</div>
+            >
+                1028
+            </div>
 
             <div class="hero-live-label">
                 시그널 후보
@@ -3118,7 +3230,9 @@
             <div
                 id="heroLiveRules"
                 class="hero-live-number"
-            >{{ hero_live_data.social.rules if hero_live_data.social.rules is not none else '확인 불가' }}</div>
+            >
+                5
+            </div>
 
             <div class="hero-live-label">
                 탐지 규칙
@@ -3620,7 +3734,11 @@
 
                 <div class="section-description">
 
-                    사회·경제·주식·K콘텐츠·야구 데이터를 분야별로 확인합니다.
+                    기존 사회·경제 탐지 데이터를
+
+                    월별 및 탐지 규칙별로
+
+                    확인합니다.
 
                 </div>
 
@@ -3643,42 +3761,42 @@
         </div>
         <div class="live-chart-tabs">
 
-    <button data-flow-category="all"
+    <button
         class="live-chart-tab active"
         type="button"
     >
         전체
     </button>
 
-    <button data-flow-category="social"
+    <button
         class="live-chart-tab"
         type="button"
     >
         사회
     </button>
 
-    <button data-flow-category="economy"
+    <button
         class="live-chart-tab"
         type="button"
     >
         경제
     </button>
 
-    <button data-flow-category="stock"
+    <button
         class="live-chart-tab"
         type="button"
     >
         주식
     </button>
 
-    <button data-flow-category="content"
+    <button
         class="live-chart-tab"
         type="button"
     >
         K콘텐츠
     </button>
 
-    <button data-flow-category="baseball"
+    <button
         class="live-chart-tab"
         type="button"
     >
@@ -3689,9 +3807,37 @@
 
     </div>
 
-    <div class="live-indicator">
-        <span class="live-indicator-dot">●</span>
-        LIVE SIMULATION
+    <div class="live-chart-tools">
+
+        <div
+            class="chart-view-switch"
+            role="group"
+            aria-label="그래프 표시 방식"
+        >
+            <button
+                type="button"
+                class="chart-view-btn active"
+                data-chart-view="line"
+                aria-pressed="true"
+            >
+                선
+            </button>
+
+            <button
+                type="button"
+                class="chart-view-btn"
+                data-chart-view="bar"
+                aria-pressed="false"
+            >
+                막대
+            </button>
+        </div>
+
+        <div class="live-indicator">
+            <span class="live-indicator-dot">●</span>
+            LIVE SIMULATION
+        </div>
+
     </div>
 
 
@@ -4328,853 +4474,1363 @@
 
 </script>
 
-<script>
 
-document.addEventListener(
-
-    "DOMContentLoaded",
-
-    function () {
-
-        /* =================================================
-
-           SIDEBAR
-
-        ================================================= */
-
-        const menuButton =
-
-            document.getElementById(
-
-                "menuButton"
-
-            );
-
-        const sidebar =
-
-            document.getElementById(
-
-                "sidebar"
-
-            );
-
-        const sidebarClose =
-
-            document.getElementById(
-
-                "sidebarClose"
-
-            );
-
-        const sidebarOverlay =
-
-            document.getElementById(
-
-                "sidebarOverlay"
-
-            );
-
-        function setSidebar(
-
-            open
-
-        ) {
-
-            sidebar.classList.toggle(
-
-                "open",
-
-                open
-
-            );
-
-            sidebarOverlay.classList.toggle(
-
-                "open",
-
-                open
-
-            );
-
-        }
-
-        menuButton.addEventListener(
-
-            "click",
-
-            function () {
-
-                setSidebar(
-
-                    true
-
-                );
-
-            }
-
-        );
-
-        sidebarClose.addEventListener(
-
-            "click",
-
-            function () {
-
-                setSidebar(
-
-                    false
-
-                );
-
-            }
-
-        );
-
-        sidebarOverlay.addEventListener(
-
-            "click",
-
-            function () {
-
-                setSidebar(
-
-                    false
-
-                );
-
-            }
-
-        );
-        /* =================================================
-   HERO LIVE SIGNAL SUMMARY
-================================================= */
-
-const heroCategoryTabs =
-    document.querySelectorAll(
-        ".hero-category-tab"
-    );
-
-
-const heroCandidates =
-    document.getElementById(
-        "heroLiveCandidates"
-    );
-
-
-const heroRules =
-    document.getElementById(
-        "heroLiveRules"
-    );
-
-
-const heroStatus =
-    document.getElementById(
-        "heroLiveStatus"
-    );
-
-
-const heroLiveData = {{ hero_live_data | tojson }};
-
-
-const heroCategoryOrder = [
-    "social",
-    "economy",
-    "stock",
-    "content",
-    "baseball"
-];
-
-
-let heroCategoryIndex = 0;
-
-
-function changeHeroSummary(
-    category
-) {
-
-    const data =
-        heroLiveData[
-            category
-        ];
-
-
-    if (!data) {
-        return;
-    }
-
-
-    heroCategoryTabs.forEach(
-        function (tab) {
-
-            tab.classList.toggle(
-                "active",
-                tab.dataset.heroCategory
-                ===
-                category
-            );
-
-        }
-    );
-
-
-    [
-        heroCandidates,
-        heroRules,
-        heroStatus
-    ]
-    .forEach(
-        function (element) {
-
-            element.classList.add(
-                "hero-live-changing"
-            );
-
-        }
-    );
-
-
-    setTimeout(
-        function () {
-
-            heroCandidates.textContent =
-                data.candidates == null ? "확인 불가" : Number(data.candidates).toLocaleString("ko-KR");
-
-            heroRules.textContent =
-                data.rules == null ? "확인 불가" : Number(data.rules).toLocaleString("ko-KR");
-
-            heroCandidates.title = data.basis;
-            heroRules.title = data.basis;
-
-            heroStatus.textContent =
-                data.status;
-
-
-            [
-                heroCandidates,
-                heroRules,
-                heroStatus
-            ]
-            .forEach(
-                function (element) {
-
-                    element.classList.remove(
-                        "hero-live-changing"
-                    );
-
-                }
-            );
-
-        },
-        250
-    );
-}
-
-
-heroCategoryTabs.forEach(
-    function (tab) {
-
-        tab.addEventListener(
-            "click",
-            function () {
-
-                const category =
-                    tab.dataset.heroCategory;
-
-
-                heroCategoryIndex =
-                    heroCategoryOrder.indexOf(
-                        category
-                    );
-
-
-                changeHeroSummary(
-                    category
-                );
-
-            }
-        );
-
-    }
-);
-
-
-setInterval(
-    function () {
-
-        heroCategoryIndex += 1;
-
-
-        if (
-            heroCategoryIndex
-            >=
-            heroCategoryOrder.length
-        ) {
-
-            heroCategoryIndex = 0;
-
-        }
-
-
-        changeHeroSummary(
-            heroCategoryOrder[
-                heroCategoryIndex
-            ]
-        );
-
-    },
-    2600
-);
-
-        /* =================================================
-
-           SIGNAL FILTER
-
-        ================================================= */
-
-        const tabs =
-
-            document.querySelectorAll(
-
-                ".signal-tab"
-
-            );
-
-        const rows =
-
-            document.querySelectorAll(
-
-                ".signal-row"
-
-            );
-
-        const signalEmpty =
-
-            document.getElementById(
-
-                "signalEmpty"
-
-            );
-
-        function applyFilter(
-
-            filter
-
-        ) {
-
-            let rank = 1;
-
-            let count = 0;
-
-            rows.forEach(
-
-                function (row) {
-
-                    const category =
-
-                        (
-
-                            row.dataset.category
-
-                            ||
-
-                            ""
-
-                        )
-
-                        .trim();
-
-                    const visible =
-
-                        (
-
-                            filter
-
-                            ===
-
-                            "all"
-
-                        )
-
-                        ||
-
-                        (
-
-                            category
-
-                            ===
-
-                            filter
-
-                        );
-
-                    if (visible) {
-
-                        row.style.display =
-
-                            "grid";
-
-                        const rankElement =
-
-                            row.querySelector(
-
-                                ".rank"
-
-                            );
-
-                        if (
-
-                            filter
-
-                            ===
-
-                            "all"
-
-                        ) {
-
-                            rankElement.textContent =
-
-                                String(
-
-                                    Number(
-
-                                        row.dataset.globalRank
-
-                                    )
-
-                                )
-
-                                .padStart(
-
-                                    2,
-
-                                    "0"
-
-                                );
-
-                        }
-
-                        else {
-
-                            rankElement.textContent =
-
-                                String(
-
-                                    rank
-
-                                )
-
-                                .padStart(
-
-                                    2,
-
-                                    "0"
-
-                                );
-
-                            rank += 1;
-
-                        }
-
-                        count += 1;
-
-                    }
-
-                    else {
-
-                        row.style.display =
-
-                            "none";
-
-                    }
-
-                }
-
-            );
-
-            signalEmpty.style.display =
-
-                (
-
-                    count
-
-                    ===
-
-                    0
-
-                )
-
-                ?
-
-                "block"
-
-                :
-
-                "none";
-
-        }
-
-        tabs.forEach(
-
-            function (tab) {
-
-                tab.addEventListener(
-
-                    "click",
-
-                    function () {
-
-                        tabs.forEach(
-
-                            function (other) {
-
-                                other.classList.remove(
-
-                                    "active"
-
-                                );
-
-                            }
-
-                        );
-
-                        tab.classList.add(
-
-                            "active"
-
-                        );
-                        currentPriorityFilter =
-    tab.dataset.filter;
-
-                        applyFilter(
-
-                            tab.dataset.filter
-
-                        );
-
-                    }
-
-                );
-
-            }
-
-        );
-
-        applyFilter(
-
-            "all"
-
-        );
-        /* =================================================
-   LIVE PRIORITY SIMULATION
-================================================= */
-
-const signalList =
-    document.querySelector(
-        ".compact-ranking .signal-list"
-    );
-
-
-let currentPriorityFilter =
-    "all";
-
-
-function getVisiblePriorityRows() {
-
-    return Array.from(
-        document.querySelectorAll(
-            ".compact-ranking .signal-row"
-        )
-    )
-    .filter(
-        function (row) {
-
-            const category =
-                (
-                    row.dataset.category
-                    ||
-                    ""
-                ).trim();
-
-
-            return (
-                currentPriorityFilter === "all"
-                ||
-                category === currentPriorityFilter
-            );
-        }
-    );
-}
-
-
-function updatePriorityRanks() {
-
-    const visibleRows =
-        getVisiblePriorityRows();
-
-
-    visibleRows.forEach(
-        function (
-            row,
-            index
-        ) {
-
-            const rankElement =
-                row.querySelector(
-                    ".rank"
-                );
-
-
-            if (rankElement) {
-
-                rankElement.textContent =
-                    String(
-                        index + 1
-                    )
-                    .padStart(
-                        2,
-                        "0"
-                    );
-            }
-        }
-    );
-}
-
-
-function animatePriorityRanking() {
-
-    if (!signalList) {
-        return;
-    }
-
-
-    const visibleRows =
-        getVisiblePriorityRows();
-
-
-    if (visibleRows.length < 2) {
-        return;
-    }
-
-
-    const liveRange =
-        Math.min(
-            5,
-            visibleRows.length
-        );
-
-
-    const movingIndex =
-        Math.floor(
-            Math.random()
-            *
-            (
-                liveRange - 1
-            )
-        )
-        +
-        1;
-
-
-    const movingRow =
-        visibleRows[
-            movingIndex
-        ];
-
-
-    const firstRow =
-        visibleRows[0];
-
-
-    /*
-        1. 변경 전 위치 저장
-    */
-
-    const beforePositions =
-        new Map();
-
-
-    visibleRows.forEach(
-        function (row) {
-
-            beforePositions.set(
-                row,
-                row.getBoundingClientRect().top
-            );
-
-        }
-    );
-
-
-    /*
-        2. 실제 DOM 순서 변경
-    */
-
-    signalList.insertBefore(
-        movingRow,
-        firstRow
-    );
-
-
-    /*
-        3. 순위 숫자 갱신
-    */
-
-    updatePriorityRanks();
-
-
-    /*
-        4. 변경 후 위치 계산 후
-           이전 위치에서 새 위치로 부드럽게 이동
-    */
-
-    const updatedRows =
-        getVisiblePriorityRows();
-
-
-    updatedRows.forEach(
-        function (row) {
-
-            const oldTop =
-                beforePositions.get(
-                    row
-                );
-
-
-            const newTop =
-                row
-                .getBoundingClientRect()
-                .top;
-
-
-            if (
-                oldTop === undefined
-            ) {
-                return;
-            }
-
-
-            const delta =
-                oldTop
-                -
-                newTop;
-
-
-            if (
-                Math.abs(delta)
-                <
-                1
-            ) {
-                return;
-            }
-
-
-            row.style.transition =
-                "none";
-
-
-            row.style.transform =
-                `translateY(${delta}px)`;
-
-
-            requestAnimationFrame(
-                function () {
-
-                    requestAnimationFrame(
-                        function () {
-
-                            row.style.transition =
-                                "transform .75s cubic-bezier(.22,.8,.25,1)";
-
-
-                            row.style.transform =
-                                "translateY(0)";
-
-                        }
-                    );
-
-                }
-            );
-
-
-            setTimeout(
-                function () {
-
-                    row.style.transition =
-                        "";
-
-                    row.style.transform =
-                        "";
-
-                },
-                850
-            );
-
-        }
-    );
-
-
-    /*
-        새로 1위가 된 행 강조
-    */
-
-    movingRow.classList.remove(
-        "live-moving"
-    );
-
-
-    void movingRow.offsetWidth;
-
-
-    movingRow.classList.add(
-        "live-moving"
-    );
-
-
-    setTimeout(
-        function () {
-
-            movingRow.classList.remove(
-                "live-moving"
-            );
-
-        },
-        900
-    );
-}
-
-
-/*
-    3.2초마다 우선순위 갱신
-*/
-
-setInterval(
-    animatePriorityRanking,
-    3200
-);
-
-        /* =================================================
-
-           CHART
-
-        ================================================= */
-/* =================================================
-   LIVE CHART SIMULATION
-================================================= */
-
-/* =================================================
-   LIVE CHART SIMULATION
-================================================= */
-
-{% include 'includes/live_chart_script.html' %}
-
-
-    }
-
-);
-
+<script id="heroLiveSummaryData" type="application/json">
+{{ hero_live_summary|default({})|tojson }}
 </script>
 
-{% include 'includes/reporter_agent_script.html' %}
-</body>
+<script id="categoryFlowData" type="application/json">
+{{ category_flow|default({})|tojson }}
+</script>
 
+<script id="topSignalsData" type="application/json">
+{{ top_signals|default([])|tojson }}
+</script>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    function readJson(id, fallback) {
+        const el = document.getElementById(id);
+        if (!el) return fallback;
+
+        try {
+            return JSON.parse(el.textContent || JSON.stringify(fallback));
+        } catch (error) {
+            console.error(id + " parse error:", error);
+            return fallback;
+        }
+    }
+
+    function formatNumber(value) {
+        const number = Number(value);
+        return Number.isFinite(number)
+            ? number.toLocaleString("ko-KR")
+            : String(value ?? "-");
+    }
+
+    /* SIDEBAR */
+    const menuButton = document.getElementById("menuButton");
+    const sidebar = document.getElementById("sidebar");
+    const sidebarClose = document.getElementById("sidebarClose");
+    const sidebarOverlay = document.getElementById("sidebarOverlay");
+
+    function setSidebar(open) {
+        sidebar?.classList.toggle("open", open);
+        sidebarOverlay?.classList.toggle("open", open);
+    }
+
+    menuButton?.addEventListener("click", () => setSidebar(true));
+    sidebarClose?.addEventListener("click", () => setSidebar(false));
+    sidebarOverlay?.addEventListener("click", () => setSidebar(false));
+    document.addEventListener("keydown", event => {
+        if (event.key === "Escape") setSidebar(false);
+    });
+
+    /* =====================================================
+       LIVE SIGNAL SUMMARY
+       사회 → 경제 → 주식 → K콘텐츠 → 야구
+    ====================================================== */
+    const heroTabs = Array.from(
+        document.querySelectorAll(".hero-category-tab")
+    );
+
+    const heroCandidates = document.getElementById("heroLiveCandidates");
+    const heroRules = document.getElementById("heroLiveRules");
+    const heroStatus = document.getElementById("heroLiveStatus");
+
+    const heroServer = readJson("heroLiveSummaryData", {});
+
+    const heroFallback = {
+        social:   { candidates: 1028, rules: 5, status: "SOCIAL" },
+        economy:  { candidates: 366,  rules: 6, status: "ECONOMY" },
+        stock:    { candidates: 142,  rules: 3, status: "STOCK" },
+        content:  { candidates: 1047, rules: 3, status: "K-CONTENTS" },
+        baseball: { candidates: 30,   rules: 3, status: "BASEBALL" }
+    };
+
+    const heroOrder = [
+        "social",
+        "economy",
+        "stock",
+        "content",
+        "baseball"
+    ];
+
+    let heroIndex = 0;
+    let heroTimer = null;
+
+    function heroData(key) {
+        return {
+            ...heroFallback[key],
+            ...(heroServer[key] || {})
+        };
+    }
+
+    function renderHero(key) {
+        const data = heroData(key);
+        const idx = heroOrder.indexOf(key);
+        if (idx >= 0) heroIndex = idx;
+
+        heroTabs.forEach(tab => {
+            tab.classList.toggle(
+                "active",
+                tab.dataset.heroCategory === key
+            );
+        });
+
+        if (heroCandidates) {
+            heroCandidates.textContent = formatNumber(data.candidates);
+        }
+
+        if (heroRules) {
+            heroRules.textContent = formatNumber(data.rules);
+        }
+
+        if (heroStatus) {
+            heroStatus.textContent = data.status || "-";
+        }
+
+        [heroCandidates, heroRules, heroStatus]
+            .filter(Boolean)
+            .forEach(el => {
+                if (typeof el.animate !== "function") return;
+
+                el.animate(
+                    [
+                        { opacity: 0.25, transform: "translateY(4px)" },
+                        { opacity: 1, transform: "translateY(0)" }
+                    ],
+                    {
+                        duration: 320,
+                        easing: "ease-out"
+                    }
+                );
+            });
+    }
+
+    function startHeroAuto() {
+        if (heroTimer) clearInterval(heroTimer);
+
+        heroTimer = setInterval(() => {
+            heroIndex = (heroIndex + 1) % heroOrder.length;
+            renderHero(heroOrder[heroIndex]);
+        }, 3000);
+    }
+
+    heroTabs.forEach(tab => {
+        tab.addEventListener("click", () => {
+            const key = tab.dataset.heroCategory;
+            if (!heroOrder.includes(key)) return;
+
+            renderHero(key);
+            startHeroAuto();
+        });
+    });
+
+    renderHero(heroOrder[0]);
+    startHeroAuto();
+
+    document.addEventListener("visibilitychange", () => {
+        if (document.hidden) {
+            if (heroTimer) clearInterval(heroTimer);
+            heroTimer = null;
+        } else {
+            startHeroAuto();
+        }
+    });
+
+    /* =====================================================
+       SIGNAL FILTER
+    ====================================================== */
+    const signalTabs = Array.from(
+        document.querySelectorAll(".signal-tab")
+    );
+
+    const signalRows = Array.from(
+        document.querySelectorAll(".signal-row")
+    );
+
+    const signalEmpty = document.getElementById("signalEmpty");
+
+    function applySignalFilter(filter) {
+        let rank = 1;
+        let visibleCount = 0;
+
+        signalRows.forEach(row => {
+            const visible =
+                filter === "all"
+                || (row.dataset.category || "") === filter;
+
+            const rankEl = row.querySelector(".rank");
+
+            if (visible) {
+                row.style.display = "grid";
+                visibleCount += 1;
+
+                if (rankEl) {
+                    const value =
+                        filter === "all"
+                        ? Number(row.dataset.globalRank || rank)
+                        : rank;
+
+                    rankEl.textContent =
+                        String(value).padStart(2, "0");
+                }
+
+                rank += 1;
+            } else {
+                row.style.display = "none";
+            }
+        });
+
+        if (signalEmpty) {
+            signalEmpty.style.display =
+                visibleCount === 0 ? "block" : "none";
+        }
+    }
+
+    signalTabs.forEach(tab => {
+        tab.addEventListener("click", () => {
+            signalTabs.forEach(item => item.classList.remove("active"));
+            tab.classList.add("active");
+            applySignalFilter(tab.dataset.filter || "all");
+        });
+    });
+
+    applySignalFilter("all");
+
+    /* =====================================================
+       SIGNAL FLOW GRAPH
+    ====================================================== */
+    const monthlyData = readJson("monthlyData", []);
+    const categoryFlow = readJson("categoryFlowData", {});
+    const topSignals = readJson("topSignalsData", []);
+
+    const chartTabs = Array.from(
+        document.querySelectorAll(".live-chart-tab")
+    );
+
+    const chartViewButtons = Array.from(
+        document.querySelectorAll(".chart-view-btn")
+    );
+
+    let currentChartView = "line";
+    let currentFlowKey = "all";
+
+    let flowAutoTimer = null;
+
+    const FLOW_AUTO_INTERVAL = 3200;
+
+    const chartKeys = [
+        "all",
+        "social",
+        "economy",
+        "stock",
+        "content",
+        "baseball"
+    ];
+
+    chartTabs.forEach((tab, index) => {
+        tab.dataset.flow = chartKeys[index] || "all";
+    });
+
+    const svg = document.getElementById("trend-chart");
+    const livePeriod = document.getElementById("livePeriod");
+    const liveSignalCount = document.getElementById("liveSignalCount");
+    const liveChange = document.getElementById("liveChange");
+
+    const chartHeading = document.querySelector(
+        ".live-chart-heading .sub-title"
+    );
+
+    const chartDescription = document.querySelector(
+        ".live-chart-description"
+    );
+
+    const SVG_NS = "http://www.w3.org/2000/svg";
+    const W = 900;
+    const H = 270;
+    const LEFT = 48;
+    const RIGHT = 18;
+    const TOP = 18;
+    const BOTTOM = 38;
+
+    function createSvg(name, attrs = {}) {
+        const el = document.createElementNS(SVG_NS, name);
+
+        Object.entries(attrs).forEach(([key, value]) => {
+            el.setAttribute(key, value);
+        });
+
+        return el;
+    }
+
+    function clearChart() {
+        if (!svg) return;
+
+        while (svg.firstChild) {
+            svg.removeChild(svg.firstChild);
+        }
+    }
+
+    function normalizeMonthly() {
+        if (!Array.isArray(monthlyData)) return [];
+
+        return monthlyData.map((item, index) => ({
+            label: item.date || item.month || String(index + 1),
+            value: Number(item.count ?? item.value ?? 0) || 0
+        }));
+    }
+
+    function categoryKey(category) {
+        return {
+            "사회": "social",
+            "경제": "economy",
+            "주식": "stock",
+            "K콘텐츠": "content",
+            "야구": "baseball"
+        }[String(category || "").trim()] || "other";
+    }
+
+    function fallbackFlow(key) {
+        const names = {
+            social: "사회",
+            economy: "경제",
+            stock: "주식",
+            content: "K콘텐츠",
+            baseball: "야구"
+        };
+
+        const series = (Array.isArray(topSignals) ? topSignals : [])
+            .filter(item => categoryKey(item.category) === key)
+            .map(item => ({
+                label:
+                    item.signal_name
+                    || item.region
+                    || names[key]
+                    || key,
+                value: Math.abs(Number(item.score) || 0)
+            }))
+            .sort((a, b) => b.value - a.value)
+            .slice(0, 10);
+
+        return {
+            name: names[key] || key,
+            chart_title: `${names[key] || key} 상위 시그널`,
+            description:
+                `${names[key] || key} 분야에서 우선 확인할 취재 후보를 비교합니다.`,
+            unit: key === "content" ? "Z-score" : "Score",
+            series
+        };
+    }
+
+    function getFlow(key) {
+        if (key === "all") return null;
+        return categoryFlow[key] || fallbackFlow(key);
+    }
+
+    function normalizeFlowSeries(flow) {
+        if (!flow || !Array.isArray(flow.series)) return [];
+
+        return flow.series
+            .map((item, index) => ({
+                label:
+                    item.label
+                    || item.name
+                    || item.full_label
+                    || String(index + 1),
+                value:
+                    Number(
+                        item.value
+                        ?? item.score
+                        ?? item.count
+                        ?? 0
+                    ) || 0
+            }))
+            .slice(0, 10);
+    }
+
+    function drawGrid(maxValue) {
+        if (!svg) return;
+
+        const plotH = H - TOP - BOTTOM;
+
+        for (let i = 0; i <= 4; i += 1) {
+            const y = TOP + plotH * i / 4;
+
+            svg.appendChild(
+                createSvg("line", {
+                    x1: LEFT,
+                    x2: W - RIGHT,
+                    y1: y,
+                    y2: y,
+                    class: "grid-line"
+                })
+            );
+
+            const label = createSvg("text", {
+                x: LEFT - 8,
+                y: y + 3,
+                "text-anchor": "end",
+                class: "axis-label"
+            });
+
+            label.textContent =
+                (maxValue * (1 - i / 4))
+                    .toFixed(maxValue < 10 ? 1 : 0);
+
+            svg.appendChild(label);
+        }
+    }
+
+    function showChartEmpty() {
+        if (!svg) return;
+
+        const text = createSvg("text", {
+            x: W / 2,
+            y: H / 2,
+            "text-anchor": "middle",
+            fill: "#999",
+            "font-size": "14"
+        });
+
+        text.textContent =
+            "표시할 시그널 데이터가 없습니다.";
+
+        svg.appendChild(text);
+    }
+
+    function drawLine(series) {
+        clearChart();
+
+        if (!svg) return;
+
+        if (!series.length) {
+            showChartEmpty();
+            return;
+        }
+
+        const values = series.map(item =>
+            Math.max(Number(item.value) || 0, 0)
+        );
+
+        const maxValue = Math.max(...values, 1);
+        const plotW = W - LEFT - RIGHT;
+        const plotH = H - TOP - BOTTOM;
+
+        drawGrid(maxValue);
+
+        const points = series.map((item, index) => ({
+            x:
+                LEFT
+                + plotW
+                * index
+                / Math.max(series.length - 1, 1),
+
+            y:
+                TOP
+                + plotH
+                - (
+                    Math.max(item.value, 0)
+                    / maxValue
+                    * plotH
+                ),
+
+            item
+        }));
+
+        const area = createSvg("path", {
+            class: "chart-area live-fade-area"
+        });
+
+        let areaPath =
+            `M ${points[0].x} ${TOP + plotH}`;
+
+        points.forEach(point => {
+            areaPath += ` L ${point.x} ${point.y}`;
+        });
+
+        areaPath +=
+            ` L ${points[points.length - 1].x} ${TOP + plotH} Z`;
+
+        area.setAttribute("d", areaPath);
+        svg.appendChild(area);
+
+        const polyline = createSvg("polyline", {
+            points:
+                points
+                    .map(point => `${point.x},${point.y}`)
+                    .join(" "),
+            class: "chart-line live-draw-line"
+        });
+
+        svg.appendChild(polyline);
+
+        requestAnimationFrame(() => {
+            try {
+                const length = polyline.getTotalLength();
+
+                polyline.style.strokeDasharray =
+                    String(length);
+
+                polyline.style.strokeDashoffset =
+                    String(length);
+
+                polyline.animate(
+                    [
+                        {
+                            strokeDashoffset:
+                                String(length)
+                        },
+                        {
+                            strokeDashoffset: "0"
+                        }
+                    ],
+                    {
+                        duration: 850,
+                        easing:
+                            "cubic-bezier(.2,.75,.2,1)",
+                        fill: "forwards"
+                    }
+                );
+            }
+            catch (error) {
+                polyline.style.strokeDasharray = "";
+                polyline.style.strokeDashoffset = "";
+            }
+
+            if (
+                typeof area.animate
+                === "function"
+            ) {
+                area.animate(
+                    [
+                        { opacity: 0 },
+                        { opacity: 1 }
+                    ],
+                    {
+                        duration: 520,
+                        delay: 160,
+                        easing: "ease-out",
+                        fill: "forwards"
+                    }
+                );
+            }
+            else {
+                area.style.opacity = "1";
+            }
+        });
+
+        points.forEach((point, index) => {
+            const circle = createSvg("circle", {
+                cx: point.x,
+                cy: point.y,
+                r: 4,
+                class:
+                    index === points.length - 1
+                        ? "chart-point latest-point"
+                        : "chart-point"
+            });
+
+            const title = createSvg("title");
+            title.textContent =
+                `${point.item.label}: ${point.item.value}`;
+
+            circle.appendChild(title);
+            svg.appendChild(circle);
+
+            if (typeof circle.animate === "function") {
+                circle.animate(
+                    [
+                        {
+                            opacity: 0,
+                            transform: "scale(.4)"
+                        },
+                        {
+                            opacity: 1,
+                            transform: "scale(1)"
+                        }
+                    ],
+                    {
+                        duration: 300,
+                        delay: 220 + index * 45,
+                        easing: "ease-out",
+                        fill: "both"
+                    }
+                );
+            }
+
+            if (
+                series.length <= 6
+                || index === 0
+                || index === series.length - 1
+            ) {
+                const label = createSvg("text", {
+                    x: point.x,
+                    y: H - 10,
+                    "text-anchor":
+                        index === 0
+                        ? "start"
+                        : (
+                            index === series.length - 1
+                            ? "end"
+                            : "middle"
+                        ),
+                    class: "axis-label"
+                });
+
+                label.textContent =
+                    String(point.item.label || "").slice(0, 12);
+
+                svg.appendChild(label);
+            }
+        });
+    }
+
+    function drawBars(series) {
+        clearChart();
+
+        if (!svg) return;
+
+        if (!series.length) {
+            showChartEmpty();
+            return;
+        }
+
+        const values = series.map(item =>
+            Math.max(Number(item.value) || 0, 0)
+        );
+
+        const maxValue = Math.max(...values, 1);
+        const plotW = W - LEFT - RIGHT;
+        const plotH = H - TOP - BOTTOM;
+
+        drawGrid(maxValue);
+
+        const count = Math.max(series.length, 1);
+        const slot = plotW / count;
+
+        const barWidth =
+            Math.max(
+                10,
+                Math.min(
+                    44,
+                    slot * 0.58
+                )
+            );
+
+        series.forEach((item, index) => {
+            const value =
+                Math.max(
+                    Number(item.value) || 0,
+                    0
+                );
+
+            const height =
+                value / maxValue * plotH;
+
+            const x =
+                LEFT
+                + slot * index
+                + (
+                    slot - barWidth
+                ) / 2;
+
+            const y =
+                TOP
+                + plotH
+                - height;
+
+            const rect = createSvg("rect", {
+                x,
+                y,
+                width: barWidth,
+                height,
+                rx: 1,
+                class: "chart-bar"
+            });
+
+            const title = createSvg("title");
+            title.textContent =
+                `${item.label}: ${item.value}`;
+
+            rect.appendChild(title);
+            svg.appendChild(rect);
+
+            if (typeof rect.animate === "function") {
+                rect.animate(
+                    [
+                        {
+                            transform: "scaleY(0)",
+                            opacity: 0.25
+                        },
+                        {
+                            transform: "scaleY(1)",
+                            opacity: 1
+                        }
+                    ],
+                    {
+                        duration: 620,
+                        delay: index * 65,
+                        easing:
+                            "cubic-bezier(.2,.75,.2,1)",
+                        fill: "both"
+                    }
+                );
+            }
+
+            if (series.length <= 10) {
+                const valueLabel = createSvg("text", {
+                    x:
+                        x
+                        + barWidth / 2,
+                    y:
+                        Math.max(
+                            TOP + 9,
+                            y - 6
+                        ),
+                    class: "chart-bar-value"
+                });
+
+                valueLabel.textContent =
+                    value.toFixed(
+                        maxValue < 10
+                            ? 2
+                            : 0
+                    );
+
+                svg.appendChild(valueLabel);
+            }
+
+            const shouldShowLabel =
+                series.length <= 6
+                || index === 0
+                || index === series.length - 1
+                || index % 2 === 0;
+
+            if (shouldShowLabel) {
+                const label = createSvg("text", {
+                    x:
+                        x
+                        + barWidth / 2,
+                    y: H - 10,
+                    class: "chart-bar-label"
+                });
+
+                label.textContent =
+                    String(item.label || "")
+                        .slice(0, 10);
+
+                svg.appendChild(label);
+            }
+        });
+    }
+
+    function drawCurrentChart(series) {
+        if (currentChartView === "bar") {
+            drawBars(series);
+            return;
+        }
+
+        drawLine(series);
+    }
+
+    function changePercent(current, previous) {
+        const now = Number(current);
+        const before = Number(previous);
+
+        if (
+            !Number.isFinite(now)
+            || !Number.isFinite(before)
+            || before === 0
+        ) {
+            return "-";
+        }
+
+        const value =
+            ((now - before) / Math.abs(before)) * 100;
+
+        return (
+            (value >= 0 ? "+" : "")
+            + value.toFixed(1)
+            + "%"
+        );
+    }
+
+    function renderFlow(key) {
+        currentFlowKey = key;
+
+        chartTabs.forEach(tab => {
+            tab.classList.toggle(
+                "active",
+                tab.dataset.flow === key
+            );
+        });
+
+        if (key === "all") {
+            const series = normalizeMonthly();
+            drawCurrentChart(series);
+
+            if (chartHeading) {
+                chartHeading.textContent =
+                    "월별 시그널 탐지량";
+            }
+
+            if (chartDescription) {
+                chartDescription.textContent =
+                    "월별 탐지 시그널 후보 수와 직전 월 대비 변화를 확인합니다.";
+            }
+
+            const latest = series[series.length - 1];
+            const previous = series[series.length - 2];
+
+            if (livePeriod) {
+                livePeriod.textContent =
+                    latest ? latest.label : "-";
+            }
+
+            if (liveSignalCount) {
+                liveSignalCount.textContent =
+                    latest
+                    ? formatNumber(latest.value)
+                    : "0";
+            }
+
+            if (liveChange) {
+                liveChange.textContent =
+                    latest && previous
+                    ? changePercent(
+                        latest.value,
+                        previous.value
+                    )
+                    : "-";
+            }
+
+            return;
+        }
+
+        const flow = getFlow(key);
+        const series = normalizeFlowSeries(flow);
+
+        drawCurrentChart(series);
+
+        if (chartHeading) {
+            chartHeading.textContent =
+                flow?.chart_title
+                || `${flow?.name || key} 시그널`;
+        }
+
+        if (chartDescription) {
+            chartDescription.textContent =
+                flow?.description
+                || "분야별 이상신호 상위 후보를 확인합니다.";
+        }
+
+        if (livePeriod) {
+            livePeriod.textContent =
+                flow?.name || key;
+        }
+
+        if (liveSignalCount) {
+            liveSignalCount.textContent =
+                formatNumber(series.length);
+        }
+
+        const top =
+            series.length
+            ? Math.max(...series.map(item => item.value))
+            : 0;
+
+        if (liveChange) {
+            liveChange.textContent =
+                series.length
+                ? `TOP ${top.toFixed(2)} ${flow?.unit || "Score"}`
+                : "-";
+        }
+    }
+
+    function stopFlowAuto() {
+        if (flowAutoTimer !== null) {
+            window.clearInterval(
+                flowAutoTimer
+            );
+
+            flowAutoTimer = null;
+        }
+    }
+
+
+    function startFlowAuto() {
+        stopFlowAuto();
+
+        flowAutoTimer =
+            window.setInterval(
+                function () {
+                    const currentIndex =
+                        chartKeys.indexOf(
+                            currentFlowKey
+                        );
+
+                    const nextIndex =
+                        (
+                            (
+                                currentIndex >= 0
+                                    ? currentIndex
+                                    : 0
+                            )
+                            + 1
+                        )
+                        %
+                        chartKeys.length;
+
+                    renderFlow(
+                        chartKeys[
+                            nextIndex
+                        ]
+                    );
+                },
+                FLOW_AUTO_INTERVAL
+            );
+    }
+
+
+    chartTabs.forEach(tab => {
+        tab.addEventListener("click", () => {
+            renderFlow(
+                tab.dataset.flow
+                || "all"
+            );
+
+            /*
+             * 직접 클릭한 탭부터 다시 자동 순환
+             */
+            startFlowAuto();
+        });
+    });
+
+
+    chartViewButtons.forEach(button => {
+        button.addEventListener("click", () => {
+            const view =
+                button.dataset.chartView
+                || "line";
+
+            if (
+                view !== "line"
+                && view !== "bar"
+            ) {
+                return;
+            }
+
+            currentChartView = view;
+
+            chartViewButtons.forEach(item => {
+                const active =
+                    item === button;
+
+                item.classList.toggle(
+                    "active",
+                    active
+                );
+
+                item.setAttribute(
+                    "aria-pressed",
+                    active
+                        ? "true"
+                        : "false"
+                );
+            });
+
+            /*
+             * 현재 분야는 그대로,
+             * 선/막대 표시만 변경
+             */
+            renderFlow(
+                currentFlowKey
+            );
+        });
+    });
+
+
+    /*
+     * 전체 → 사회 → 경제 → 주식 → K콘텐츠 → 야구 → 반복
+     */
+    renderFlow("all");
+    startFlowAuto();
+
+
+    /*
+     * 다른 브라우저 탭에 있을 때 자동순환 일시정지
+     */
+    document.addEventListener(
+        "visibilitychange",
+        function () {
+            if (document.hidden) {
+                stopFlowAuto();
+                return;
+            }
+
+            startFlowAuto();
+        }
+    );
+
+
+    /* =====================================================
+       AI REPORTER
+    ====================================================== */
+    const aiSelect = document.getElementById("aiSelect");
+    const aiGenerate = document.getElementById("aiGenerate");
+    const aiEmpty = document.getElementById("aiEmpty");
+    const aiOutput = document.getElementById("aiOutput");
+    const aiTitle = document.getElementById("aiTitle");
+    const aiBriefing = document.getElementById("aiBriefing");
+    const aiIdeas = document.getElementById("aiIdeas");
+    const aiQuestions = document.getElementById("aiQuestions");
+    const aiData = document.getElementById("aiData");
+
+    let aiRequestSerial = 0;
+
+    function escapeHtml(value) {
+        return String(value)
+            .replaceAll("&", "&amp;")
+            .replaceAll("<", "&lt;")
+            .replaceAll(">", "&gt;")
+            .replaceAll('"', "&quot;")
+            .replaceAll("'", "&#039;");
+    }
+
+    function listHtml(values) {
+        return (Array.isArray(values) ? values : [])
+            .map(value => `<li>${escapeHtml(value)}</li>`)
+            .join("");
+    }
+
+    function findMatchingOption(button) {
+        if (!aiSelect) return null;
+
+        return Array.from(aiSelect.options).find(option => {
+            if (!option.value) return false;
+
+            const sameName =
+                option.value === (button.dataset.signalName || "");
+
+            const sameCategory =
+                (option.dataset.category || "")
+                === (button.dataset.category || "");
+
+            const sameRegion =
+                (option.dataset.region || "")
+                === (button.dataset.region || "");
+
+            if (
+                button.dataset.category === "주식"
+                && button.dataset.stockCode
+            ) {
+                return (
+                    sameCategory
+                    && (option.dataset.stockMarket || "")
+                        === (button.dataset.stockMarket || "")
+                    && (option.dataset.stockCode || "")
+                        === (button.dataset.stockCode || "")
+                    && (option.dataset.stockDate || "")
+                        === (button.dataset.stockDate || "")
+                );
+            }
+
+            const itemId = button.dataset.itemId || "";
+            const optionItemId = option.dataset.itemId || "";
+
+            if (itemId && optionItemId) {
+                return (
+                    sameName
+                    && sameCategory
+                    && itemId === optionItemId
+                );
+            }
+
+            return sameName && sameCategory && sameRegion;
+        }) || null;
+    }
+
+    function setAiLoading(option) {
+        if (!aiOutput || !aiEmpty || !aiGenerate) return;
+
+        aiEmpty.style.display = "none";
+        aiOutput.style.display = "block";
+
+        const region = option?.dataset.region || "";
+        const signalName = option?.value || "선택한 시그널";
+
+        if (aiTitle) {
+            aiTitle.textContent =
+                region
+                ? `${region} · ${signalName}`
+                : signalName;
+        }
+
+        if (aiBriefing) {
+            aiBriefing.textContent =
+                "선택한 시그널을 분석하고 있습니다...";
+        }
+
+        if (aiIdeas) aiIdeas.innerHTML = "";
+        if (aiQuestions) aiQuestions.innerHTML = "";
+        if (aiData) aiData.innerHTML = "";
+
+        aiGenerate.disabled = true;
+        aiGenerate.textContent = "분석 중...";
+    }
+
+    function finishAiLoading() {
+        if (!aiGenerate) return;
+
+        aiGenerate.disabled = false;
+        aiGenerate.textContent =
+            "선택 항목 다시 분석 →";
+    }
+
+    function ruleBased(option) {
+        if (!option) return;
+
+        const category = option.dataset.category || "시그널";
+        const region = option.dataset.region || "";
+        const signal = option.value || "선택한 시그널";
+        const score = option.dataset.score || "";
+        const severity = option.dataset.severity || "";
+
+        if (aiTitle) {
+            aiTitle.textContent =
+                region
+                ? `${region} · ${signal}`
+                : signal;
+        }
+
+        if (aiBriefing) {
+            aiBriefing.textContent =
+                `${category} 데이터에서 '${signal}' 시그널이 우선 확인 대상으로 탐지되었습니다.`
+                + (score ? ` 이상도 ${score}` : "")
+                + (severity ? `, ${severity} 등급` : "")
+                + "으로 분류됐으며 실제 원인은 원자료와 추가 취재로 검증해야 합니다.";
+        }
+
+        const ideas = [
+            `'${signal}' 변화가 시작된 시점과 배경을 추적`,
+            "유사 대상과 비교해 이번 움직임의 이례성 검증",
+            "수치 변화가 실제 현장 변화와 연결되는지 확인"
+        ];
+
+        const questions = [
+            "이 시그널 직전에 어떤 변화가 있었는가?",
+            "유사 지역·종목·선수에서도 같은 패턴이 나타나는가?",
+            "일시적 변동인지 지속적 변화인지 확인할 추가 지표는 무엇인가?"
+        ];
+
+        const verify = [
+            "원자료와 최근 시계열",
+            "유사 대상 및 전체 평균 비교",
+            "공식 자료와 현장 취재를 통한 교차 검증"
+        ];
+
+        if (aiIdeas) aiIdeas.innerHTML = listHtml(ideas);
+        if (aiQuestions) aiQuestions.innerHTML = listHtml(questions);
+        if (aiData) aiData.innerHTML = listHtml(verify);
+    }
+
+    async function kcontentReport(option, serial) {
+        const id = option.dataset.itemId || "";
+
+        if (!id) {
+            ruleBased(option);
+            return;
+        }
+
+        const response = await fetch(
+            `/api/ai-report/${encodeURIComponent(id)}`,
+            { method: "POST" }
+        );
+
+        const data = await response.json().catch(() => ({}));
+
+        if (!response.ok) {
+            throw new Error(
+                data.error || `HTTP ${response.status}`
+            );
+        }
+
+        if (serial !== aiRequestSerial) return;
+
+        if (aiBriefing) {
+            aiBriefing.textContent =
+                data.briefing || "생성된 브리핑이 없습니다.";
+        }
+
+        if (aiIdeas) {
+            aiIdeas.innerHTML =
+                listHtml(
+                    data.article_ideas
+                    || data.hypotheses
+                    || []
+                );
+        }
+
+        if (aiQuestions) {
+            aiQuestions.innerHTML =
+                listHtml(data.questions || []);
+        }
+
+        if (aiData) {
+            aiData.innerHTML =
+                listHtml(data.verification_data || []);
+        }
+    }
+
+    async function stockReport(option, serial) {
+        const market = option.dataset.stockMarket || "";
+        const code = option.dataset.stockCode || "";
+        const date = option.dataset.stockDate || "";
+
+        if (!market || !code || !date) {
+            ruleBased(option);
+            return;
+        }
+
+        const url =
+            `/api/stock-report/${encodeURIComponent(market)}/`
+            + `${encodeURIComponent(code)}/`
+            + `${encodeURIComponent(date)}`;
+
+        const response = await fetch(url, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            },
+            body: JSON.stringify({
+                include_news: false
+            })
+        });
+
+        const data = await response.json().catch(() => ({}));
+
+        if (!response.ok) {
+            throw new Error(
+                data.error || `HTTP ${response.status}`
+            );
+        }
+
+        if (serial !== aiRequestSerial) return;
+
+        const ideas =
+            data.article_ideas
+            || data.ideas
+            || data.hypotheses
+            || [];
+
+        const questions =
+            data.questions
+            || data.reporting_questions
+            || [];
+
+        const verify =
+            data.verification_data
+            || data.data_to_check
+            || data.sources
+            || [];
+
+        if (aiBriefing) {
+            aiBriefing.textContent =
+                data.briefing
+                || data.summary
+                || data.analysis
+                || "주식 시그널 분석 결과가 생성되었습니다.";
+        }
+
+        if (aiIdeas) aiIdeas.innerHTML = listHtml(ideas);
+        if (aiQuestions) aiQuestions.innerHTML = listHtml(questions);
+        if (aiData) aiData.innerHTML = listHtml(verify);
+
+        if (
+            ideas.length === 0
+            && questions.length === 0
+            && verify.length === 0
+        ) {
+            ruleBased(option);
+        }
+    }
+
+    async function renderAi() {
+        if (!aiSelect || !aiOutput || !aiEmpty) return;
+
+        const option =
+            aiSelect.options[aiSelect.selectedIndex];
+
+        if (!option || !option.value) {
+            aiOutput.style.display = "none";
+            aiEmpty.style.display = "block";
+            return;
+        }
+
+        const serial = ++aiRequestSerial;
+        setAiLoading(option);
+
+        try {
+            const category = option.dataset.category || "";
+
+            if (category === "K콘텐츠") {
+                await kcontentReport(option, serial);
+            } else if (category === "주식") {
+                await stockReport(option, serial);
+            } else {
+                ruleBased(option);
+            }
+        } catch (error) {
+            console.error("MAIN AI ERROR:", error);
+
+            if (serial !== aiRequestSerial) return;
+
+            if (aiBriefing) {
+                aiBriefing.textContent =
+                    `분석에 실패했습니다. ${error.message || "잠시 후 다시 시도해주세요."}`;
+            }
+
+            if (aiIdeas) aiIdeas.innerHTML = "";
+            if (aiQuestions) aiQuestions.innerHTML = "";
+            if (aiData) aiData.innerHTML = "";
+        } finally {
+            if (serial === aiRequestSerial) {
+                finishAiLoading();
+            }
+        }
+    }
+
+    aiSelect?.addEventListener("change", renderAi);
+    aiGenerate?.addEventListener("click", renderAi);
+
+    document.querySelectorAll(".analyse-button").forEach(button => {
+        button.addEventListener("click", () => {
+            const option = findMatchingOption(button);
+
+            if (!option) {
+                alert("선택한 시그널을 AI 목록에서 찾지 못했습니다.");
+                return;
+            }
+
+            if (aiSelect) {
+                aiSelect.selectedIndex = option.index;
+            }
+
+            document
+                .querySelector(".ai-panel")
+                ?.scrollIntoView({
+                    behavior: "smooth",
+                    block: "start"
+                });
+
+            renderAi();
+        });
+    });
+});
+</script>
+
+</body>
 </html>

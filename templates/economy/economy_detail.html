@@ -583,146 +583,14 @@
 
     <section class="section">
 
-        <div class="ai-box">
-
-            <div class="ai-top">
-
-                <div>
-                    <div class="ai-kicker">
-                        AI AGENT / REPORTING ASSISTANT
-                    </div>
-
-                    <div class="ai-title">
-                        데이터 다음의 취재를 제안합니다.
-                    </div>
-                </div>
-
-                <button
-                    id="ai-button"
-                    data-signal-type="{{ item.signal_type }}"
-                >
-                    AI 취재 브리핑 생성 →
-                </button>
-
-            </div>
-
-
-            <div
-                id="ai-result"
-                class="ai-result"
-            >
-
-                <div class="ai-section">
-                    <h3>EXECUTIVE BRIEFING</h3>
-                    <p id="briefing-text"></p>
-                </div>
-
-                <div class="ai-section">
-                    <h3>ARTICLE IDEAS</h3>
-                    <ul id="article-ideas"></ul>
-                </div>
-
-                <div class="ai-section">
-                    <h3>REPORTING QUESTIONS</h3>
-                    <ul id="questions"></ul>
-                </div>
-
-                <div class="ai-section">
-                    <h3>VERIFICATION DATA</h3>
-                    <ul id="verification-data"></ul>
-                </div>
-
-            </div>
-
-        </div>
+        {% include 'includes/newspaper_briefing.html' %}
 
     </section>
 
 </div>
 
 
-<script>
-    const aiButton = document.getElementById("ai-button");
-
-    aiButton.addEventListener("click", async function() {
-
-        const signalType = aiButton.dataset.signalType;
-
-        aiButton.disabled = true;
-        aiButton.textContent = "생성 중...";
-
-        try {
-
-            const response = await fetch(
-                "/api/economy-report/" + signalType,
-                {
-                    method: "POST"
-                }
-            );
-
-            const data = await response.json();
-
-            if (!response.ok) {
-                throw new Error(
-                    data.error || "AI 브리핑 생성 실패"
-                );
-            }
-
-            document.getElementById(
-                "briefing-text"
-            ).innerHTML = data.briefing;
-
-
-            function fillList(id, items) {
-
-                const target = document.getElementById(id);
-
-                target.innerHTML = "";
-
-                items.forEach(function(item) {
-
-                    const li = document.createElement("li");
-
-                    li.textContent = item;
-
-                    target.appendChild(li);
-                });
-            }
-
-
-            fillList(
-                "article-ideas",
-                data.article_ideas
-            );
-
-            fillList(
-                "questions",
-                data.questions
-            );
-
-            fillList(
-                "verification-data",
-                data.verification_data
-            );
-
-
-            document.getElementById(
-                "ai-result"
-            ).style.display = "block";
-
-            aiButton.textContent = "브리핑 생성 완료";
-
-        } catch (error) {
-
-            alert(error.message);
-
-            aiButton.disabled = false;
-
-            aiButton.textContent =
-                "AI 취재 브리핑 생성 →";
-        }
-    });
-</script>
+<script>document.querySelectorAll('.bar').forEach(bar => {bar.style.width = (bar.dataset.width || 0) + '%';});</script>
 
 </body>
 </html>

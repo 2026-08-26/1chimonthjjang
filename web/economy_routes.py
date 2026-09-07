@@ -1,3 +1,4 @@
+from web.briefing_support import briefing_extras
 import os
 
 import pandas as pd
@@ -381,9 +382,9 @@ def economy_report(
         f"<strong>{signal_name}</strong> 시그널이 탐지되었습니다. "
         f"{reason}. "
         f"주택가격은 전년 동월 대비 "
-        f"<strong>{price_change:+.1f}%</strong>, "
+        f"<strong>{format(price_change, '+.1f') if price_change is not None else '자료 없음'}%</strong>, "
         f"거래량은 "
-        f"<strong>{transaction_change:+.1f}%</strong> 변화했습니다. "
+        f"<strong>{format(transaction_change, '+.1f') if transaction_change is not None else '자료 없음'}%</strong> 변화했습니다. "
         f"이 패턴만으로 시장 변화의 원인을 단정할 수 없으며 "
         f"공급, 수요, 정책, 지역 개발 등 추가 자료 확인이 필요합니다."
     )
@@ -419,6 +420,7 @@ def economy_report(
 
 
     return jsonify({
+        **briefing_extras(row, "economy", request.get_json(silent=True)),
         "title":
             signal_name,
 
@@ -434,3 +436,8 @@ def economy_report(
         "verification_data":
             verification_data
     })
+
+@economy_bp.route("/api/economy-draft", methods=["POST"])
+def economy_draft():
+    from web.article_draft import draft_response
+    return draft_response()

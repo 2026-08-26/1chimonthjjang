@@ -37,6 +37,8 @@ from web.social_routes import social_bp
 # ==================================================
 
 app = Flask(__name__)
+from web.baseball_desk import baseball_desk_bp
+app.register_blueprint(baseball_desk_bp)
 
 
 # ==================================================

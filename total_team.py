@@ -35,6 +35,8 @@ from web.stock_routes import stock_bp
 # ==================================================
 
 app = Flask(__name__)
+from web.baseball_desk import baseball_desk_bp
+app.register_blueprint(baseball_desk_bp)
 
 
 # ==================================================

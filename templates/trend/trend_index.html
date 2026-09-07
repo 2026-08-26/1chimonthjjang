@@ -1,1087 +1,665 @@
 {% extends "trend/trend_base.html" %}
 
-
 {% block extra_head %}
-
 <style>
-
     /* =========================================
        HERO
     ========================================= */
 
     .hero {
-
-        display:
-            grid;
-
-        grid-template-columns:
-            minmax(0, 1fr)
-            470px;
-
-        background:
-            white;
-
-        border:
-            1px solid
-            var(--border);
-
-        border-radius:
-            18px;
-
-        overflow:
-            hidden;
-
-        box-shadow:
-            0 4px 24px
-            rgba(0, 0, 0, .035);
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 470px;
+        background: white;
+        border: 1px solid var(--border);
+        border-radius: 18px;
+        overflow: hidden;
+        box-shadow: 0 4px 24px rgba(0, 0, 0, .035);
     }
-
 
     .hero-left {
-
-        min-height:
-            330px;
-
-        padding:
-            52px 56px;
-
-        display:
-            flex;
-
-        flex-direction:
-            column;
-
-        justify-content:
-            center;
+        min-height: 330px;
+        padding: 52px 56px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
     }
-
 
     .hero-eyebrow {
-
-        margin-bottom:
-            18px;
-
-        display:
-            flex;
-
-        align-items:
-            center;
-
-        gap:
-            9px;
-
-        color:
-            #888;
-
-        font-size:
-            9px;
-
-        font-weight:
-            800;
-
-        letter-spacing:
-            1.6px;
+        margin-bottom: 18px;
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        color: #888;
+        font-size: 9px;
+        font-weight: 800;
+        letter-spacing: 1.6px;
     }
-
 
     .hero-eyebrow-dot {
-
-        width:
-            7px;
-
-        height:
-            7px;
-
-        background:
-            #111;
-
-        border-radius:
-            50%;
+        width: 7px;
+        height: 7px;
+        background: #111;
+        border-radius: 50%;
     }
-
 
     .hero-title {
-
-        max-width:
-            750px;
-
-        margin:
-            0;
-
-        font-size:
-            clamp(
-                42px,
-                4.6vw,
-                67px
-            );
-
-        line-height:
-            1.12;
-
-        font-weight:
-            900;
-
-        letter-spacing:
-            -3.6px;
-
-        word-break:
-            keep-all;
+        max-width: 750px;
+        margin: 0;
+        font-size: clamp(42px, 4.6vw, 67px);
+        line-height: 1.12;
+        font-weight: 900;
+        letter-spacing: -3.6px;
+        word-break: keep-all;
     }
-
 
     .hero-description {
-
-        max-width:
-            690px;
-
-        margin:
-            25px 0 0;
-
-        color:
-            var(--text-secondary);
-
-        font-size:
-            12px;
-
-        line-height:
-            1.85;
-
-        word-break:
-            keep-all;
+        max-width: 690px;
+        margin: 25px 0 0;
+        color: var(--text-secondary);
+        font-size: 12px;
+        line-height: 1.85;
+        word-break: keep-all;
     }
-
 
     .hero-meta {
-
-        margin-top:
-            30px;
-
-        display:
-            flex;
-
-        align-items:
-            center;
-
-        gap:
-            10px;
-
-        color:
-            #999;
-
-        font-size:
-            9px;
-
-        font-weight:
-            600;
+        margin-top: 30px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        color: #999;
+        font-size: 9px;
+        font-weight: 600;
     }
-
 
     .hero-meta strong {
-
-        color:
-            #111;
-
-        font-weight:
-            800;
+        color: #111;
+        font-weight: 800;
     }
-
 
     /* =========================================
        STATS
     ========================================= */
 
     .hero-right {
-
-        padding:
-            22px;
-
-        background:
-            #f8f8f8;
-
-        border-left:
-            1px solid
-            var(--border);
-
-        display:
-            grid;
-
-        grid-template-columns:
-            repeat(2, 1fr);
-
-        gap:
-            12px;
+        padding: 22px;
+        background: #f8f8f8;
+        border-left: 1px solid var(--border);
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
     }
 
-
     .stat-card {
-
-        min-height:
-            136px;
-
-        padding:
-            21px;
-
-        background:
-            white;
-
-        border:
-            1px solid
-            var(--border-light);
-
-        border-radius:
-            13px;
-
-        display:
-            flex;
-
-        flex-direction:
-            column;
-
-        justify-content:
-            space-between;
-
+        min-height: 136px;
+        padding: 21px;
+        background: white;
+        border: 1px solid var(--border-light);
+        border-radius: 13px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
         transition:
             transform .18s ease,
             box-shadow .18s ease,
             border-color .18s ease;
     }
 
-
     .stat-card:hover {
-
-        transform:
-            translateY(-2px);
-
-        border-color:
-            #c8c8c8;
-
-        box-shadow:
-            0 8px 22px
-            rgba(0, 0, 0, .05);
+        transform: translateY(-2px);
+        border-color: #c8c8c8;
+        box-shadow: 0 8px 22px rgba(0, 0, 0, .05);
     }
-
 
     .stat-label {
-
-        color:
-            #888;
-
-        font-size:
-            9px;
-
-        font-weight:
-            700;
+        color: #888;
+        font-size: 9px;
+        font-weight: 700;
     }
-
 
     .stat-number {
-
-        font-size:
-            37px;
-
-        line-height:
-            1;
-
-        font-weight:
-            900;
-
-        letter-spacing:
-            -2px;
+        font-size: 37px;
+        line-height: 1;
+        font-weight: 900;
+        letter-spacing: -2px;
     }
-
 
     .stat-unit {
-
-        margin-left:
-            4px;
-
-        color:
-            #aaa;
-
-        font-size:
-            9px;
-
-        font-weight:
-            500;
-
-        letter-spacing:
-            0;
+        margin-left: 4px;
+        color: #aaa;
+        font-size: 9px;
+        font-weight: 500;
+        letter-spacing: 0;
     }
-
 
     .stat-indicator {
-
-        width:
-            24px;
-
-        height:
-            3px;
-
-        margin-bottom:
-            8px;
-
-        border-radius:
-            10px;
-
-        background:
-            #111;
+        width: 24px;
+        height: 3px;
+        margin-bottom: 8px;
+        border-radius: 10px;
+        background: #111;
     }
 
-
-    .stat-card.high
-    .stat-indicator {
-
-        background:
-            var(--high);
+    .stat-card.high .stat-indicator {
+        background: var(--high);
     }
 
-
-    .stat-card.medium
-    .stat-indicator {
-
-        background:
-            var(--medium);
+    .stat-card.medium .stat-indicator {
+        background: var(--medium);
     }
 
-
-    .stat-card.low
-    .stat-indicator {
-
-        background:
-            var(--low);
+    .stat-card.low .stat-indicator {
+        background: var(--low);
     }
-
 
     /* =========================================
        CATEGORY
     ========================================= */
 
     .category-nav {
-
-        margin-top:
-            20px;
-
-        padding:
-            8px;
-
-        background:
-            white;
-
-        border:
-            1px solid
-            var(--border);
-
-        border-radius:
-            13px;
-
-        display:
-            flex;
-
-        align-items:
-            center;
-
-        gap:
-            6px;
+        margin-top: 20px;
+        padding: 8px;
+        background: white;
+        border: 1px solid var(--border);
+        border-radius: 13px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
     }
-
 
     .category-title {
-
-        padding:
-            0 18px;
-
-        color:
-            #888;
-
-        font-size:
-            9px;
-
-        font-weight:
-            800;
-
-        letter-spacing:
-            .8px;
+        padding: 0 18px;
+        color: #888;
+        font-size: 9px;
+        font-weight: 800;
+        letter-spacing: .8px;
     }
-
 
     .category-link {
-
-        min-width:
-            105px;
-
-        padding:
-            11px 18px;
-
-        border-radius:
-            8px;
-
-        display:
-            flex;
-
-        align-items:
-            center;
-
-        justify-content:
-            center;
-
-        color:
-            #777;
-
-        font-size:
-            10px;
-
-        font-weight:
-            700;
-
-        transition:
-            all .18s ease;
+        min-width: 105px;
+        padding: 11px 18px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #777;
+        font-size: 10px;
+        font-weight: 700;
+        transition: all .18s ease;
     }
-
 
     .category-link:hover {
-
-        background:
-            #f3f3f3;
-
-        color:
-            #111;
+        background: #f3f3f3;
+        color: #111;
     }
-
 
     .category-link.active {
-
-        background:
-            #111;
-
-        color:
-            white;
+        background: #111;
+        color: white;
     }
-
 
     /* =========================================
        RANKING PANEL
     ========================================= */
 
     .ranking-panel {
-
-        margin-top:
-            20px;
-
-        background:
-            white;
-
-        border:
-            1px solid
-            var(--border);
-
-        border-radius:
-            18px;
-
-        overflow:
-            hidden;
-
-        box-shadow:
-            0 4px 24px
-            rgba(0,0,0,.025);
+        margin-top: 20px;
+        background: white;
+        border: 1px solid var(--border);
+        border-radius: 18px;
+        overflow: hidden;
+        box-shadow: 0 4px 24px rgba(0, 0, 0, .025);
     }
-
 
     .ranking-header {
-
-        min-height:
-            118px;
-
-        padding:
-            30px 32px;
-
-        display:
-            flex;
-
-        align-items:
-            center;
-
-        justify-content:
-            space-between;
-
-        gap:
-            30px;
-
-        border-bottom:
-            1px solid
-            var(--border-light);
+        min-height: 118px;
+        padding: 30px 32px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 30px;
+        border-bottom: 1px solid var(--border-light);
     }
-
 
     .ranking-small {
-
-        margin-bottom:
-            7px;
-
-        color:
-            #999;
-
-        font-size:
-            9px;
-
-        font-weight:
-            700;
-
-        letter-spacing:
-            1px;
+        margin-bottom: 7px;
+        color: #999;
+        font-size: 9px;
+        font-weight: 700;
+        letter-spacing: 1px;
     }
-
 
     .ranking-title {
-
-        font-size:
-            28px;
-
-        font-weight:
-            900;
-
-        letter-spacing:
-            -1.4px;
+        font-size: 28px;
+        font-weight: 900;
+        letter-spacing: -1.4px;
     }
-
 
     .ranking-desc {
-
-        max-width:
-            450px;
-
-        text-align:
-            right;
-
-        color:
-            #888;
-
-        font-size:
-            9px;
-
-        line-height:
-            1.7;
+        max-width: 450px;
+        text-align: right;
+        color: #888;
+        font-size: 9px;
+        line-height: 1.7;
     }
-
 
     .ranking-desc strong {
-
-        display:
-            block;
-
-        margin-bottom:
-            3px;
-
-        color:
-            #333;
-
-        font-size:
-            9px;
-
-        font-weight:
-            800;
+        display: block;
+        margin-bottom: 3px;
+        color: #333;
+        font-size: 9px;
+        font-weight: 800;
     }
-
 
     /* =========================================
        COLUMN LABEL
     ========================================= */
 
     .column-row {
-
-        min-height:
-            42px;
-
-        padding:
-            0 28px;
-
-        background:
-            #fafafa;
-
-        border-bottom:
-            1px solid
-            var(--border-light);
-
-        display:
-            grid;
-
+        min-height: 42px;
+        padding: 0 28px;
+        background: #fafafa;
+        border-bottom: 1px solid var(--border-light);
+        display: grid;
         grid-template-columns:
             68px
-            minmax(260px, 1fr)
+            68px
+            minmax(240px, 1fr)
             150px
             110px
             125px
             30px;
-
-        gap:
-            20px;
-
-        align-items:
-            center;
-
-        color:
-            #aaa;
-
-        font-size:
-            8px;
-
-        font-weight:
-            700;
+        gap: 20px;
+        align-items: center;
+        color: #aaa;
+        font-size: 8px;
+        font-weight: 700;
     }
-
 
     .text-right {
-        text-align:
-            right;
+        text-align: right;
     }
-
 
     /* =========================================
        ITEM
     ========================================= */
 
     .ranking-row {
-
-        min-height:
-            94px;
-
-        padding:
-            0 28px;
-
-        display:
-            grid;
-
+        min-height: 94px;
+        padding: 0 28px;
+        display: grid;
         grid-template-columns:
             68px
-            minmax(260px, 1fr)
+            68px
+            minmax(240px, 1fr)
             150px
             110px
             125px
             30px;
-
-        gap:
-            20px;
-
-        align-items:
-            center;
-
-        border-bottom:
-            1px solid
-            var(--border-light);
-
-        transition:
-            background .18s ease;
+        gap: 20px;
+        align-items: center;
+        border-bottom: 1px solid var(--border-light);
+        transition: background .18s ease;
     }
-
 
     .ranking-row:last-child {
-
-        border-bottom:
-            0;
+        border-bottom: 0;
     }
-
 
     .ranking-row:hover {
-
-        background:
-            #fafafa;
+        background: #fafafa;
     }
-
 
     /* 순위 */
 
     .rank {
-
-        width:
-            42px;
-
-        height:
-            42px;
-
-        border-radius:
-            50%;
-
-        background:
-            #f2f2f2;
-
-        display:
-            grid;
-
-        place-items:
-            center;
-
-        color:
-            #333;
-
-        font-size:
-            12px;
-
-        font-weight:
-            800;
-
-        transition:
-            all .18s ease;
+        width: 42px;
+        height: 42px;
+        border-radius: 50%;
+        background: #f2f2f2;
+        display: grid;
+        place-items: center;
+        color: #333;
+        font-size: 12px;
+        font-weight: 800;
+        transition: all .18s ease;
     }
 
-
-    .ranking-row:hover
-    .rank {
-
-        background:
-            #111;
-
-        color:
-            white;
+    .ranking-row:hover .rank {
+        background: #111;
+        color: white;
     }
-
 
     /* 콘텐츠 */
 
     .content-title-line {
-
-        display:
-            flex;
-
-        align-items:
-            center;
-
-        gap:
-            8px;
-
-        min-width:
-            0;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        min-width: 0;
     }
-
 
     .content-title {
-
-        min-width:
-            0;
-
-        overflow:
-            hidden;
-
-        text-overflow:
-            ellipsis;
-
-        white-space:
-            nowrap;
-
-        color:
-            #111;
-
-        font-size:
-            14px;
-
-        font-weight:
-            800;
-
-        letter-spacing:
-            -.4px;
+        min-width: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        color: #111;
+        font-size: 14px;
+        font-weight: 800;
+        letter-spacing: -.4px;
     }
-
 
     .content-tag {
+        padding: 4px 7px;
+        flex: 0 0 auto;
+        border-radius: 5px;
+        background: #f1f1f1;
+        color: #777;
+        font-size: 8px;
+        font-weight: 700;
+    }
 
-        padding:
-            4px 7px;
+    .content-sub {
+        margin-top: 6px;
+        color: #999;
+        font-size: 9px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
 
-        flex:
-            0 0 auto;
+    /* 썸네일 */
 
-        border-radius:
-            5px;
+    .thumbnail-wrap {
+        width: 58px;
+        height: 58px;
+        border-radius: 10px;
+        overflow: hidden;
+        position: relative;
+        flex: 0 0 auto;
+        background: #f0f0f0;
+        border: 1px solid #e2e2e2;
+        box-shadow: 0 3px 10px rgba(0, 0, 0, .035);
+    }
 
+    .content-thumbnail {
+        width: 100%;
+        height: 100%;
+        display: block;
+        object-fit: cover;
+        opacity: 0;
+        transform: scale(1.035);
+        transition:
+            opacity .32s ease,
+            transform .45s ease;
+    }
+
+    .thumbnail-wrap.loaded .content-thumbnail {
+        opacity: 1;
+        transform: scale(1);
+    }
+
+    .thumbnail-fallback {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 4px;
+        color: #5d5d5d;
         background:
-            #f1f1f1;
+            linear-gradient(
+                145deg,
+                #f6f6f6 0%,
+                #ececec 100%
+            );
+        transition: opacity .22s ease;
+    }
 
-        color:
-            #777;
+    .thumbnail-wrap.loaded .thumbnail-fallback {
+        opacity: 0;
+        pointer-events: none;
+    }
 
-        font-size:
-            8px;
+    .thumbnail-fallback-icon {
+        font-size: 17px;
+        line-height: 1;
+    }
 
-        font-weight:
-            700;
+    .thumbnail-fallback-text {
+        font-size: 6.5px;
+        font-weight: 900;
+        letter-spacing: .7px;
+    }
+
+    .thumbnail-wrap[data-category="music"] .thumbnail-fallback {
+        background:
+            linear-gradient(
+                145deg,
+                #f5f2f4 0%,
+                #eee7eb 100%
+            );
     }
 
 
-    .content-sub {
+    /* 카테고리별 실제 미디어 비율 */
+    .thumbnail-wrap[data-category="music"] {
+        width: 58px;
+        height: 58px;
+        border-radius: 9px;
+    }
 
-        margin-top:
-            6px;
+    .thumbnail-wrap[data-category="drama"],
+    .thumbnail-wrap[data-category="webtoon"] {
+        width: 52px;
+        height: 70px;
+        border-radius: 8px;
+    }
 
-        color:
-            #999;
+    .thumbnail-wrap[data-category="drama"] .content-thumbnail,
+    .thumbnail-wrap[data-category="webtoon"] .content-thumbnail {
+        object-position: center top;
+    }
 
-        font-size:
-            9px;
+    .thumbnail-wrap[data-category="drama"] .thumbnail-fallback {
+        background:
+            linear-gradient(
+                145deg,
+                #f2f3f5 0%,
+                #e7e9ed 100%
+            );
+    }
 
-        overflow:
-            hidden;
+    .thumbnail-wrap[data-category="webtoon"] .thumbnail-fallback {
+        background:
+            linear-gradient(
+                145deg,
+                #f2f5f1 0%,
+                #e7eee4 100%
+            );
+    }
 
-        text-overflow:
-            ellipsis;
+    .ranking-row:hover .thumbnail-wrap {
+        border-color: #c7c7c7;
+        box-shadow: 0 5px 14px rgba(0, 0, 0, .06);
+    }
 
-        white-space:
-            nowrap;
+    @media (max-width: 1100px) {
+        .thumbnail-wrap {
+            width: 52px;
+            height: 52px;
+            border-radius: 9px;
+        }
+    }
+
+    @media (max-width: 760px) {
+        .thumbnail-wrap[data-category="music"] {
+            width: 48px;
+            height: 48px;
+            border-radius: 8px;
+        }
+
+        .thumbnail-wrap[data-category="drama"],
+        .thumbnail-wrap[data-category="webtoon"] {
+            width: 44px;
+            height: 60px;
+            border-radius: 7px;
+        }
     }
 
 
     /* 지표 */
 
     .metric {
-
-        text-align:
-            right;
+        text-align: right;
     }
-
 
     .metric-label {
-
-        color:
-            #aaa;
-
-        font-size:
-            8px;
+        color: #aaa;
+        font-size: 8px;
     }
-
 
     .metric-value {
-
-        margin-top:
-            4px;
-
-        font-size:
-            16px;
-
-        font-weight:
-            800;
+        margin-top: 4px;
+        font-size: 16px;
+        font-weight: 800;
     }
-
 
     .metric-value.positive {
-
-        color:
-            var(--high);
+        color: var(--high);
     }
 
-
-    /* 신호 */
+    /* =========================================
+       신호 뱃지
+       HIGH만 시각화 강화
+    ========================================= */
 
     .signal-wrap {
-
-        display:
-            flex;
-
-        justify-content:
-            flex-end;
+        display: flex;
+        justify-content: flex-end;
     }
-
 
     .signal {
-
-        min-width:
-            72px;
-
-        padding:
-            6px 10px;
-
-        border-radius:
-            999px;
-
-        text-align:
-            center;
-
-        font-size:
-            8px;
-
-        font-weight:
-            800;
+        min-width: 72px;
+        padding: 6px 10px;
+        border-radius: 999px;
+        text-align: center;
+        font-size: 8px;
+        font-weight: 800;
+        transition:
+            background .18s ease,
+            border-color .18s ease,
+            color .18s ease,
+            box-shadow .18s ease,
+            transform .18s ease;
     }
 
-
+    /*
+       HIGH
+       - 너무 진한 빨강 채움은 사용하지 않음
+       - 흰 화면에서 바로 구분될 정도의 핑크 배경
+       - 글자/테두리를 한 단계 선명하게
+    */
     .signal.high {
-
-        color:
-            var(--high);
-
-        background:
-            var(--high-bg);
-
-        border:
-            1px solid
-            #ffd9dd;
+        color: #c52d42;
+        background: #fff1f3;
+        border: 1px solid #e98a97;
+        box-shadow: 0 3px 10px rgba(197, 45, 66, .10);
+        font-weight: 900;
+        letter-spacing: .25px;
     }
 
+    .ranking-row:hover .signal.high {
+        color: #ad2135;
+        background: #ffe5e9;
+        border-color: #df6c7c;
+        box-shadow: 0 4px 13px rgba(173, 33, 53, .14);
+        transform: translateY(-1px);
+    }
 
     .signal.medium {
-
-        color:
-            var(--medium);
-
-        background:
-            var(--medium-bg);
-
-        border:
-            1px solid
-            #f3dfad;
+        color: var(--medium);
+        background: var(--medium-bg);
+        border: 1px solid #f3dfad;
     }
-
 
     .signal.low {
-
-        color:
-            var(--low);
-
-        background:
-            var(--low-bg);
-
-        border:
-            1px solid
-            #ccebdc;
+        color: var(--low);
+        background: var(--low-bg);
+        border: 1px solid #ccebdc;
     }
-
 
     /* 점수 */
 
     .score {
-
-        text-align:
-            right;
+        text-align: right;
     }
-
 
     .score-label {
-
-        color:
-            #aaa;
-
-        font-size:
-            8px;
+        color: #aaa;
+        font-size: 8px;
     }
-
 
     .score-value {
-
-        margin-top:
-            3px;
-
-        color:
-            #111;
-
-        font-size:
-            20px;
-
-        font-weight:
-            900;
-
-        letter-spacing:
-            -1px;
+        margin-top: 3px;
+        color: #111;
+        font-size: 20px;
+        font-weight: 900;
+        letter-spacing: -1px;
     }
-
 
     .score-value span {
-
-        margin-left:
-            2px;
-
-        color:
-            #aaa;
-
-        font-size:
-            8px;
-
-        font-weight:
-            500;
-
-        letter-spacing:
-            0;
+        margin-left: 2px;
+        color: #aaa;
+        font-size: 8px;
+        font-weight: 500;
+        letter-spacing: 0;
     }
-
 
     /* 화살표 */
 
     .row-arrow {
-
-        color:
-            #bbb;
-
-        text-align:
-            center;
-
-        font-size:
-            12px;
-
-        transition:
-            all .18s ease;
+        color: #bbb;
+        text-align: center;
+        font-size: 12px;
+        transition: all .18s ease;
     }
 
-
-    .ranking-row:hover
-    .row-arrow {
-
-        color:
-            #111;
-
-        transform:
-            translateX(3px);
+    .ranking-row:hover .row-arrow {
+        color: #111;
+        transform: translateX(3px);
     }
-
 
     .empty {
-
-        padding:
-            70px;
-
-        text-align:
-            center;
-
-        color:
-            #999;
-
-        font-size:
-            11px;
+        padding: 70px;
+        text-align: center;
+        color: #999;
+        font-size: 11px;
     }
-
 
     /* =========================================
        RESPONSIVE
     ========================================= */
 
-    @media (
-        max-width:
-        1100px
-    ) {
-
+    @media (max-width: 1100px) {
         .hero {
-
-            grid-template-columns:
-                1fr;
+            grid-template-columns: 1fr;
         }
-
 
         .hero-right {
-
-            border-left:
-                0;
-
-            border-top:
-                1px solid
-                var(--border);
+            border-left: 0;
+            border-top: 1px solid var(--border);
         }
-
 
         .column-row {
-
-            display:
-                none;
+            display: none;
         }
 
-
         .ranking-row {
-
             grid-template-columns:
                 55px
+                58px
                 minmax(0, 1fr)
                 130px
                 90px
@@ -1090,145 +668,158 @@
         }
     }
 
-
-    @media (
-        max-width:
-        760px
-    ) {
-
+    @media (max-width: 760px) {
         .hero-left {
-
-            min-height:
-                auto;
-
-            padding:
-                34px 24px;
+            min-height: auto;
+            padding: 34px 24px;
         }
-
 
         .hero-title {
-
-            font-size:
-                38px;
-
-            letter-spacing:
-                -2px;
+            font-size: 38px;
+            letter-spacing: -2px;
         }
-
 
         .hero-right {
-
-            padding:
-                12px;
+            padding: 12px;
         }
-
 
         .stat-card {
-
-            min-height:
-                110px;
-
-            padding:
-                17px;
+            min-height: 110px;
+            padding: 17px;
         }
-
 
         .stat-number {
-
-            font-size:
-                30px;
+            font-size: 30px;
         }
-
 
         .category-nav {
-
-            overflow-x:
-                auto;
+            overflow-x: auto;
         }
-
 
         .category-title {
-
-            display:
-                none;
+            display: none;
         }
-
 
         .category-link {
-
-            min-width:
-                88px;
+            min-width: 88px;
         }
-
 
         .ranking-header {
-
-            align-items:
-                flex-start;
-
-            flex-direction:
-                column;
+            align-items: flex-start;
+            flex-direction: column;
         }
-
 
         .ranking-desc {
-
-            text-align:
-                left;
+            text-align: left;
         }
-
 
         .ranking-row {
-
-            padding:
-                18px;
-
+            padding: 18px;
             grid-template-columns:
                 45px
+                54px
                 minmax(0, 1fr)
                 22px;
-
-            gap:
-                12px;
+            gap: 10px;
         }
 
+        .ranking-content {
+            grid-column: 3;
+        }
 
         .metric,
         .signal-wrap,
         .score {
-
-            grid-column:
-                2;
-
-            text-align:
-                left;
-
-            justify-content:
-                flex-start;
+            grid-column: 3;
+            text-align: left;
+            justify-content: flex-start;
         }
 
+        .thumbnail-wrap {
+            grid-column: 2;
+            grid-row: 1;
+        }
 
         .row-arrow {
+            grid-column: 4;
+            grid-row: 1 / 5;
+            align-self: center;
+        }
+    }
 
-            grid-column:
-                3;
+    /* ==================================================
+       K-CONTENT MEDIA THUMBNAIL - BACKEND FINAL
+       음악 = 앨범 커버 / 드라마 = 포스터 / 웹툰 = 썸네일
+       외부 API는 Flask 서버가 조회하므로 브라우저 CORS 영향 없음
+    ================================================== */
 
-            grid-row:
-                1 / 5;
+    .thumbnail-wrap {
+        width: 60px;
+        height: 60px;
+        border-radius: 10px;
+        background: #f2f2f2;
+        justify-self: center;
+        overflow: hidden;
+    }
 
-            align-self:
-                center;
+    .thumbnail-wrap[data-category="music"] {
+        width: 60px;
+        height: 60px;
+        border-radius: 10px;
+    }
+
+    .thumbnail-wrap[data-category="drama"],
+    .thumbnail-wrap[data-category="webtoon"] {
+        width: 46px;
+        height: 64px;
+        border-radius: 8px;
+    }
+
+    .content-thumbnail,
+    .thumbnail-wrap.loaded .content-thumbnail {
+        width: 100%;
+        height: 100%;
+        display: block;
+        object-fit: cover;
+        opacity: 1 !important;
+        transform: none !important;
+    }
+
+    .thumbnail-fallback {
+        display: none !important;
+    }
+
+    @media (max-width: 1100px) {
+        .thumbnail-wrap[data-category="music"] {
+            width: 54px;
+            height: 54px;
+        }
+
+        .thumbnail-wrap[data-category="drama"],
+        .thumbnail-wrap[data-category="webtoon"] {
+            width: 42px;
+            height: 58px;
+        }
+    }
+
+    @media (max-width: 760px) {
+        .thumbnail-wrap[data-category="music"] {
+            width: 50px;
+            height: 50px;
+        }
+
+        .thumbnail-wrap[data-category="drama"],
+        .thumbnail-wrap[data-category="webtoon"] {
+            width: 40px;
+            height: 54px;
         }
     }
 
 </style>
-
 {% endblock %}
 
 
-
 {% block content %}
-
 
 <!-- =========================================
      HERO
@@ -1236,198 +827,129 @@
 
 <section class="hero">
 
-
     <div class="hero-left">
 
-
         <div class="hero-eyebrow">
-
             <span class="hero-eyebrow-dot"></span>
-
             K-CONTENTS SIGNAL MONITOR
-
         </div>
 
-
         <h1 class="hero-title">
-
             {% if category_name %}
-
                 {{ category_name }}에서 발견한<br>
                 오늘의 취재 시그널
-
             {% else %}
-
                 데이터가 발견한<br>
                 오늘의 K콘텐츠 시그널
-
             {% endif %}
-
         </h1>
 
-
         <p class="hero-description">
-
             이전 23일 평균과 최근 7일 평균을 비교해
             검색 관심도 및 미디어 반응 변화를 분석합니다.
             평소와 다른 움직임을 탐지해 기자가 먼저 확인할
             취재 후보를 제공합니다.
-
         </p>
 
-
         <div class="hero-meta">
-
-            <strong>
-                TOP 10
-            </strong>
-
-            <span>
-                ·
-            </span>
-
+            <strong>TOP 10</strong>
+            <span>·</span>
             이상감지 기반 취재 우선순위
-
         </div>
 
-
     </div>
-
 
 
     <!-- STATS -->
 
     <div class="hero-right">
 
-
         <div class="stat-card">
-
             <div>
-
                 <div class="stat-indicator"></div>
-
                 <div class="stat-label">
                     전체 감지 신호
                 </div>
-
             </div>
 
-
             <div class="stat-number">
-
                 {{
                     stats.total
                     if stats
                     else items|length
                 }}
-
                 <span class="stat-unit">
                     건
                 </span>
-
             </div>
-
         </div>
 
 
-
         <div class="stat-card high">
-
             <div>
-
                 <div class="stat-indicator"></div>
-
                 <div class="stat-label">
                     HIGH / 급상승
                 </div>
-
             </div>
 
-
             <div class="stat-number">
-
                 {{
                     stats.high
                     if stats
                     else 0
                 }}
-
                 <span class="stat-unit">
                     건
                 </span>
-
             </div>
-
         </div>
 
 
-
         <div class="stat-card medium">
-
             <div>
-
                 <div class="stat-indicator"></div>
-
                 <div class="stat-label">
                     MEDIUM / 주의
                 </div>
-
             </div>
 
-
             <div class="stat-number">
-
                 {{
                     stats.medium
                     if stats
                     else 0
                 }}
-
                 <span class="stat-unit">
                     건
                 </span>
-
             </div>
-
         </div>
 
 
-
         <div class="stat-card low">
-
             <div>
-
                 <div class="stat-indicator"></div>
-
                 <div class="stat-label">
                     LOW / 정상·유지
                 </div>
-
             </div>
 
-
             <div class="stat-number">
-
                 {{
                     stats.low
                     if stats
                     else 0
                 }}
-
                 <span class="stat-unit">
                     건
                 </span>
-
             </div>
-
         </div>
-
 
     </div>
 
-
 </section>
-
 
 
 <!-- =========================================
@@ -1436,13 +958,9 @@
 
 <nav class="category-nav">
 
-
     <div class="category-title">
-
         K-CONTENTS
-
     </div>
-
 
     <a
         href="/trend"
@@ -1456,7 +974,6 @@
         전체
     </a>
 
-
     <a
         href="/content/music"
         class="
@@ -1468,7 +985,6 @@
     >
         ♫ 노래
     </a>
-
 
     <a
         href="/content/drama"
@@ -1482,7 +998,6 @@
         ▣ 드라마
     </a>
 
-
     <a
         href="/content/webtoon"
         class="
@@ -1495,9 +1010,7 @@
         ▦ 웹툰
     </a>
 
-
 </nav>
-
 
 
 <!-- =========================================
@@ -1506,43 +1019,28 @@
 
 <section class="ranking-panel">
 
-
     <div class="ranking-header">
 
-
         <div>
-
             <div class="ranking-small">
-
                 TREND RANKING
-
             </div>
-
 
             <div class="ranking-title">
-
                 취재 우선순위 TOP 10
-
             </div>
-
         </div>
 
-
-
         <div class="ranking-desc">
-
             <strong>
                 이상감지 점수 높은 순
             </strong>
 
             관심도 변화율과 Z-score를 기반으로
             평소와 다른 움직임이 큰 콘텐츠부터 정렬합니다.
-
         </div>
 
-
     </div>
-
 
 
     <!-- COLUMN -->
@@ -1551,6 +1049,10 @@
 
         <div>
             순위
+        </div>
+
+        <div>
+            썸네일
         </div>
 
         <div>
@@ -1574,65 +1076,72 @@
     </div>
 
 
-
     <!-- ITEMS -->
 
     <div>
 
-
         {% for item in items %}
-
 
         <a
             href="/detail/{{ item.id }}"
             class="ranking-row"
         >
 
-
             <!-- 순위 -->
 
             <div class="rank">
-
                 {{ loop.index }}
-
             </div>
 
+
+            <!-- 썸네일
+                 music  -> 앨범 커버
+                 drama  -> 드라마 포스터
+                 webtoon -> 웹툰 썸네일/포스터
+            -->
+
+            <div
+                class="thumbnail-wrap"
+                data-category="{{ item.category|e }}"
+            >
+                <img
+                    class="content-thumbnail"
+                    src="{{
+                        url_for(
+                            'kcontent_media.thumbnail',
+                            category=item.category,
+                            title=item.title,
+                            external_url=item.external_url|default('')
+                        )
+                    }}"
+                    alt="{{ item.title|e }} 썸네일"
+                    loading="lazy"
+                    decoding="async"
+                >
+            </div>
 
 
             <!-- 콘텐츠 -->
 
-            <div>
-
+            <div class="ranking-content">
 
                 <div class="content-title-line">
 
-
                     <div class="content-title">
-
                         {{ item.title }}
-
                     </div>
 
-
                     <span class="content-tag">
-
                         {{ item.category_name }}
-
                     </span>
 
-
                 </div>
-
 
                 <div class="content-sub">
-
                     {{ item.sub_info }}
-
                 </div>
 
-
             </div>
-
 
 
             <!-- 관심도 -->
@@ -1640,31 +1149,24 @@
             <div class="metric">
 
                 <div class="metric-label">
-
                     검색 관심도
-
                 </div>
 
-
                 <div class="metric-value positive">
-
                     {{
                         "%+.1f"
                         |format(
                             item.increase_rate
                         )
                     }}%
-
                 </div>
 
             </div>
 
 
-
             <!-- 신호 -->
 
             <div class="signal-wrap">
-
 
                 {% if item.signal == "HIGH" %}
 
@@ -1672,13 +1174,11 @@
                         HIGH
                     </span>
 
-
                 {% elif item.signal == "MEDIUM" %}
 
                     <span class="signal medium">
                         MEDIUM
                     </span>
-
 
                 {% else %}
 
@@ -1688,72 +1188,52 @@
 
                 {% endif %}
 
-
             </div>
-
 
 
             <!-- 점수 -->
 
             <div class="score">
 
-
                 <div class="score-label">
-
                     트렌드 점수
-
                 </div>
 
-
                 <div class="score-value">
-
                     {{ item.trend_score }}
-
                     <span>
                         /100
                     </span>
-
                 </div>
 
-
             </div>
-
 
 
             <!-- 화살표 -->
 
             <div class="row-arrow">
-
                 <i
                     class="
                         fa-solid
                         fa-chevron-right
                     "
                 ></i>
-
             </div>
-
 
         </a>
 
-
         {% else %}
 
-
         <div class="empty">
-
             감지된 트렌드 데이터가 없습니다.
-
         </div>
-
 
         {% endfor %}
 
-
     </div>
 
-
 </section>
+
 
 
 {% endblock %}

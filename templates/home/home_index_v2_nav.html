@@ -2345,6 +2345,12 @@
     overflow: visible;
 }
 
+/* 선 그래프 포인트 마커 제거 */
+#trend-chart .chart-point,
+#trend-chart .latest-point {
+    display: none !important;
+}
+
 @media (max-width: 650px) {
     .live-chart-top {
         align-items: flex-start;
@@ -3886,14 +3892,14 @@
 
     <div class="live-stat">
         <div class="live-stat-label">
-            CHANGE
+            DATA BASIS
         </div>
 
         <div
             id="liveChange"
             class="live-stat-value"
         >
-            -
+            분류별 건수
         </div>
     </div>
 
@@ -4719,7 +4725,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     let flowAutoTimer = null;
 
-    const FLOW_AUTO_INTERVAL = 3200;
+    const FLOW_AUTO_INTERVAL = 8000;
 
     const chartKeys = [
         "all",
@@ -4987,7 +4993,7 @@ document.addEventListener("DOMContentLoaded", function () {
                         }
                     ],
                     {
-                        duration: 850,
+                        duration: 1200,
                         easing:
                             "cubic-bezier(.2,.75,.2,1)",
                         fill: "forwards"
@@ -5021,45 +5027,12 @@ document.addEventListener("DOMContentLoaded", function () {
             }
         });
 
+        /*
+         * 포인트 동그라미는 사용하지 않습니다.
+         * 선이 완성되는 흐름 자체에 집중하도록
+         * x축 라벨만 필요한 위치에 표시합니다.
+         */
         points.forEach((point, index) => {
-            const circle = createSvg("circle", {
-                cx: point.x,
-                cy: point.y,
-                r: 4,
-                class:
-                    index === points.length - 1
-                        ? "chart-point latest-point"
-                        : "chart-point"
-            });
-
-            const title = createSvg("title");
-            title.textContent =
-                `${point.item.label}: ${point.item.value}`;
-
-            circle.appendChild(title);
-            svg.appendChild(circle);
-
-            if (typeof circle.animate === "function") {
-                circle.animate(
-                    [
-                        {
-                            opacity: 0,
-                            transform: "scale(.4)"
-                        },
-                        {
-                            opacity: 1,
-                            transform: "scale(1)"
-                        }
-                    ],
-                    {
-                        duration: 300,
-                        delay: 220 + index * 45,
-                        easing: "ease-out",
-                        fill: "both"
-                    }
-                );
-            }
-
             if (
                 series.length <= 6
                 || index === 0
@@ -5170,7 +5143,7 @@ document.addEventListener("DOMContentLoaded", function () {
                         }
                     ],
                     {
-                        duration: 620,
+                        duration: 760,
                         delay: index * 65,
                         easing:
                             "cubic-bezier(.2,.75,.2,1)",
@@ -5298,12 +5271,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
             if (liveChange) {
                 liveChange.textContent =
-                    latest && previous
-                    ? changePercent(
-                        latest.value,
-                        previous.value
-                    )
-                    : "-";
+                    "분류별 건수";
             }
 
             return;
@@ -5336,16 +5304,9 @@ document.addEventListener("DOMContentLoaded", function () {
                 formatNumber(series.length);
         }
 
-        const top =
-            series.length
-            ? Math.max(...series.map(item => item.value))
-            : 0;
-
         if (liveChange) {
             liveChange.textContent =
-                series.length
-                ? `TOP ${top.toFixed(2)} ${flow?.unit || "Score"}`
-                : "-";
+                "분류별 건수";
         }
     }
 
@@ -5448,6 +5409,13 @@ document.addEventListener("DOMContentLoaded", function () {
             renderFlow(
                 currentFlowKey
             );
+
+            /*
+             * 사용자가 선/막대를 직접 바꾼 뒤에는
+             * 바로 다음 분야로 넘어가지 않고
+             * 다시 8초를 충분히 보여준 뒤 이동합니다.
+             */
+            startFlowAuto();
         });
     });
 

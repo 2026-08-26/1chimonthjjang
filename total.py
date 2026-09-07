@@ -26,10 +26,12 @@ from analysis.drama.mock_data import load_all_contents
 # ==================================================
 # 다른 팀 기능
 # ==================================================
+
 from web.economy_routes import economy_bp
 from web.home_v2_nav_routes import home_v2_nav_bp
+from web.kcontent_media_routes import kcontent_media_bp
 from web.social_routes import social_bp
-from web.stock_routes import stock_bp
+
 # ==================================================
 # Flask 서버 생성
 # ==================================================
@@ -47,7 +49,9 @@ app.register_blueprint(social_bp)
 
 app.register_blueprint(home_v2_nav_bp)
 
-app.register_blueprint(stock_bp)
+app.register_blueprint(kcontent_media_bp)
+
+
 # ==================================================
 # AI Agent 생성
 # ==================================================
@@ -55,7 +59,6 @@ app.register_blueprint(stock_bp)
 baseball_ai_agent = BaseballAIAgent()
 
 trend_ai_agent = TrendAIAgent()
-
 
 
 # ==================================================
@@ -134,7 +137,6 @@ def sort_trend_items(items):
 
         reverse=True
     )
-
 
 
 # ==================================================
@@ -541,7 +543,9 @@ def category_page(
 # K-CONTENTS 상세 페이지
 # ==================================================
 
-@app.route("/detail/<int:item_id>")
+@app.route(
+    "/detail/<int:item_id>"
+)
 def detail_page(
     item_id
 ):
@@ -609,72 +613,97 @@ def detail_page(
     "/api/ai-report/<int:item_id>",
     methods=["POST"]
 )
-def ai_agent_report(
-    item_id
-):
+def ai_agent_report(item_id):
 
     # ==================================================
-    # 전체 콘텐츠
+    # 1. 잘못된 ID 방어
     # ==================================================
 
-    all_items = (
-        load_all_contents()
-    )
+    if item_id < 1 or item_id > 1_000_000:
+
+        return jsonify({
+            "error": "잘못된 콘텐츠 ID입니다."
+        }), 400
 
 
     # ==================================================
-    # ID 검색
+    # 2. 전체 콘텐츠 데이터 로딩
+    # ==================================================
+
+    try:
+
+        all_items = load_all_contents()
+
+    except Exception as e:
+
+        print(
+            "[KCONTENT API] 콘텐츠 로딩 오류:",
+            type(e).__name__
+        )
+
+        return jsonify({
+            "error": "콘텐츠 데이터를 불러오지 못했습니다."
+        }), 500
+
+
+    # ==================================================
+    # 3. ID로 콘텐츠 검색
     # ==================================================
 
     item = next(
-
         (
-
-            item
-
-            for item in all_items
-
-            if item.get(
-                "id"
-            ) == item_id
-
+            content
+            for content in all_items
+            if content.get("id") == item_id
         ),
-
         None
     )
 
 
     # ==================================================
-    # 데이터 없음
+    # 4. 존재하지 않는 콘텐츠
     # ==================================================
 
     if item is None:
 
-        return jsonify(
-
-            {
-                "error":
-                    "Item not found"
-            }
-
-        ), 404
+        return jsonify({
+            "error": "해당 콘텐츠를 찾을 수 없습니다."
+        }), 404
 
 
     # ==================================================
-    # AI 취재 분석
+    # 5. AI 취재 분석
     # ==================================================
 
-    report = (
-        trend_ai_agent
-        .generate_report(
-            item
+    try:
+
+        report = (
+            trend_ai_agent
+            .generate_report(
+                item
+            )
         )
-    )
 
+    except Exception as e:
+
+        # API KEY 같은 민감한 값은 출력하지 않음
+        print(
+            "[KCONTENT API] AI 리포트 오류:",
+            type(e).__name__
+        )
+
+        return jsonify({
+            "error": "AI 취재 브리핑 생성 중 오류가 발생했습니다."
+        }), 500
+
+
+    # ==================================================
+    # 6. 정상 응답
+    # ==================================================
 
     return jsonify(
         report
-    )
+    ), 200
 
 
 # ==================================================
@@ -682,7 +711,6 @@ def ai_agent_report(
 # ==================================================
 
 @app.route(
-    
     "/api/baseball-ai-report/<int:item_id>",
     methods=["POST"]
 )

@@ -1,5 +1,12 @@
 import json
 import os
+import re
+from datetime import timezone
+from email.utils import parsedate_to_datetime
+from functools import lru_cache
+from urllib.parse import quote_plus, urlparse
+from urllib.request import Request, urlopen
+import xml.etree.ElementTree as ET
 
 
 class TrendAIAgent:
@@ -30,6 +37,14 @@ class TrendAIAgent:
             )
 
         fallback = self._generate_rule_based_report(item)
+
+        # 실제 외부 기사 검색 결과를 AI 추론과 분리해 붙입니다.
+        # 실패해도 기존 AI 리포트는 정상 동작합니다.
+        news_bundle = self._related_news_bundle(item)
+        fallback["related_news"] = news_bundle["items"]
+        fallback["related_news_query"] = news_bundle["query"]
+        fallback["related_news_search_url"] = news_bundle["search_url"]
+        fallback["related_news_source"] = news_bundle["source"]
 
         if not self.api_key:
             return fallback
@@ -771,6 +786,276 @@ class TrendAIAgent:
         return json.loads(content)
 
     # =========================================================
+    # REAL RELATED NEWS
+    # =========================================================
+
+    def _related_news_bundle(self, item):
+        """
+        실제 기사 검색 결과를 가져옵니다.
+
+        - AI가 기사 제목/링크를 생성하지 않습니다.
+        - Google News RSS가 반환한 실제 검색 결과만 사용합니다.
+        - 네트워크 실패 시 빈 목록으로 안전하게 fallback 합니다.
+        """
+
+        title = self._safe_text(
+            item.get("title"),
+            ""
+        )
+
+        cat_type = self._safe_text(
+            item.get("category"),
+            ""
+        ).lower()
+
+        query = self._build_news_query(
+            title=title,
+            cat_type=cat_type,
+        )
+
+        search_url = (
+            "https://news.google.com/search?"
+            f"q={quote_plus(query)}"
+            "&hl=ko&gl=KR&ceid=KR%3Ako"
+        )
+
+        if not query:
+            return {
+                "items": [],
+                "query": "",
+                "search_url": search_url,
+                "source": "Google News",
+            }
+
+        items = self._fetch_google_news_rss(
+            query
+        )
+
+        return {
+            "items": items,
+            "query": query,
+            "search_url": search_url,
+            "source": "Google News RSS",
+        }
+
+    def _build_news_query(
+        self,
+        title,
+        cat_type,
+    ):
+        title = self._safe_text(
+            title,
+            ""
+        )
+
+        if not title:
+            return ""
+
+        parts = [
+            value.strip()
+            for value in re.split(
+                r"\s*[-–—]\s*",
+                title
+            )
+            if value.strip()
+        ]
+
+        if len(parts) >= 2:
+            query = " ".join(
+                f'"{part}"'
+                for part in parts[:3]
+            )
+        else:
+            query = f'"{title}"'
+
+        category_hint = {
+            "music": "K-pop",
+            "drama": "드라마",
+            "webtoon": "웹툰",
+        }.get(
+            cat_type,
+            ""
+        )
+
+        if category_hint:
+            query = (
+                f"{query} {category_hint}"
+            )
+
+        return query[:350]
+
+    @staticmethod
+    @lru_cache(maxsize=64)
+    def _fetch_google_news_rss(query):
+        """
+        Google News RSS 검색 결과에서 실제 기사 링크를 최대 6건 반환합니다.
+        앱 실행 중 동일 검색어는 메모리 캐시를 사용합니다.
+        """
+
+        if not query:
+            return []
+
+        rss_url = (
+            "https://news.google.com/rss/search?"
+            f"q={quote_plus(query)}"
+            "&hl=ko&gl=KR&ceid=KR%3Ako"
+        )
+
+        request = Request(
+            rss_url,
+            headers={
+                "User-Agent": (
+                    "Mozilla/5.0 "
+                    "(Windows NT 10.0; Win64; x64) "
+                    "AppleWebKit/537.36 "
+                    "Chrome/124 Safari/537.36"
+                ),
+                "Accept": (
+                    "application/rss+xml,"
+                    "application/xml;q=0.9,*/*;q=0.8"
+                ),
+            },
+        )
+
+        try:
+            with urlopen(
+                request,
+                timeout=3.0
+            ) as response:
+                payload = response.read(
+                    1_500_000
+                )
+        except Exception as exc:
+            print(
+                "[TrendAIAgent] 관련 뉴스 조회 실패:",
+                type(exc).__name__,
+            )
+            return []
+
+        try:
+            root = ET.fromstring(
+                payload
+            )
+        except ET.ParseError:
+            return []
+
+        result = []
+        seen = set()
+
+        for node in root.findall(
+            ".//item"
+        ):
+            raw_title = (
+                node.findtext("title")
+                or ""
+            ).strip()
+
+            raw_link = (
+                node.findtext("link")
+                or ""
+            ).strip()
+
+            raw_date = (
+                node.findtext("pubDate")
+                or ""
+            ).strip()
+
+            source_node = node.find(
+                "source"
+            )
+
+            source = (
+                (source_node.text or "").strip()
+                if source_node is not None
+                else ""
+            )
+
+            if not raw_title or not raw_link:
+                continue
+
+            parsed = urlparse(
+                raw_link
+            )
+
+            if parsed.scheme not in {
+                "http",
+                "https",
+            }:
+                continue
+
+            article_title = raw_title
+
+            if source:
+                suffix = (
+                    " - "
+                    + source
+                )
+
+                if article_title.endswith(
+                    suffix
+                ):
+                    article_title = (
+                        article_title[
+                            :-len(suffix)
+                        ].strip()
+                    )
+
+            clean_key = (
+                article_title.casefold(),
+                source.casefold(),
+            )
+
+            if clean_key in seen:
+                continue
+
+            seen.add(clean_key)
+
+            published_at = ""
+            published_label = ""
+
+            if raw_date:
+                try:
+                    dt = parsedate_to_datetime(
+                        raw_date
+                    )
+
+                    if dt.tzinfo is None:
+                        dt = dt.replace(
+                            tzinfo=timezone.utc
+                        )
+
+                    published_at = (
+                        dt.astimezone(
+                            timezone.utc
+                        )
+                        .isoformat()
+                    )
+
+                    published_label = (
+                        dt.strftime(
+                            "%Y.%m.%d"
+                        )
+                    )
+
+                except Exception:
+                    published_label = (
+                        raw_date[:24]
+                    )
+
+            result.append({
+                "title": article_title[:300],
+                "source": source[:120],
+                "published_at": published_at,
+                "published_label": published_label,
+                "url": raw_link,
+            })
+
+            if len(result) >= 6:
+                break
+
+        return result
+
+    # =========================================================
     # NORMALIZE
     # =========================================================
 
@@ -811,6 +1096,12 @@ class TrendAIAgent:
                 report.get("article_draft"),
                 fallback["article_draft"]
             ),
+            # 실제 기사 목록은 LLM이 만들지 않습니다.
+            # 서버가 외부 뉴스 RSS에서 가져온 결과만 그대로 전달합니다.
+            "related_news": fallback.get("related_news", []),
+            "related_news_query": fallback.get("related_news_query", ""),
+            "related_news_search_url": fallback.get("related_news_search_url", ""),
+            "related_news_source": fallback.get("related_news_source", ""),
             "summary_metrics": fallback["summary_metrics"],
         }
 
@@ -997,6 +1288,10 @@ class TrendAIAgent:
             "article_ideas": [],
             "questions": [],
             "verification_data": [],
+            "related_news": [],
+            "related_news_query": "",
+            "related_news_search_url": "",
+            "related_news_source": "",
             "article_draft": {
                 "status": "DRAFT · 생성 불가",
                 "headline": "",

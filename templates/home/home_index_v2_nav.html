@@ -1844,6 +1844,38 @@
 
         }
 
+        /* AI 분석 중 버튼 게이지 */
+
+.ai-generate {
+    position: relative;
+    overflow: hidden;
+    isolation: isolate;
+}
+
+.ai-generate::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+
+    width: var(--ai-progress, 0%);
+
+    background: linear-gradient(
+    90deg,
+    #5F7488,
+    #91A6B8
+);
+
+    transition: width .5s cubic-bezier(.22, .8, .25, 1);
+
+    z-index: -1;
+}
+
+.ai-generate.is-analyzing {
+    color: white;
+}
+
         .ai-generate:disabled {
 
             opacity: .65;
@@ -1880,11 +1912,12 @@
 
                 serif;
 
-            font-size: 22px;
+            font-size: 15px;
 
             font-weight: 900;
 
         }
+
 
         .ai-output {
 
@@ -2345,11 +2378,7 @@
     overflow: visible;
 }
 
-/* 선 그래프 포인트 마커 제거 */
-#trend-chart .chart-point,
-#trend-chart .latest-point {
-    display: none !important;
-}
+
 
 @media (max-width: 650px) {
     .live-chart-top {
@@ -3404,15 +3433,10 @@
 
                 </div>
 
-                <div class="section-description">
-
-                    분야별 탭을 선택하면
-
-                    해당 분야 안에서 순위를
-
-                    01부터 다시 계산합니다.
-
-                </div>
+<div class="section-description"
+     style="white-space: nowrap; margin-right: 28px;">
+    분야별 탭을 선택하면 해당 분야 안에서 순위를 01부터 다시 계산합니다.
+</div>
 
             </div>
 
@@ -4377,24 +4401,20 @@
             >
 
                 <div class="ai-empty-title">
-
-                    취재할 시그널을<br>
-
-                    선택해주세요.
+시그널을 선택한 뒤<br>
+        AI 취재 브리핑을 생성해주세요.
 
                 </div>
 
             </div>
 
-            <div
+<div
+    id="aiOutput"
+    class="ai-output"
+>
 
-                id="aiOutput"
-
-                class="ai-output"
-
-            >
-
-                <div class="ai-selected">
+    
+    <div class="ai-selected">
 
                     <div class="ai-label">
 
@@ -4483,6 +4503,10 @@
 
 <script id="heroLiveSummaryData" type="application/json">
 {{ hero_live_summary|default({})|tojson }}
+</script>
+
+<script id="liveChartData" type="application/json">
+{{ live_chart_data|default({})|tojson }}
 </script>
 
 <script id="categoryFlowData" type="application/json">
@@ -4644,6 +4668,293 @@ document.addEventListener("DOMContentLoaded", function () {
             startHeroAuto();
         }
     });
+    /* =================================================
+   LIVE PRIORITY SIMULATION
+================================================= */
+
+const signalList =
+    document.querySelector(
+        ".compact-ranking .signal-list"
+    );
+
+
+let currentPriorityFilter =
+    "all";
+
+
+function getVisiblePriorityRows() {
+
+    return Array.from(
+        document.querySelectorAll(
+            ".compact-ranking .signal-row"
+        )
+    )
+    .filter(
+        function (row) {
+
+            const category =
+                (
+                    row.dataset.category
+                    ||
+                    ""
+                ).trim();
+
+
+            return (
+                currentPriorityFilter === "all"
+                ||
+                category === currentPriorityFilter
+            );
+        }
+    );
+}
+
+
+function updatePriorityRanks() {
+
+    const visibleRows =
+        getVisiblePriorityRows();
+
+
+    visibleRows.forEach(
+        function (
+            row,
+            index
+        ) {
+
+            const rankElement =
+                row.querySelector(
+                    ".rank"
+                );
+
+
+            if (rankElement) {
+
+                rankElement.textContent =
+                    String(
+                        index + 1
+                    )
+                    .padStart(
+                        2,
+                        "0"
+                    );
+            }
+        }
+    );
+}
+
+
+function animatePriorityRanking() {
+
+    if (!signalList) {
+        return;
+    }
+
+
+    const visibleRows =
+        getVisiblePriorityRows();
+
+
+    if (visibleRows.length < 2) {
+        return;
+    }
+
+
+    const liveRange =
+        Math.min(
+            5,
+            visibleRows.length
+        );
+
+
+    const movingIndex =
+        Math.floor(
+            Math.random()
+            *
+            (
+                liveRange - 1
+            )
+        )
+        +
+        1;
+
+
+    const movingRow =
+        visibleRows[
+            movingIndex
+        ];
+
+
+    const firstRow =
+        visibleRows[0];
+
+
+    /*
+        1. 변경 전 위치 저장
+    */
+
+    const beforePositions =
+        new Map();
+
+
+    visibleRows.forEach(
+        function (row) {
+
+            beforePositions.set(
+                row,
+                row.getBoundingClientRect().top
+            );
+
+        }
+    );
+
+
+    /*
+        2. 실제 DOM 순서 변경
+    */
+
+    signalList.insertBefore(
+        movingRow,
+        firstRow
+    );
+
+
+    /*
+        3. 순위 숫자 갱신
+    */
+
+    updatePriorityRanks();
+
+
+    /*
+        4. 변경 후 위치 계산 후
+           이전 위치에서 새 위치로 부드럽게 이동
+    */
+
+    const updatedRows =
+        getVisiblePriorityRows();
+
+
+    updatedRows.forEach(
+        function (row) {
+
+            const oldTop =
+                beforePositions.get(
+                    row
+                );
+
+
+            const newTop =
+                row
+                .getBoundingClientRect()
+                .top;
+
+
+            if (
+                oldTop === undefined
+            ) {
+                return;
+            }
+
+
+            const delta =
+                oldTop
+                -
+                newTop;
+
+
+            if (
+                Math.abs(delta)
+                <
+                1
+            ) {
+                return;
+            }
+
+
+            row.style.transition =
+                "none";
+
+
+            row.style.transform =
+                `translateY(${delta}px)`;
+
+
+            requestAnimationFrame(
+                function () {
+
+                    requestAnimationFrame(
+                        function () {
+
+                            row.style.transition =
+                                "transform .75s cubic-bezier(.22,.8,.25,1)";
+
+
+                            row.style.transform =
+                                "translateY(0)";
+
+                        }
+                    );
+
+                }
+            );
+
+
+            setTimeout(
+                function () {
+
+                    row.style.transition =
+                        "";
+
+                    row.style.transform =
+                        "";
+
+                },
+                850
+            );
+
+        }
+    );
+
+
+    /*
+        새로 1위가 된 행 강조
+    */
+
+    movingRow.classList.remove(
+        "live-moving"
+    );
+
+
+    void movingRow.offsetWidth;
+
+
+    movingRow.classList.add(
+        "live-moving"
+    );
+
+
+    setTimeout(
+        function () {
+
+            movingRow.classList.remove(
+                "live-moving"
+            );
+
+        },
+        900
+    );
+}
+
+
+/*
+    3.2초마다 우선순위 갱신
+*/
+
+setInterval(
+    animatePriorityRanking,
+    3200
+);
 
     /* =====================================================
        SIGNAL FILTER
@@ -4696,21 +5007,43 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     signalTabs.forEach(tab => {
-        tab.addEventListener("click", () => {
-            signalTabs.forEach(item => item.classList.remove("active"));
-            tab.classList.add("active");
-            applySignalFilter(tab.dataset.filter || "all");
-        });
-    });
+    tab.addEventListener("click", () => {
+        signalTabs.forEach(item => item.classList.remove("active"));
+        tab.classList.add("active");
 
-    applySignalFilter("all");
+        const selectedFilter =
+            tab.dataset.filter || "all";
+
+        /*
+            화면 필터와 LIVE PRIORITY SIMULATION의
+            현재 카테고리를 동일하게 맞춘다.
+        */
+        currentPriorityFilter =
+            selectedFilter;
+
+        applySignalFilter(
+            selectedFilter
+        );
+
+        /*
+            현재 화면에 보이는 행 기준으로
+            순위를 다시 계산한다.
+        */
+        updatePriorityRanks();
+    });
+});
+
+currentPriorityFilter = "all";
+applySignalFilter("all");
+updatePriorityRanks();
 
     /* =====================================================
        SIGNAL FLOW GRAPH
     ====================================================== */
-    const monthlyData = readJson("monthlyData", []);
-    const categoryFlow = readJson("categoryFlowData", {});
-    const topSignals = readJson("topSignalsData", []);
+const monthlyData = readJson("monthlyData", []);
+const liveChartData = readJson("liveChartData", {});
+const categoryFlow = readJson("categoryFlowData", {});
+const topSignals = readJson("topSignalsData", []);
 
     const chartTabs = Array.from(
         document.querySelectorAll(".live-chart-tab")
@@ -4725,7 +5058,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     let flowAutoTimer = null;
 
-    const FLOW_AUTO_INTERVAL = 8000;
+    const FLOW_AUTO_INTERVAL = 3000;
 
     const chartKeys = [
         "all",
@@ -4778,6 +5111,39 @@ document.addEventListener("DOMContentLoaded", function () {
             svg.removeChild(svg.firstChild);
         }
     }
+
+    function getLiveLineSeries(key) {
+    const selected =
+        liveChartData &&
+        liveChartData[key];
+
+    if (
+        !selected ||
+        !Array.isArray(selected.series)
+    ) {
+        return [];
+    }
+
+    /*
+        원래 LIVE 선그래프처럼
+        최근 8개 데이터만 사용
+    */
+    return selected.series
+        .slice(-8)
+        .map(item => ({
+            label:
+                item.date
+                || item.label
+                || "-",
+
+            value:
+                Number(
+                    item.count
+                    ?? item.value
+                    ?? 0
+                ) || 0
+        }));
+}
 
     function normalizeMonthly() {
         if (!Array.isArray(monthlyData)) return [];
@@ -4906,159 +5272,317 @@ document.addEventListener("DOMContentLoaded", function () {
         svg.appendChild(text);
     }
 
-    function drawLine(series) {
-        clearChart();
+function drawLine(series) {
+    clearChart();
 
-        if (!svg) return;
+    if (!svg) return;
 
-        if (!series.length) {
-            showChartEmpty();
-            return;
-        }
+    if (!Array.isArray(series) || series.length === 0) {
+        showChartEmpty();
+        return;
+    }
 
-        const values = series.map(item =>
-            Math.max(Number(item.value) || 0, 0)
-        );
+    const values = series.map(item =>
+        Number(item.value) || 0
+    );
 
-        const maxValue = Math.max(...values, 1);
-        const plotW = W - LEFT - RIGHT;
-        const plotH = H - TOP - BOTTOM;
+    const maxValue = Math.max(
+        ...values,
+        1
+    );
 
-        drawGrid(maxValue);
+    const plotW =
+        W - LEFT - RIGHT;
 
-        const points = series.map((item, index) => ({
-            x:
+    const plotH =
+        H - TOP - BOTTOM;
+
+    drawGrid(maxValue);
+
+
+    /*
+        데이터 좌표 계산
+    */
+    const points = series.map(
+        (item, index) => {
+
+            const x =
                 LEFT
-                + plotW
-                * index
-                / Math.max(series.length - 1, 1),
+                +
+                (
+                    plotW
+                    *
+                    index
+                    /
+                    Math.max(
+                        series.length - 1,
+                        1
+                    )
+                );
 
-            y:
+            const value =
+                Number(item.value) || 0;
+
+            const y =
                 TOP
-                + plotH
-                - (
-                    Math.max(item.value, 0)
-                    / maxValue
-                    * plotH
-                ),
+                +
+                plotH
+                -
+                (
+                    value
+                    /
+                    maxValue
+                    *
+                    plotH
+                );
 
-            item
-        }));
+            return {
+                x,
+                y,
+                item
+            };
+        }
+    );
 
-        const area = createSvg("path", {
-            class: "chart-area live-fade-area"
-        });
+
+    /*
+        그래프 아래 영역
+    */
+    if (points.length > 0) {
 
         let areaPath =
-            `M ${points[0].x} ${TOP + plotH}`;
+            `M ${points[0].x} ${TOP + plotH} `;
 
         points.forEach(point => {
-            areaPath += ` L ${point.x} ${point.y}`;
+            areaPath +=
+                `L ${point.x} ${point.y} `;
         });
 
         areaPath +=
-            ` L ${points[points.length - 1].x} ${TOP + plotH} Z`;
+            `L ${points[points.length - 1].x} ${TOP + plotH} Z`;
 
-        area.setAttribute("d", areaPath);
+        const area =
+            createSvg(
+                "path",
+                {
+                    d: areaPath,
+                    class: "chart-area"
+                }
+            );
+
         svg.appendChild(area);
+    }
 
-        const polyline = createSvg("polyline", {
-            points:
-                points
-                    .map(point => `${point.x},${point.y}`)
-                    .join(" "),
-            class: "chart-line live-draw-line"
-        });
 
-        svg.appendChild(polyline);
+    /*
+        선
+    */
+    if (points.length > 1) {
 
-        requestAnimationFrame(() => {
-            try {
-                const length = polyline.getTotalLength();
+        const line =
+            createSvg(
+                "polyline",
+                {
+                    points:
+                        points
+                            .map(
+                                point =>
+                                    `${point.x},${point.y}`
+                            )
+                            .join(" "),
+                    class:
+                        "chart-line live-draw-line",
+                    fill:
+                        "none"
+                }
+            );
 
-                polyline.style.strokeDasharray =
-                    String(length);
+        svg.appendChild(line);
 
-                polyline.style.strokeDashoffset =
-                    String(length);
 
-                polyline.animate(
+        /*
+            선이 그려지는 애니메이션
+        */
+        try {
+            const length =
+                line.getTotalLength();
+
+            line.style.strokeDasharray =
+                String(length);
+
+            line.style.strokeDashoffset =
+                String(length);
+
+            line.animate(
+                [
+                    {
+                        strokeDashoffset:
+                            length
+                    },
+                    {
+                        strokeDashoffset:
+                            0
+                    }
+                ],
+                {
+                    duration:
+                        900,
+                    easing:
+                        "ease-out",
+                    fill:
+                        "forwards"
+                }
+            );
+        }
+        catch (error) {
+            // 애니메이션을 지원하지 않아도
+            // 그래프 자체는 그대로 표시
+        }
+    }
+
+
+    /*
+        ★ 데이터 포인트 동그라미
+        첫 번째 사진의 동그라미 복구
+    */
+    points.forEach(
+        (point, index) => {
+
+            const isLatest =
+                index
+                ===
+                points.length - 1;
+
+            const circle =
+                createSvg(
+                    "circle",
+                    {
+                        cx:
+                            point.x,
+                        cy:
+                            point.y,
+                        r:
+                            isLatest
+                                ? 5
+                                : 4,
+                        class:
+                            isLatest
+                                ? "chart-point latest-point"
+                                : "chart-point"
+                    }
+                );
+
+
+            /*
+                마우스를 올렸을 때
+                날짜 / 건수 확인
+            */
+            const title =
+                createSvg(
+                    "title"
+                );
+
+            title.textContent =
+                `${point.item.label}: ${point.item.value}`;
+
+            circle.appendChild(
+                title
+            );
+
+            svg.appendChild(
+                circle
+            );
+
+
+            /*
+                동그라미 등장 애니메이션
+            */
+            if (
+                typeof circle.animate
+                ===
+                "function"
+            ) {
+
+                circle.animate(
                     [
                         {
-                            strokeDashoffset:
-                                String(length)
+                            opacity: 0,
+                            transform:
+                                "scale(0.4)",
+                            transformOrigin:
+                                `${point.x}px ${point.y}px`
                         },
                         {
-                            strokeDashoffset: "0"
+                            opacity: 1,
+                            transform:
+                                "scale(1)",
+                            transformOrigin:
+                                `${point.x}px ${point.y}px`
                         }
                     ],
                     {
-                        duration: 1200,
+                        duration:
+                            300,
+                        delay:
+                            100
+                            +
+                            index * 70,
                         easing:
-                            "cubic-bezier(.2,.75,.2,1)",
-                        fill: "forwards"
+                            "ease-out",
+                        fill:
+                            "both"
                     }
                 );
             }
-            catch (error) {
-                polyline.style.strokeDasharray = "";
-                polyline.style.strokeDashoffset = "";
+        }
+    );
+
+
+    /*
+        X축 날짜
+    */
+    points.forEach(
+        (point, index) => {
+
+            const shouldShowLabel =
+                series.length <= 8
+                ||
+                index === 0
+                ||
+                index ===
+                    series.length - 1;
+
+            if (!shouldShowLabel) {
+                return;
             }
 
-            if (
-                typeof area.animate
-                === "function"
-            ) {
-                area.animate(
-                    [
-                        { opacity: 0 },
-                        { opacity: 1 }
-                    ],
+            const label =
+                createSvg(
+                    "text",
                     {
-                        duration: 520,
-                        delay: 160,
-                        easing: "ease-out",
-                        fill: "forwards"
+                        x:
+                            point.x,
+                        y:
+                            H - 10,
+                        class:
+                            "chart-x-label"
                     }
                 );
-            }
-            else {
-                area.style.opacity = "1";
-            }
-        });
 
-        /*
-         * 포인트 동그라미는 사용하지 않습니다.
-         * 선이 완성되는 흐름 자체에 집중하도록
-         * x축 라벨만 필요한 위치에 표시합니다.
-         */
-        points.forEach((point, index) => {
-            if (
-                series.length <= 6
-                || index === 0
-                || index === series.length - 1
-            ) {
-                const label = createSvg("text", {
-                    x: point.x,
-                    y: H - 10,
-                    "text-anchor":
-                        index === 0
-                        ? "start"
-                        : (
-                            index === series.length - 1
-                            ? "end"
-                            : "middle"
-                        ),
-                    class: "axis-label"
-                });
+            label.textContent =
+                String(
+                    point.item.label || ""
+                ).slice(
+                    0,
+                    10
+                );
 
-                label.textContent =
-                    String(point.item.label || "").slice(0, 12);
-
-                svg.appendChild(label);
-            }
-        });
-    }
+            svg.appendChild(
+                label
+            );
+        }
+    );
+}
 
     function drawBars(series) {
         clearChart();
@@ -5230,86 +5754,237 @@ document.addEventListener("DOMContentLoaded", function () {
         );
     }
 
-    function renderFlow(key) {
-        currentFlowKey = key;
+function renderFlow(key) {
+    currentFlowKey = key;
 
-        chartTabs.forEach(tab => {
-            tab.classList.toggle(
-                "active",
-                tab.dataset.flow === key
-            );
-        });
+    chartTabs.forEach(tab => {
+        tab.classList.toggle(
+            "active",
+            tab.dataset.flow === key
+        );
+    });
 
-        if (key === "all") {
-            const series = normalizeMonthly();
-            drawCurrentChart(series);
 
-            if (chartHeading) {
-                chartHeading.textContent =
-                    "월별 시그널 탐지량";
-            }
+    /* =================================================
+       LINE VIEW
+       원래 LIVE 선그래프 데이터 사용
+    ================================================= */
 
-            if (chartDescription) {
-                chartDescription.textContent =
-                    "월별 탐지 시그널 후보 수와 직전 월 대비 변화를 확인합니다.";
-            }
+    if (currentChartView === "line") {
 
-            const latest = series[series.length - 1];
-            const previous = series[series.length - 2];
+        const liveInfo =
+            liveChartData[key] || {};
 
-            if (livePeriod) {
-                livePeriod.textContent =
-                    latest ? latest.label : "-";
-            }
+        const lineSeries =
+            getLiveLineSeries(key);
 
-            if (liveSignalCount) {
-                liveSignalCount.textContent =
-                    latest
-                    ? formatNumber(latest.value)
-                    : "0";
-            }
+        drawLine(lineSeries);
 
-            if (liveChange) {
-                liveChange.textContent =
-                    "분류별 건수";
-            }
 
-            return;
-        }
-
-        const flow = getFlow(key);
-        const series = normalizeFlowSeries(flow);
-
-        drawCurrentChart(series);
+        /*
+            제목
+        */
 
         if (chartHeading) {
             chartHeading.textContent =
-                flow?.chart_title
-                || `${flow?.name || key} 시그널`;
+                liveInfo.title
+                || "월별 시그널 탐지량";
+        }
+
+
+        /*
+            설명
+        */
+
+        if (chartDescription) {
+            chartDescription.textContent =
+                liveInfo.description
+                || "최근 시그널 탐지 흐름을 확인합니다.";
+        }
+
+
+        /*
+            현재 값
+        */
+
+        const latest =
+            lineSeries.length
+                ? lineSeries[
+                    lineSeries.length - 1
+                ]
+                : null;
+
+        const previous =
+            lineSeries.length > 1
+                ? lineSeries[
+                    lineSeries.length - 2
+                ]
+                : null;
+
+
+        /*
+            CURRENT PERIOD
+        */
+
+        if (livePeriod) {
+            livePeriod.textContent =
+                latest
+                    ? latest.label
+                    : "-";
+        }
+
+
+        /*
+            DETECTED SIGNALS
+        */
+
+        if (liveSignalCount) {
+            liveSignalCount.textContent =
+                latest
+                    ? formatNumber(
+                        latest.value
+                    )
+                    : "0";
+        }
+
+
+        /*
+            CHANGE
+        */
+
+        if (liveChange) {
+
+            if (
+                latest &&
+                previous
+            ) {
+
+                const diff =
+                    latest.value
+                    -
+                    previous.value;
+
+                if (diff > 0) {
+                    liveChange.textContent =
+                        `▲ +${formatNumber(diff)}건`;
+                }
+                else if (diff < 0) {
+                    liveChange.textContent =
+                        `▼ ${formatNumber(diff)}건`;
+                }
+                else {
+                    liveChange.textContent =
+                        "─ 0건";
+                }
+            }
+            else {
+                liveChange.textContent =
+                    "-";
+            }
+        }
+
+        return;
+    }
+
+
+    /* =================================================
+       BAR VIEW
+       팀원이 추가한 막대그래프 데이터 유지
+    ================================================= */
+
+    if (key === "all") {
+
+        const series =
+            normalizeMonthly();
+
+        drawBars(series);
+
+        if (chartHeading) {
+            chartHeading.textContent =
+                "월별 시그널 탐지량";
         }
 
         if (chartDescription) {
             chartDescription.textContent =
-                flow?.description
-                || "분야별 이상신호 상위 후보를 확인합니다.";
+                "월별 탐지 시그널 후보 수와 직전 월 대비 변화를 확인합니다.";
         }
+
+        const latest =
+            series[
+                series.length - 1
+            ];
 
         if (livePeriod) {
             livePeriod.textContent =
-                flow?.name || key;
+                latest
+                    ? latest.label
+                    : "-";
         }
 
         if (liveSignalCount) {
             liveSignalCount.textContent =
-                formatNumber(series.length);
+                latest
+                    ? formatNumber(
+                        latest.value
+                    )
+                    : "0";
         }
 
         if (liveChange) {
             liveChange.textContent =
                 "분류별 건수";
         }
+
+        return;
     }
 
+
+    /*
+        분야별 막대그래프
+    */
+
+    const flow =
+        getFlow(key);
+
+    const series =
+        normalizeFlowSeries(flow);
+
+    drawBars(series);
+
+
+    if (chartHeading) {
+        chartHeading.textContent =
+            flow?.chart_title
+            || `${flow?.name || key} 시그널`;
+    }
+
+
+    if (chartDescription) {
+        chartDescription.textContent =
+            flow?.description
+            || "분야별 이상신호 상위 후보를 확인합니다.";
+    }
+
+
+    if (livePeriod) {
+        livePeriod.textContent =
+            flow?.name || key;
+    }
+
+
+    if (liveSignalCount) {
+        liveSignalCount.textContent =
+            formatNumber(
+                series.length
+            );
+    }
+
+
+    if (liveChange) {
+        liveChange.textContent =
+            "분류별 건수";
+    }
+}
     function stopFlowAuto() {
         if (flowAutoTimer !== null) {
             window.clearInterval(
@@ -5321,38 +5996,107 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
 
-    function startFlowAuto() {
-        stopFlowAuto();
+function startFlowAuto() {
+    stopFlowAuto();
 
-        flowAutoTimer =
-            window.setInterval(
-                function () {
-                    const currentIndex =
-                        chartKeys.indexOf(
-                            currentFlowKey
-                        );
+    flowAutoTimer =
+        window.setInterval(
+            function () {
 
-                    const nextIndex =
-                        (
-                            (
-                                currentIndex >= 0
-                                    ? currentIndex
-                                    : 0
-                            )
-                            + 1
-                        )
-                        %
-                        chartKeys.length;
+                const currentIndex =
+                    chartKeys.indexOf(
+                        currentFlowKey
+                    );
+
+                /*
+                    아직 야구까지 안 갔다면
+                    같은 그래프 타입에서
+                    다음 분야로 이동
+                */
+                if (
+                    currentIndex
+                    <
+                    chartKeys.length - 1
+                ) {
+
+                    const nextKey =
+                        chartKeys[
+                            currentIndex + 1
+                        ];
 
                     renderFlow(
-                        chartKeys[
-                            nextIndex
-                        ]
+                        nextKey
                     );
-                },
-                FLOW_AUTO_INTERVAL
-            );
-    }
+
+                    return;
+                }
+
+
+                /*
+                    현재가 야구라면
+                    그래프 타입 변경
+                */
+
+                if (
+                    currentChartView
+                    ===
+                    "line"
+                ) {
+
+                    /*
+                        선 야구
+                        ↓
+                        막대 전체
+                    */
+                    currentChartView =
+                        "bar";
+
+                }
+                else {
+
+                    /*
+                        막대 야구
+                        ↓
+                        선 전체
+                    */
+                    currentChartView =
+                        "line";
+                }
+
+
+                /*
+                    선 / 막대 버튼
+                    active 상태도 같이 변경
+                */
+                chartViewButtons.forEach(
+                    button => {
+
+                        const buttonView =
+                            button.dataset.view
+                            ||
+                            button.dataset.chartView;
+
+                        button.classList.toggle(
+                            "active",
+                            buttonView
+                            ===
+                            currentChartView
+                        );
+                    }
+                );
+
+
+                /*
+                    새 그래프 타입의
+                    전체 탭부터 다시 시작
+                */
+                renderFlow(
+                    "all"
+                );
+            },
+            FLOW_AUTO_INTERVAL
+        );
+}
 
 
     chartTabs.forEach(tab => {
@@ -5456,6 +6200,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const aiQuestions = document.getElementById("aiQuestions");
     const aiData = document.getElementById("aiData");
 
+
     let aiRequestSerial = 0;
 
     function escapeHtml(value) {
@@ -5549,13 +6294,23 @@ document.addEventListener("DOMContentLoaded", function () {
         aiGenerate.textContent = "분석 중...";
     }
 
-    function finishAiLoading() {
-        if (!aiGenerate) return;
+function finishAiLoading() {
+    if (!aiGenerate) return;
 
-        aiGenerate.disabled = false;
-        aiGenerate.textContent =
-            "선택 항목 다시 분석 →";
-    }
+    aiGenerate.disabled = false;
+
+    aiGenerate.classList.remove(
+        "is-analyzing"
+    );
+
+    aiGenerate.style.setProperty(
+        "--ai-progress",
+        "0%"
+    );
+
+    aiGenerate.textContent =
+        "AI 취재 브리핑 생성 →";
+}
 
     function ruleBased(option) {
         if (!option) return;
@@ -5725,54 +6480,200 @@ document.addEventListener("DOMContentLoaded", function () {
             ruleBased(option);
         }
     }
+    function waitAi(ms) {
+    return new Promise(resolve => {
+        window.setTimeout(resolve, ms);
+    });
+}
 
-    async function renderAi() {
-        if (!aiSelect || !aiOutput || !aiEmpty) return;
+async function showAiAnalysisSteps(serial) {
+    const steps = [
+        {
+            percent: 20,
+            text: "데이터 확인 중"
+        },
+        {
+            percent: 45,
+            text: "이상 패턴 분석 중"
+        },
+        {
+            percent: 70,
+            text: "추가 데이터 검토 중"
+        },
+        {
+            percent: 90,
+            text: "취재 질문 생성 중"
+        },
+        {
+            percent: 100,
+            text: "브리핑 생성 완료"
+        }
+    ];
 
-        const option =
-            aiSelect.options[aiSelect.selectedIndex];
+    if (!aiGenerate) {
+        return false;
+    }
 
-        if (!option || !option.value) {
-            aiOutput.style.display = "none";
-            aiEmpty.style.display = "block";
+    aiGenerate.classList.add("is-analyzing");
+    aiGenerate.style.setProperty(
+        "--ai-progress",
+        "0%"
+    );
+
+    for (const step of steps) {
+        if (serial !== aiRequestSerial) {
+            return false;
+        }
+
+        aiGenerate.style.setProperty(
+            "--ai-progress",
+            `${step.percent}%`
+        );
+
+        aiGenerate.textContent =
+            `${step.text} · ${step.percent}%`;
+
+        await waitAi(
+            step.percent === 100
+                ? 350
+                : 600
+        );
+    }
+
+    return serial === aiRequestSerial;
+}
+
+async function renderAi() {
+    if (!aiSelect || !aiOutput || !aiEmpty) return;
+
+    const option =
+        aiSelect.options[aiSelect.selectedIndex];
+
+    if (!option || !option.value) {
+        aiOutput.style.display = "none";
+        aiEmpty.style.display = "block";
+        return;
+    }
+
+    const serial =
+        ++aiRequestSerial;
+
+    setAiLoading(option);
+
+    try {
+        /*
+            분석 과정을 화면에 보여줌
+        */
+        const canContinue =
+            await showAiAnalysisSteps(serial);
+
+        if (!canContinue) return;
+
+        const category =
+            option.dataset.category || "";
+
+        /*
+            실제 기존 분석 로직
+        */
+        if (category === "K콘텐츠") {
+            await kcontentReport(
+                option,
+                serial
+            );
+        }
+        else if (category === "주식") {
+            await stockReport(
+                option,
+                serial
+            );
+        }
+        else {
+            ruleBased(option);
+        }
+
+    }
+    catch (error) {
+        console.error(
+            "MAIN AI ERROR:",
+            error
+        );
+
+        if (
+            serial !==
+            aiRequestSerial
+        ) {
             return;
         }
 
-        const serial = ++aiRequestSerial;
-        setAiLoading(option);
+        if (aiBriefing) {
+            aiBriefing.textContent =
+                `분석에 실패했습니다. ${
+                    error.message
+                    || "잠시 후 다시 시도해주세요."
+                }`;
+        }
 
-        try {
-            const category = option.dataset.category || "";
+        if (aiIdeas) {
+            aiIdeas.innerHTML = "";
+        }
 
-            if (category === "K콘텐츠") {
-                await kcontentReport(option, serial);
-            } else if (category === "주식") {
-                await stockReport(option, serial);
-            } else {
-                ruleBased(option);
-            }
-        } catch (error) {
-            console.error("MAIN AI ERROR:", error);
+        if (aiQuestions) {
+            aiQuestions.innerHTML = "";
+        }
 
-            if (serial !== aiRequestSerial) return;
+        if (aiData) {
+            aiData.innerHTML = "";
+        }
 
-            if (aiBriefing) {
-                aiBriefing.textContent =
-                    `분석에 실패했습니다. ${error.message || "잠시 후 다시 시도해주세요."}`;
-            }
-
-            if (aiIdeas) aiIdeas.innerHTML = "";
-            if (aiQuestions) aiQuestions.innerHTML = "";
-            if (aiData) aiData.innerHTML = "";
-        } finally {
-            if (serial === aiRequestSerial) {
-                finishAiLoading();
-            }
+    }
+    finally {
+        if (
+            serial ===
+            aiRequestSerial
+        ) {
+            finishAiLoading();
         }
     }
+}
 
-    aiSelect?.addEventListener("change", renderAi);
-    aiGenerate?.addEventListener("click", renderAi);
+aiSelect?.addEventListener("change", function () {
+    if (!aiSelect || !aiOutput || !aiEmpty) return;
+
+    const option =
+        aiSelect.options[aiSelect.selectedIndex];
+
+    if (!option || !option.value) {
+        aiOutput.style.display = "none";
+        aiEmpty.style.display = "block";
+        return;
+    }
+
+    /*
+        선택만 했을 때는 아직 분석하지 않음
+    */
+    aiOutput.style.display = "none";
+    aiEmpty.style.display = "block";
+
+    const emptyTitle =
+        aiEmpty.querySelector(".ai-empty-title");
+
+    if (emptyTitle) {
+        emptyTitle.innerHTML =
+            "시그널이 선택되었습니다.<br>"
+            + "AI 취재 브리핑 생성을 시작해주세요.";
+    }
+
+    if (aiGenerate) {
+        aiGenerate.disabled = false;
+        aiGenerate.textContent =
+            "AI 취재 브리핑 생성 →";
+    }
+});
+
+aiGenerate?.addEventListener(
+    "click",
+    renderAi
+);
 
     document.querySelectorAll(".analyse-button").forEach(button => {
         button.addEventListener("click", () => {

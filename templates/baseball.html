@@ -1485,7 +1485,7 @@
                         <tbody>
                             {% for player in temp_top %}
                             <tr>
-                                <td class="player-name">{{ player.player_name }}</td>
+                                <td class="player-name"><button type="button" class="player-open" data-name="{{ player.player_name }}" data-kind="temp" data-group="{{ player.temp_group }}">{{ player.player_name }} <span>프로필 ↗</span></button></td>
 
                                 <td>
                                     <span class="condition">{{ player.temp_group }}</span>
@@ -1542,7 +1542,7 @@
                         <tbody>
                             {% for player in humidity_top %}
                             <tr>
-                                <td class="player-name">{{ player.player_name }}</td>
+                                <td class="player-name"><button type="button" class="player-open" data-name="{{ player.player_name }}" data-kind="humidity" data-group="{{ player.humidity_group }}">{{ player.player_name }} <span>프로필 ↗</span></button></td>
 
                                 <td>
                                     <span class="condition">{{ player.humidity_group }}</span>
@@ -1598,7 +1598,7 @@
                         <tbody>
                             {% for player in rain_top %}
                             <tr>
-                                <td class="player-name">{{ player.player_name }}</td>
+                                <td class="player-name"><button type="button" class="player-open" data-name="{{ player.player_name }}" data-kind="rain" data-group="{{ player.rain_group }}">{{ player.player_name }} <span>프로필 ↗</span></button></td>
                                 <td>{{ player.games }}</td>
                                 <td>{{ player.AB }}</td>
                                 <td>{{ "%.3f"|format(player.season_avg) }}</td>
@@ -1770,77 +1770,7 @@
          AI REPORT
     ========================================== -->
 
-    <section class="section ai-section">
-        <div class="baseball-ai-report">
-
-            <div class="baseball-ai-header">
-                <div>
-                    <p class="baseball-ai-label">04 / AI REPORTER AGENT</p>
-
-                    <h2>
-                        기자용 AI 취재 인사이트 브리핑
-                    </h2>
-                </div>
-
-                <button
-                    type="button"
-                    id="baseballAiBtn"
-                    onclick="generateBaseballAIReport()"
-                >
-                    분석 생성 →
-                </button>
-            </div>
-
-
-            <div
-                id="baseballAiEmpty"
-                class="baseball-ai-empty"
-            >
-                <strong>AI Agent 분석 준비 완료</strong>
-
-                <p>
-                    기온 · 습도 · 강수 이상신호를 비교하여
-                    가장 주목할 만한 취재 후보를 분석합니다.
-                </p>
-            </div>
-
-
-            <div
-                id="baseballAiContent"
-                style="display: none;"
-            >
-                <div class="baseball-executive">
-                    <p class="baseball-executive-label">
-                        EXECUTIVE BRIEFING
-                    </p>
-
-                    <div
-                        id="baseballAiBriefing"
-                        class="baseball-briefing-box"
-                    ></div>
-                </div>
-
-
-                <div class="baseball-ai-grid">
-                    <div class="baseball-ai-card">
-                        <h3>기사 아이디어</h3>
-                        <ul id="baseballAiIdeas"></ul>
-                    </div>
-
-                    <div class="baseball-ai-card">
-                        <h3>주요 취재 질문</h3>
-                        <ul id="baseballAiQuestions"></ul>
-                    </div>
-
-                    <div class="baseball-ai-card">
-                        <h3>추가 확인 필요 데이터</h3>
-                        <ul id="baseballAiVerification"></ul>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
+    {% include 'includes/baseball_desk.html' %}
 
     <footer class="footer">
         <strong>DATA TIP-OFF / BASEBALL DESK</strong>
@@ -1955,82 +1885,6 @@
        기존 API / 기능 그대로 유지
     ========================================== */
 
-    async function generateBaseballAIReport() {
-        const btn =
-            document.getElementById("baseballAiBtn");
-
-        const empty =
-            document.getElementById("baseballAiEmpty");
-
-        const content =
-            document.getElementById("baseballAiContent");
-
-        btn.innerHTML = "분석 중...";
-        btn.disabled = true;
-
-        try {
-            const response = await fetch(
-                "/api/baseball-ai-report/top",
-                {
-                    method: "POST"
-                }
-            );
-
-            const data = await response.json();
-
-            if (!response.ok) {
-                alert(
-                    data.error ||
-                    "AI 분석 결과를 생성하지 못했습니다."
-                );
-
-                btn.innerHTML = "다시 생성 →";
-                return;
-            }
-
-            empty.style.display = "none";
-            content.style.display = "block";
-
-            document.getElementById(
-                "baseballAiBriefing"
-            ).innerHTML = data.briefing;
-
-            document.getElementById(
-                "baseballAiIdeas"
-            ).innerHTML =
-                data.article_ideas
-                    .map(item => `<li>${item}</li>`)
-                    .join("");
-
-            document.getElementById(
-                "baseballAiQuestions"
-            ).innerHTML =
-                data.questions
-                    .map(item => `<li>${item}</li>`)
-                    .join("");
-
-            document.getElementById(
-                "baseballAiVerification"
-            ).innerHTML =
-                data.verification_data
-                    .map(item => `<li>${item}</li>`)
-                    .join("");
-
-            btn.innerHTML = "✓ 생성 완료";
-        }
-        catch (error) {
-            console.error(error);
-
-            alert(
-                "서버와 통신하는 중 오류가 발생했습니다."
-            );
-
-            btn.innerHTML = "다시 생성 →";
-        }
-        finally {
-            btn.disabled = false;
-        }
-    }
 </script>
 
 {% with sidebar_section = 'baseball' %}

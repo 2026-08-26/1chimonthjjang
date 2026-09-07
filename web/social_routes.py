@@ -1,3 +1,4 @@
+from web.briefing_support import briefing_extras
 import os
 
 import pandas as pd
@@ -641,8 +642,8 @@ def social_report(
         f"<strong>{date}</strong> 데이터에서 "
         f"<strong>{signal_name}</strong> 시그널이 탐지되었습니다. "
         f"{reason}. "
-        f"현재 자연증가는 <strong>{natural_now:,.0f}명</strong>, "
-        f"순이동은 <strong>{migration_now:,.0f}명</strong>입니다. "
+        f"현재 자연증가는 <strong>{format(natural_now, ',.0f') if natural_now is not None else '자료 없음'}명</strong>, "
+        f"순이동은 <strong>{format(migration_now, ',.0f') if migration_now is not None else '자료 없음'}명</strong>입니다. "
         f"이 결과는 통계적 패턴을 보여주는 것이며 "
         f"특정 원인을 의미하지는 않습니다. "
         f"원인을 확인하기 위한 추가 취재가 필요합니다."
@@ -679,6 +680,7 @@ def social_report(
 
 
     return jsonify({
+        **briefing_extras(row, "social", request.get_json(silent=True)),
         "title":
             signal_name,
 
@@ -694,3 +696,8 @@ def social_report(
         "verification_data":
             verification_data
     })
+
+@social_bp.route("/api/social-draft", methods=["POST"])
+def social_draft():
+    from web.article_draft import draft_response
+    return draft_response()

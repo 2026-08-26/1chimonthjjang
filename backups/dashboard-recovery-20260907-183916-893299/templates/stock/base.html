@@ -1,0 +1,411 @@
+<!doctype html>
+<html lang="ko">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>주식 | DATA TIP-OFF</title>
+
+    <style>
+        * { box-sizing: border-box; }
+
+        :root {
+            --bg: #f4f4f1;
+            --paper: #ffffff;
+            --black: #101010;
+            --dark: #181818;
+            --text: #171717;
+            --muted: #777772;
+            --line: #d7d7d2;
+            --line-soft: #e9e9e5;
+            --soft: #f8f8f5;
+            --red: #b73c35;
+            --blue: #3e5f78;
+            --green: #52705a;
+            --amber: #956e2c;
+        }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            margin: 0;
+            background: var(--bg);
+            color: var(--text);
+            font-family: Pretendard, "Noto Sans KR", Arial, sans-serif;
+            line-height: 1.65;
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        button,
+        select {
+            font: inherit;
+        }
+
+        button { cursor: pointer; }
+
+        /* ==================================================
+           STOCK HEADER
+           - 메인 뉴스룸의 흑백 톤만 이어받고
+             주식 페이지 고유의 데스크형 헤더로 구성
+        ================================================== */
+
+        .stock-shell-header {
+            height: 72px;
+            padding: 0 34px;
+            background: var(--black);
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 24px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-bottom: 1px solid #292929;
+        }
+
+        .stock-brand-wrap {
+            min-width: 0;
+            display: flex;
+            align-items: center;
+            gap: 18px;
+        }
+
+        .stock-brand {
+            font-family: Georgia, "Times New Roman", serif;
+            font-size: 21px;
+            font-weight: 900;
+            letter-spacing: -1px;
+            white-space: nowrap;
+        }
+
+        .stock-divider {
+            width: 1px;
+            height: 18px;
+            background: #4a4a4a;
+        }
+
+        .stock-desk-name {
+            color: #b9b9b9;
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            white-space: nowrap;
+        }
+
+        .stock-main-nav {
+            height: 72px;
+            margin-left: auto;
+            display: flex;
+            align-items: stretch;
+        }
+
+        .stock-main-nav a {
+            position: relative;
+            min-width: 64px;
+            padding: 0 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #aaa;
+            font-size: 10px;
+            font-weight: 800;
+            white-space: nowrap;
+            transition: color .16s ease;
+        }
+
+        .stock-main-nav a:hover {
+            color: #fff;
+        }
+
+        .stock-main-nav a.active {
+            color: #fff;
+        }
+
+        .stock-main-nav a.active::after {
+            content: "";
+            position: absolute;
+            left: 16px;
+            right: 16px;
+            bottom: 15px;
+            height: 2px;
+            background: #fff;
+        }
+
+        .stock-header-right {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+        }
+
+        .stock-home-link {
+            color: #a9a9a9;
+            font-size: 9px;
+            font-weight: 800;
+            transition: .18s ease;
+        }
+
+        .stock-home-link:hover { color: #fff; }
+
+        .stock-live {
+            min-height: 31px;
+            padding: 0 13px;
+            border: 1px solid #454545;
+            border-radius: 999px;
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            color: #bdbdbd;
+            font-size: 9px;
+            font-weight: 800;
+        }
+
+        .stock-live-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: #fff;
+            animation: stockPulse 1.35s ease-in-out infinite;
+        }
+
+        @keyframes stockPulse {
+            0%, 100% { opacity: .35; transform: scale(.82); }
+            50% { opacity: 1; transform: scale(1.1); }
+        }
+
+        /* ==================================================
+           PAGE WRAP
+        ================================================== */
+
+        main {
+            width: min(1440px, calc(100% - 48px));
+            margin: 0 auto;
+            padding: 34px 0 56px;
+        }
+
+        .stock-footer {
+            width: min(1440px, calc(100% - 48px));
+            margin: 0 auto 36px;
+            padding-top: 16px;
+            border-top: 1px solid var(--line);
+            display: flex;
+            justify-content: space-between;
+            gap: 20px;
+            color: #8b8b86;
+            font-size: 9px;
+            line-height: 1.7;
+        }
+
+        .stock-footer strong {
+            color: var(--text);
+            font-family: Georgia, serif;
+            font-size: 10px;
+        }
+
+        /* ==================================================
+           COMMON COMPONENTS
+           detail.html 기존 기능도 그대로 사용 가능
+        ================================================== */
+
+        .muted {
+            color: var(--muted);
+            font-size: 13px;
+        }
+
+        .tag {
+            display: inline-flex;
+            align-items: center;
+            min-height: 27px;
+            padding: 0 9px;
+            margin: 3px 4px 3px 0;
+            border: 1px solid #d4d4cf;
+            background: #f7f7f4;
+            color: #444;
+            border-radius: 999px;
+            font-size: 10px;
+            font-weight: 800;
+        }
+
+        .panel,
+        article {
+            background: var(--paper);
+            border: 1px solid var(--line);
+        }
+
+        .panel {
+            padding: 24px;
+            margin: 18px 0;
+        }
+
+        .metrics {
+            display: flex;
+            gap: 28px;
+            flex-wrap: wrap;
+        }
+
+        .metrics p {
+            margin: 0;
+            color: var(--muted);
+            font-size: 12px;
+        }
+
+        .metrics strong {
+            display: block;
+            margin-top: 3px;
+            color: var(--text);
+            font-family: Georgia, serif;
+            font-size: 23px;
+            line-height: 1.2;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        td,
+        th {
+            padding: 10px 8px;
+            border-bottom: 1px solid var(--line-soft);
+            text-align: right;
+            font-size: 12px;
+        }
+
+        td:first-child,
+        th:first-child {
+            text-align: left;
+        }
+
+        summary {
+            cursor: pointer;
+            font-weight: 800;
+        }
+
+        /* ==================================================
+           RESPONSIVE
+        ================================================== */
+
+        @media (max-width: 980px) {
+            .stock-desk-name,
+            .stock-divider {
+                display: none;
+            }
+
+            .stock-main-nav a {
+                min-width: 54px;
+                padding: 0 9px;
+                font-size: 9px;
+            }
+
+            .stock-header-right {
+                gap: 10px;
+            }
+        }
+
+        @media (max-width: 760px) {
+            .stock-shell-header {
+                height: auto;
+                min-height: 68px;
+                padding: 14px 18px;
+                flex-wrap: wrap;
+            }
+
+            .stock-brand-wrap {
+                flex: 1 1 auto;
+            }
+
+            .stock-main-nav {
+                order: 3;
+                width: 100%;
+                height: 42px;
+                overflow-x: auto;
+                justify-content: center;
+                border-top: 1px solid #292929;
+                margin-left: 0;
+            }
+
+            .stock-main-nav a {
+                min-width: 62px;
+                height: 42px;
+                padding: 0 10px;
+            }
+
+            .stock-main-nav a.active::after {
+                left: 12px;
+                right: 12px;
+                bottom: 4px;
+            }
+
+            .stock-desk-name,
+            .stock-divider,
+            .stock-home-link {
+                display: none;
+            }
+
+            .stock-live {
+                padding: 0 10px;
+                font-size: 8px;
+            }
+
+            main,
+            .stock-footer {
+                width: min(100% - 28px, 1440px);
+            }
+
+            main { padding-top: 22px; }
+
+            .stock-footer {
+                flex-direction: column;
+            }
+        }
+    </style>
+{% include 'includes/desk_sidebar_styles.html' %}
+</head>
+
+<body>
+    <header class="stock-shell-header">
+        <div class="stock-brand-wrap">
+            <button id="sidebar-toggle" class="desk-menu-toggle" type="button" aria-label="메뉴 열기" aria-controls="newsroom-sidebar" aria-expanded="false">☰</button>
+
+            <a href="/" class="stock-brand">DATA TIP-OFF</a>
+            <span class="stock-divider" aria-hidden="true"></span>
+            <span class="stock-desk-name">STOCK SIGNAL DESK / 주식 취재 신호</span>
+        </div>
+
+        <nav class="stock-main-nav" aria-label="분야별 분석 메뉴">
+            <a href="/dashboard">대시보드</a>
+            <a href="/social">사회</a>
+            <a href="/economy">경제</a>
+            <a href="/stock" class="active" aria-current="page">주식</a>
+            <a href="/trend">K콘텐츠</a>
+            <a href="/baseball">야구</a>
+        </nav>
+
+        <div class="stock-header-right">
+
+            <div class="stock-live">
+                <span class="stock-live-dot"></span>
+                KRX 시그널 모니터
+            </div>
+        </div>
+    </header>
+
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="stock-footer">
+        <strong>DATA TIP-OFF / STOCK DESK</strong>
+        <span>
+            출처: 한국거래소 통계정보 · 가격·거래량·거래대금에서 탐지한 취재 후보이며
+            실제 원인은 공시·뉴스·기업행사 등 추가 확인이 필요합니다.
+        </span>
+    </footer>
+{% with sidebar_section = 'stock' %}
+{% include 'includes/desk_sidebar.html' %}
+{% endwith %}
+</body>
+</html>

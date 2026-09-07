@@ -1,0 +1,51 @@
+"""Presentation evidence: observed CSV facts, lineage and documented provenance only."""
+import pandas as pd
+from pathlib import Path
+ROOT=Path(__file__).resolve().parents[1]
+
+def build_evidence(read,records):
+    # read() is bound to the actual running project; existence follows its files.
+    try:
+        raw_stock_rows=len(read('data/raw/stock/krx_all_stocks_1y.csv'))
+        daily_stock_rows=len(read('result/stock/stock_daily.csv'))
+    except pd.errors.EmptyDataError:
+        raw_stock_rows=0;daily_stock_rows=0
+    stock_input=('KRX 원본 krx_all_stocks_1y.csv '+f'{raw_stock_rows:,}행' if raw_stock_rows else 'KRX 종목별 일별 원본은 현재 없음')
+    stock_output=('stock_daily.csv '+f'{daily_stock_rows:,}행 → ' if daily_stock_rows else 'stock_daily.csv는 현재 없음 → ')+'all_stock_signals.csv'
+    s=read('data/processed/social_monthly.csv');e=read('data/processed/economy_monthly.csv');b=read('data/processed/baseball_weather_2019.csv')
+    latest=s[(s.Date==s.Date.max())&~s.Region_ko.isin(['전국','대한민국','전국계'])]
+    es=read('result/all_economy_signals.csv').sort_values('Signal_score',ascending=False)
+    stocks=read('result/stock/all_stock_signals.csv');sl=stocks[stocks.date==stocks.date.max()]
+    batting=b[b.AB>0];eligible=batting[batting.groupby('player_name').AB.transform('sum')>=100]
+    raw_b=read('data/raw/KBO_batter_2019.csv');raw_s=read('data/raw/Korean_demographics.csv')
+    regions=len(latest);decline=int((latest.Natural_growth<0).sum());inflow=int(((latest.Natural_growth<0)&(latest.Net_migration>0)).sum());outflow=int(((latest.Natural_growth<0)&(latest.Net_migration<0)).sum())
+    econ=es.iloc[0]
+    useful=[
+      dict(domain='사회',title='자연감소에도 다른 순이동 방향',fact=f"{s.Date.max()[:7]}의 {regions}개 지역 중 자연감소 지역은 {decline}개입니다. 이 중 순유입은 {inflow}개, 순유출은 {outflow}개입니다.",meaning='출생·사망만으로 같아 보이는 지역을 순유입·순유출 구조로 구분할 수 있습니다.',source='social_monthly.csv',method='최신 월 / 전국 제외 / Natural_growth < 0 / Net_migration 부호 비교'),
+      dict(domain='경제',title='금리와 가격이 함께 오른 취재 후보',fact=f"{econ['Date'][:7]} {econ['Region']}: ㎡당 가격 중앙값 전년 동월 대비 {econ['Price_yoy_pct']:+.2f}%, 거래량 {econ['Transaction_yoy_pct']:+.2f}%, 금리 {econ['Base_rate_change']:+.2f}%p. 기존 Signal_score {econ['Signal_score']:.3f}입니다.",meaning='가격·거래량·금리를 함께 비교해 통상적 설명과 다른 움직임을 후보로 추렸습니다. 지역 내 거래구성 변화는 추가 검증이 필요합니다.',source='all_economy_signals.csv',method='기존 결과 중 Signal_score 최댓값 / 인과관계 미확정'),
+      dict(domain='주식',title='가격 외에 거래량·집중도를 함께 확인',fact=f"{stocks.date.max()} 후보 {len(sl):,}개 중 거래량·가격·집중도 3개 조건을 동시에 충족한 종목은 {int((sl.signal_count==3).sum()):,}개입니다.",meaning='5일 수익률만 보지 않고 시장 관심이 모인 근거를 여러 조건으로 확인합니다. 후보 집합 안의 결과이며 전체 시장 순위가 아닙니다.',source='all_stock_signals.csv',method='최신 거래일 / signal_count == 3'),
+      dict(domain='야구',title='기록에 날씨를 붙여 조건별 차이를 확인',fact=f"날씨와 결합한 {len(b):,}개 선수 경기 기록 중 AB > 0 및 시즌 100타수 이상 기준을 충족한 {len(eligible):,}개 기록을 분석합니다.",meaning='선수별 시즌 타율과 특정 날씨의 타율 차이를 비교할 수 있습니다. 선수·구장·상대 투수 효과를 통제한 인과 분석은 아닙니다.',source='baseball_weather_2019.csv · 04_analysis.py',method='경기 타율 H/AB / 시즌·조건 타율 ΣH/ΣAB / 조건 30타수 이상'),
+      dict(domain='K콘텐츠',title='정적 메타데이터는 대상 정의에 활용',fact='제목·이름·그룹 등의 실제 메타데이터로 분석 대상을 정하고, 기존 고정 시드 엔진으로 30일 데모 시계열을 만듭니다.',meaning='변화율·Z-score·지속성으로 후보를 분류하는 동작을 시연할 수 있습니다. 실제 관심도 급증을 발견했다는 결론은 낼 수 없습니다.',source='kpopidolsv3.csv · kdrama.csv · naver.csv · mock_data.py',method='기준 23일 / 최근 7일 / 시뮬레이션 결과는 관측 합계 제외')]
+    excluded=[
+      dict(title='타수가 없는 야구 기록',count=f"{int((b.AB<=0).sum()):,}행",why='AB ≤ 0에서는 H/AB를 계산할 수 없어 타격 분석에서 제외합니다. 선수 출전 기록 자체가 무의미하다는 뜻은 아닙니다.',source='baseball_weather_2019.csv · 04_analysis.py'),
+      dict(title='표본이 부족한 선수·기상 조건',count=f"{len(batting)-len(eligible):,}개 경기 기록 제외",why='AB > 0 중 시즌 100타수 미만 선수의 기록을 제외합니다. 조건별 시그널에서도 30타수 미만을 제외해 작은 분모의 큰 편차를 걸러냅니다.',source='04_analysis.py · 조건별 시그널 CSV'),
+      dict(title='이전 연도의 야구 파일',count=f"{len(read('data/raw/Regular_Season_Batter.csv')):,}행 / {len(read('data/raw/Regular_Season_Batter_Day_by_Day_b4.csv')):,}행",why='현재 2019년 선수·팀·날씨 결합 경로에서는 이 두 파일을 읽지 않습니다. 보유 원본과 최종 분석에 사용한 원본을 구분합니다.',source='Regular_Season_Batter.csv · Regular_Season_Batter_Day_by_Day_b4.csv · 02_preprocess.py'),
+      dict(title='장르·평점만으로 관심 급증 판정',count='시간 변화 근거 부족',why='정적 메타데이터에는 실제 30일 검색·조회량이 없습니다. 시뮬레이션은 기능 검증용이며 실제 시장 관심 변화의 증거로 사용하지 않습니다.',source='kdrama.csv · kpopidolsv3.csv · naver.csv'),
+      dict(title='없는 원본으로 전처리 손실률 계산',count='계산 제외',why=('Apart Deal.csv가 없어 아파트 원본 대비 제거율을 계산하지 않습니다. '+('KRX 원본·일별 결과는 현재 보유해 파일 행 수를 직접 확인할 수 있습니다.' if raw_stock_rows and daily_stock_rows else 'KRX 원본·일별 결과 부재로 전체 시장 대비 탐지율도 계산하지 않습니다.')),source='현재 GitHub 파일 목록'),
+      dict(title='서로 다른 점수를 하나로 합산',count='비교 대상 제외',why='사회·경제 점수, 주식 배수 기반 점수, 야구 표본 가중 점수는 다른 척도입니다. 전 분야 통합 점수 순위와 통계적 유의성 주장은 만들지 않습니다.',source='각 분야 분석 코드')]
+    lineage=[
+      dict(domain='사회',inputs='Korean_demographics.csv + population_migration.csv',clean='날짜 변환, 지역명 표준화, 순이동 Wide → Long, 순이동 결측 제외',key='Date + Region_ko / left merge',output='data/processed/social_monthly.csv',rows=len(s),derived='Natural_growth(기존 출생−사망 지표) + Net_migration(결합) → 전년 동월 변화·Z-score → 사회 시그널',evidence=f"인구동태 {len(raw_s):,}행 → 결합 결과 {len(s):,}행. 현재 두 파일의 행 수 차이 {len(raw_s)-len(s):,}행.",code='analysis/apartment/01_preprocess_social.py → 08_social_signal_engine.py'),
+      dict(domain='경제',inputs='Apart Deal.csv (현재 원본 없음) + base_rate.csv',clean='거래금액 쉼표 제거·숫자형, 면적>0, 날짜·금액·면적·지역코드 결측 제거, 지역×월 집계',key='지역×월 집계 후 Date / inner merge',output='data/processed/economy_monthly.csv',rows=len(e),derived='Price_per_m2 = 거래금액(만원)/면적(㎡) → Median_price_per_m2, Transaction_count + Base_rate → 전년 동월 변화·Z-score',evidence='원본 거래 행 수와 제거량은 원본 파일 부재로 계산하지 않습니다.',code='analysis/apartment/04_preprocess_economy.py → 09_economy_signal_engine.py'),
+      dict(domain='야구',inputs='KBO_batter_2019.csv + KBO_player_info_full.csv + edit_baseball_2019 (1).csv + edit_weather_2019.csv',clean='선수 ID 결합, 상대팀 누락 제외, 홈팀→지역 매핑, 날짜·지역별 기상 평균(강수 합계)',key='선수 ID → game_date + team → game_date + region / left merge',output='data/processed/baseball_2019_merged.csv → baseball_weather_2019.csv',rows=len(b),derived='game_avg = H/AB, season_avg = ΣH/ΣAB, weather_avg = 조건 ΣH/ΣAB, weather_diff, signal_strength = |weather_diff × √AB|',evidence=f"선수 원본 {len(raw_b):,}행 → 결합 {len(b):,}행. 최종 기온·습도·강수 결측 셀 {int(b[['temperature','humidity','rainfall']].isna().sum().sum()):,}개.",code='analysis/baseball/02_preprocess.py → 03_weather_merge.py → 04_analysis.py'),
+      dict(domain='주식',inputs=stock_input,clean='시장·코드·날짜 정렬, 숫자형 변환, 무거래·상장주식수 변동·최소 거래대금 필터',key='market + code 시계열 / date + market 거래대금 합',output='result/stock/'+stock_output,rows=len(stocks),derived='volume_avg20(직전 20일), volume_ratio, return5/20, share_pct, share_avg20, share_ratio, signal_count',evidence=('원본 '+f'{raw_stock_rows:,}행 / 일별 파생 결과 {daily_stock_rows:,}행 / 시그널 {len(stocks):,}행. 실제 보유 파일에서 직접 계산했습니다.' if raw_stock_rows and daily_stock_rows else '현재 보유 시그널 결과만 시각화합니다. 없는 원본 행 수는 metadata로 대체하지 않습니다.'),code='analysis/stock/build_signals.py'),
+      dict(domain='K콘텐츠',inputs='kpopidolsv3.csv + kdrama.csv + naver.csv',clean='이름·제목 결측 제외, 공백 정리, 카테고리별 콘텐츠 목록 구성',key='테이블 간 relational merge 없음 / 카테고리·제목을 고정 시드로 사용',output='load_all_contents() 결과 (메모리 목록, 새 CSV를 만들지 않음)',rows=None,derived='30일 시뮬레이션 지수 → 기준23일 평균·표준편차 / 최근7일 평균 → increase_rate, z_score, anomaly_days, trend_score',evidence='콘텐츠 메타데이터만 실제 원본이며 시계열은 시뮬레이션입니다.',code='analysis/drama/mock_data.py → anomaly.py')]
+    provenance=[
+      dict(domain='사회',files='Korean_demographics.csv · population_migration.csv',provider='인구동태·행정구역별 인구이동 데이터',status='수집기관·원 다운로드 주소 미기록',evidence='파일에 Date/Region, 출생·사망 및 월별 행정구역 순이동 값이 존재합니다. 파일명만으로 원 배포기관을 확정하지 않았습니다.',url=None),
+      dict(domain='경제',files='base_rate.csv',provider='한국은행 기준금리',status='파일 내부 표기 확인',evidence='통계표: 1.3.1. 한국은행 기준금리 및 여수신금리 / 계정항목: 한국은행 기준금리 / 단위: 연%. 다운로드 URL·수집일은 미기록.',url=None),
+      dict(domain='경제',files='Apart Deal.csv → economy_monthly.csv',provider='아파트 실거래 원본',status='원본 부재 / 수집 출처 확인 필요',evidence='04_preprocess_economy.py가 해당 원본 경로를 입력으로 지정합니다. 현재 원본이 없어 제공기관·원본 행 수는 확인하지 못했습니다.',url=None),
+      dict(domain='주식',files=('krx_all_stocks_1y.csv · stock_daily.csv · stock_meta.json · all_stock_signals.csv' if raw_stock_rows and daily_stock_rows else 'stock_meta.json · all_stock_signals.csv'),provider='한국거래소 통계정보',status='메타데이터·코드에서 기관과 URL 확인',evidence='stock_meta.json과 build_signals.py의 source/source_url에 한국거래소 통계정보와 Open API 주소가 기록돼 있습니다.',url='https://openapi.krx.co.kr/'),
+      dict(domain='야구',files='KBO_batter_2019.csv · KBO_player_info_full.csv · edit_baseball_2019 (1).csv',provider='KBO 선수·팀 기록',status='데이터 종류 확인 / 원 수집 경로 미기록',evidence='선수 ID, 2019 시즌 정보, 경기·팀 기록을 결합합니다. 서비스의 KBO 프로필 링크는 선수 확인용이며 원본 CSV 수집 경로의 증거는 아닙니다.',url=None),
+      dict(domain='날씨',files='edit_weather_2019.csv',provider='지역별 시간 단위 기상 관측 데이터',status='기온·강수·습도 컬럼 확인 / 기관 미기록',evidence='지점명·일시·기온·강수량·풍속·습도·기압·지면온도가 있습니다. 배포기관·다운로드 URL은 저장소에서 확인되지 않았습니다.',url=None),
+      dict(domain='K콘텐츠',files='naver.csv',provider='네이버웹툰 콘텐츠 정보',status='CSV link 컬럼에서 원문 확인',evidence='각 콘텐츠 행의 link가 comic.naver.com/webtoon/list를 가리킵니다. 수집 도구·수집일은 미기록입니다.',url='https://comic.naver.com/'),
+      dict(domain='K콘텐츠',files='kdrama.csv · kpopidolsv3.csv',provider='드라마·K-Pop 정적 메타데이터',status='원 배포처·수집일 확인 필요',evidence='제목·장르·평점·회사·이름 등 정적 컬럼을 사용합니다. 원 데이터셋 페이지를 파일명만으로 추정하지 않습니다.',url=None)]
+    return dict(useful=useful,excluded=excluded,lineage=lineage,provenance=provenance,definition='여기서 유의미는 취재 후보 선별에 활용할 수 있다는 뜻입니다. p-value 검정으로 통계적 유의성을 입증했다는 뜻이 아닙니다. 무의미 대신 분석 목적상 제외·근거 부족으로 구분합니다.')

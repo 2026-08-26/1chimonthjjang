@@ -1,0 +1,989 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>DATA TIP-OFF | K콘텐츠 이상감지</title>
+
+    <!-- 기존 K콘텐츠 화면에서 사용하는 라이브러리 유지 -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    >
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: "#f5f5f3",
+                            100: "#efefec",
+                            600: "#111111",
+                            700: "#111111",
+                            900: "#111111"
+                        }
+                    }
+                }
+            }
+        };
+    </script>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        :root {
+            --page-bg: #f5f5f3;
+            --white: #ffffff;
+            --black: #111111;
+            --text: #111111;
+            --muted: #8a8a8a;
+            --border: #ddddda;
+            --header-h: 72px;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            background: var(--page-bg);
+            color: var(--text);
+            font-family:
+                Pretendard,
+                "Noto Sans KR",
+                Arial,
+                sans-serif;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        body.sidebar-open {
+            overflow: hidden;
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        button {
+            font: inherit;
+        }
+
+        /* ==================================================
+           MAIN과 동일한 HEADER
+        ================================================== */
+
+        .site-header {
+            height: var(--header-h);
+            padding: 0 34px;
+            background: var(--black);
+            color: #fff;
+            display: flex;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .brand-wrap {
+            display: flex;
+            align-items: center;
+            gap: 22px;
+            min-width: 0;
+        }
+
+        .menu-toggle {
+            flex: 0 0 auto;
+            width: 38px;
+            height: 38px;
+            border: 1px solid #3e3e3e;
+            background: transparent;
+            color: #fff;
+            display: grid;
+            place-items: center;
+            cursor: pointer;
+            font-size: 17px;
+            line-height: 1;
+            transition:
+                border-color .18s ease,
+                background .18s ease;
+        }
+
+        .menu-toggle:hover {
+            border-color: #777;
+            background: #1b1b1b;
+        }
+
+        .site-brand {
+            flex: 0 0 auto;
+            font-family:
+                Georgia,
+                "Times New Roman",
+                serif;
+            font-size: 20px;
+            font-weight: 900;
+            letter-spacing: -1px;
+            white-space: nowrap;
+        }
+
+        .header-line {
+            flex: 0 0 auto;
+            width: 1px;
+            height: 18px;
+            background: #555;
+        }
+
+        .header-sub {
+            color: #b9b9b9;
+            font-size: 10px;
+            letter-spacing: 1.1px;
+            white-space: nowrap;
+        }
+
+        .top-category-nav {
+            height: var(--header-h);
+            margin-left: auto;
+            display: flex;
+            align-items: stretch;
+        }
+
+        .top-category-link {
+            position: relative;
+            min-width: 64px;
+            padding: 0 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #aaa;
+            font-size: 10px;
+            font-weight: 800;
+            white-space: nowrap;
+            transition: color .18s ease;
+        }
+
+        .top-category-link:hover {
+            color: #fff;
+        }
+
+        .top-category-link.active {
+            color: #fff;
+        }
+
+        .top-category-link.active::after {
+            content: "";
+            position: absolute;
+            left: 16px;
+            right: 16px;
+            bottom: 15px;
+            height: 2px;
+            background: #fff;
+        }
+
+        .header-right {
+            flex: 0 0 auto;
+            margin-left: 16px;
+            display: flex;
+            align-items: center;
+        }
+
+        .live {
+            min-height: 30px;
+            padding: 0 12px;
+            border: 1px solid #444;
+            border-radius: 999px;
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            color: #bbb;
+            font-size: 9px;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        .live-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: #fff;
+        }
+
+        /* ==================================================
+           SIDEBAR
+        ================================================== */
+
+        .sidebar-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, .42);
+            opacity: 0;
+            visibility: hidden;
+            transition: .2s ease;
+            z-index: 199;
+        }
+
+        .sidebar-overlay.open {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .newsroom-sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: min(340px, 88vw);
+            height: 100vh;
+            background: #111;
+            color: #fff;
+            transform: translateX(-100%);
+            transition: transform .22s ease;
+            z-index: 200;
+            overflow-y: auto;
+        }
+
+        .newsroom-sidebar.open {
+            transform: translateX(0);
+        }
+
+        .sidebar-close {
+            position: absolute;
+            right: 20px;
+            top: 18px;
+            border: 0;
+            background: transparent;
+            color: #aaa;
+            cursor: pointer;
+            font-size: 26px;
+        }
+
+        .sidebar-inner {
+            padding: 54px 28px 32px;
+        }
+
+        .sidebar-brand {
+            padding-bottom: 26px;
+            border-bottom: 1px solid #333;
+        }
+
+        .sidebar-brand-name {
+            font-family: Georgia, serif;
+            font-size: 24px;
+            font-weight: 900;
+        }
+
+        .sidebar-brand-sub {
+            margin-top: 8px;
+            color: #777;
+            font-size: 9px;
+        }
+
+        .sidebar-section {
+            padding: 22px 0;
+            border-bottom: 1px solid #2c2c2c;
+        }
+
+        .sidebar-label {
+            margin-bottom: 9px;
+            color: #666;
+            font-size: 8px;
+            font-weight: 900;
+            letter-spacing: 1px;
+        }
+
+        .sidebar-link {
+            min-height: 42px;
+            padding: 0 10px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            color: #bbb;
+            font-size: 11px;
+            font-weight: 700;
+            transition:
+                background .18s ease,
+                color .18s ease;
+        }
+
+        .sidebar-link:hover,
+        .sidebar-link.active {
+            background: #1d1d1d;
+            color: #fff;
+        }
+
+        .sidebar-link-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .sidebar-icon {
+            color: #777;
+        }
+
+        .sidebar-arrow {
+            color: #666;
+        }
+
+        .sidebar-sub-link {
+            min-height: 35px;
+            padding-left: 31px;
+            color: #888;
+            font-size: 10px;
+        }
+
+        .sidebar-sub-link:hover {
+            color: #fff;
+        }
+
+        /* ==================================================
+           K콘텐츠 BODY
+           trend_index / trend_detail 공통 컨테이너
+        ================================================== */
+
+        .trend-main {
+            width: 100%;
+            max-width: 1880px;
+            margin: 0 auto;
+            padding: 28px;
+        }
+
+        .trend-footer {
+            width: calc(100% - 56px);
+            max-width: 1824px;
+            min-height: 70px;
+            margin: 0 auto;
+            border-top: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+            color: #999;
+            font-size: 9px;
+        }
+
+        .trend-footer strong {
+            color: #111;
+            font-family: Georgia, serif;
+            font-weight: 900;
+        }
+
+        /* ==================================================
+           RESPONSIVE
+        ================================================== */
+
+        @media (max-width: 1050px) {
+            .header-sub,
+            .header-line {
+                display: none;
+            }
+
+            .brand-wrap {
+                gap: 14px;
+            }
+
+            .top-category-link {
+                min-width: 58px;
+                padding: 0 10px;
+            }
+        }
+
+        @media (max-width: 820px) {
+            .site-header {
+                padding: 0 16px;
+            }
+
+            .top-category-nav {
+                display: none;
+            }
+
+            .header-right {
+                margin-left: auto;
+            }
+
+            .trend-main {
+                padding: 18px;
+            }
+
+            .trend-footer {
+                width: calc(100% - 36px);
+            }
+        }
+
+        @media (max-width: 520px) {
+            .site-brand {
+                font-size: 17px;
+            }
+
+            .live {
+                display: none;
+            }
+
+            .trend-main {
+                padding: 14px;
+            }
+        }
+
+        /* ==================================================
+           K콘텐츠 TOP10 순차 등장 애니메이션
+           - 실제 데이터/정렬 로직에는 영향 없음
+           - /detail/... 링크가 여러 개 있는 목록 화면에서만 적용
+        ================================================== */
+
+        .tipoff-rank-reveal {
+            opacity: 0;
+            transform: translateY(16px) scale(.996);
+            filter: blur(2.5px);
+            will-change: opacity, transform, filter;
+            transition:
+                opacity .52s cubic-bezier(.22,.61,.36,1),
+                transform .58s cubic-bezier(.22,.61,.36,1),
+                filter .48s ease,
+                background-color .18s ease;
+        }
+
+        .tipoff-rank-reveal.is-visible {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+            filter: blur(0);
+        }
+
+        .tipoff-rank-reveal:hover {
+            transform: translateX(3px) scale(1);
+        }
+
+        .tipoff-rank-dot {
+            transform: scale(.82) translateY(4px);
+            opacity: .15;
+            transition:
+                transform .45s cubic-bezier(.22,.61,.36,1),
+                opacity .38s ease;
+        }
+
+        .tipoff-rank-reveal.is-visible .tipoff-rank-dot {
+            transform: scale(1) translateY(0);
+            opacity: 1;
+        }
+
+        .tipoff-rank-badge {
+            opacity: 0;
+            transform: translateY(4px) scale(.94);
+            transition:
+                opacity .35s ease .12s,
+                transform .42s cubic-bezier(.22,.61,.36,1) .12s;
+        }
+
+        .tipoff-rank-reveal.is-visible .tipoff-rank-badge {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+
+        .tipoff-rank-score {
+            opacity: 0;
+            transform: translateX(-5px);
+            transition:
+                opacity .36s ease .16s,
+                transform .42s cubic-bezier(.22,.61,.36,1) .16s;
+        }
+
+        .tipoff-rank-reveal.is-visible .tipoff-rank-score {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .tipoff-rank-arrow {
+            transition:
+                transform .2s ease,
+                opacity .2s ease;
+        }
+
+        .tipoff-rank-reveal:hover .tipoff-rank-arrow {
+            transform: translateX(4px);
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .tipoff-rank-reveal,
+            .tipoff-rank-dot,
+            .tipoff-rank-badge,
+            .tipoff-rank-score,
+            .tipoff-rank-arrow {
+                opacity: 1 !important;
+                transform: none !important;
+                filter: none !important;
+                transition: none !important;
+            }
+        }
+
+    </style>
+
+    {% block extra_head %}{% endblock %}
+{% include 'includes/desk_sidebar_styles.html' %}
+</head>
+
+<body>
+
+    <!-- ==================================================
+         HEADER
+         메인페이지와 동일한 분야 메뉴
+    ================================================== -->
+
+    <header class="site-header">
+
+        <div class="brand-wrap">
+
+            <button
+                id="sidebar-toggle"
+                aria-controls="newsroom-sidebar"
+                class="menu-toggle"
+                type="button"
+                aria-label="메뉴 열기"
+                aria-expanded="false"
+            >
+                ☰
+            </button>
+
+            <a
+                href="/home-v2-nav"
+                class="site-brand"
+            >
+                DATA TIP-OFF
+            </a>
+
+            <div class="header-line"></div>
+
+            <div class="header-sub">
+                디지털 뉴스룸 / 취재 시그널 모니터
+            </div>
+
+        </div>
+
+
+        <nav
+            class="top-category-nav"
+            aria-label="분야별 분석 메뉴"
+        >
+<a href="/dashboard" class="top-category-link">대시보드</a>
+            <a
+                href="/social"
+                class="top-category-link"
+            >
+                사회
+            </a>
+
+            <a
+                href="/economy"
+                class="top-category-link"
+            >
+                경제
+            </a>
+
+            <a
+                href="/stock"
+                class="top-category-link"
+            >
+                주식
+            </a>
+
+            <a
+                href="/trend"
+                class="top-category-link active"
+                aria-current="page"
+            >
+                K콘텐츠
+            </a>
+
+            <a
+                href="/baseball"
+                class="top-category-link"
+            >
+                야구
+            </a>
+        </nav>
+
+
+        <div class="header-right">
+            <div class="live">
+                <span class="live-dot"></span>
+                K콘텐츠 관심도 모니터
+            </div>
+        </div>
+
+    </header>
+
+
+    <!-- ==================================================
+         SIDEBAR
+    ================================================== -->
+
+    {% with sidebar_section = 'trend' %}
+    {% include 'includes/desk_sidebar.html' %}
+    {% endwith %}
+
+
+    <!-- ==================================================
+         PAGE CONTENT
+    ================================================== -->
+
+    <main class="trend-main">
+        {% block content %}{% endblock %}
+    </main>
+
+
+    <footer class="trend-footer">
+
+        <strong>
+            DATA TIP-OFF
+        </strong>
+
+        <span>
+            이상감지 결과를 취재 가능한 시그널로 전환합니다.
+        </span>
+
+    </footer>
+
+
+
+
+
+    <script>
+        (function () {
+            "use strict";
+
+            function startRankingReveal() {
+                const main =
+                    document.querySelector(".trend-main");
+
+                if (!main) {
+                    return;
+                }
+
+                // TOP10의 실제 상세 링크 행을 찾습니다.
+                // href가 상대/절대경로여도 동작하도록 *= 로 찾습니다.
+                const rows = Array.from(
+                    main.querySelectorAll(
+                        'a[href*="/detail/"]'
+                    )
+                ).filter(function (row) {
+                    return row.offsetParent !== null;
+                });
+
+                if (rows.length < 3) {
+                    return;
+                }
+
+                // 혹시 같은 링크가 중복 선택되는 상황 방지
+                const uniqueRows = [];
+                const seen = new Set();
+
+                rows.forEach(function (row) {
+                    if (seen.has(row)) {
+                        return;
+                    }
+
+                    seen.add(row);
+                    uniqueRows.push(row);
+                });
+
+                function findTextNode(row, matcher) {
+                    const nodes = Array.from(
+                        row.querySelectorAll(
+                            "div, span, strong, small"
+                        )
+                    );
+
+                    return nodes.find(function (node) {
+                        if (node.children.length > 0) {
+                            return false;
+                        }
+
+                        const value =
+                            (node.textContent || "")
+                            .trim();
+
+                        return matcher(
+                            value,
+                            node
+                        );
+                    }) || null;
+                }
+
+                // 페이지가 뜨자마자 0.25초 정도 기다렸다가
+                // 1위 → 10위 순으로 샤르르 등장시킵니다.
+                uniqueRows.forEach(function (row) {
+                    row.classList.add(
+                        "tipoff-rank-reveal",
+                        "is-visible"
+                    );
+
+                    // 이전 transition delay가 남아 있으면 제거
+                    row.style.transitionDelay = "0ms";
+                });
+
+                window.setTimeout(
+                    function () {
+                        uniqueRows.forEach(
+                            function (row, index) {
+                                const delay =
+                                    index * 125;
+
+                                // -------------------------------------------------
+                                // 1) 행 전체
+                                // -------------------------------------------------
+                                const rowAnimation =
+                                    row.animate(
+                                        [
+                                            {
+                                                opacity: 0,
+                                                transform:
+                                                    "translateY(28px) scale(.985)",
+                                                filter:
+                                                    "blur(6px)"
+                                            },
+                                            {
+                                                opacity: 0.72,
+                                                transform:
+                                                    "translateY(6px) scale(.997)",
+                                                filter:
+                                                    "blur(1.5px)",
+                                                offset: 0.72
+                                            },
+                                            {
+                                                opacity: 1,
+                                                transform:
+                                                    "translateY(0) scale(1)",
+                                                filter:
+                                                    "blur(0)"
+                                            }
+                                        ],
+                                        {
+                                            duration: 720,
+                                            delay: delay,
+                                            easing:
+                                                "cubic-bezier(.16,1,.3,1)",
+                                            fill: "both"
+                                        }
+                                    );
+
+                                rowAnimation.onfinish =
+                                    function () {
+                                        rowAnimation.cancel();
+
+                                        row.style.opacity = "1";
+                                        row.style.transform = "none";
+                                        row.style.filter = "none";
+                                    };
+
+                                // -------------------------------------------------
+                                // 2) 순위 원형
+                                // -------------------------------------------------
+                                const rankNode =
+                                    findTextNode(
+                                        row,
+                                        function (value) {
+                                            const number =
+                                                Number(value);
+
+                                            return (
+                                                /^\d{1,2}$/.test(value)
+                                                &&
+                                                number >= 1
+                                                &&
+                                                number <= 10
+                                            );
+                                        }
+                                    );
+
+                                if (rankNode) {
+                                    const rankTarget =
+                                        rankNode.parentElement
+                                        &&
+                                        rankNode.parentElement !== row
+                                            ? rankNode.parentElement
+                                            : rankNode;
+
+                                    rankTarget.animate(
+                                        [
+                                            {
+                                                opacity: 0,
+                                                transform:
+                                                    "scale(.62)"
+                                            },
+                                            {
+                                                opacity: 1,
+                                                transform:
+                                                    "scale(1.08)",
+                                                offset: 0.7
+                                            },
+                                            {
+                                                opacity: 1,
+                                                transform:
+                                                    "scale(1)"
+                                            }
+                                        ],
+                                        {
+                                            duration: 520,
+                                            delay:
+                                                delay + 110,
+                                            easing:
+                                                "cubic-bezier(.16,1,.3,1)",
+                                            fill: "both"
+                                        }
+                                    );
+                                }
+
+                                // -------------------------------------------------
+                                // 3) HIGH / MEDIUM / LOW 배지
+                                // -------------------------------------------------
+                                const badgeNode =
+                                    findTextNode(
+                                        row,
+                                        function (value) {
+                                            return (
+                                                value === "HIGH"
+                                                ||
+                                                value === "MEDIUM"
+                                                ||
+                                                value === "LOW"
+                                                ||
+                                                value.startsWith("HIGH ")
+                                                ||
+                                                value.startsWith("MEDIUM ")
+                                                ||
+                                                value.startsWith("LOW ")
+                                            );
+                                        }
+                                    );
+
+                                if (badgeNode) {
+                                    const badgeTarget =
+                                        badgeNode.parentElement
+                                        &&
+                                        badgeNode.parentElement !== row
+                                            ? badgeNode.parentElement
+                                            : badgeNode;
+
+                                    badgeTarget.animate(
+                                        [
+                                            {
+                                                opacity: 0,
+                                                transform:
+                                                    "translateY(7px) scale(.9)"
+                                            },
+                                            {
+                                                opacity: 1,
+                                                transform:
+                                                    "translateY(0) scale(1)"
+                                            }
+                                        ],
+                                        {
+                                            duration: 420,
+                                            delay:
+                                                delay + 220,
+                                            easing:
+                                                "cubic-bezier(.16,1,.3,1)",
+                                            fill: "both"
+                                        }
+                                    );
+                                }
+
+                                // -------------------------------------------------
+                                // 4) 오른쪽 점수
+                                // -------------------------------------------------
+                                const scoreNode =
+                                    findTextNode(
+                                        row,
+                                        function (value, node) {
+                                            if (
+                                                !/^\d{1,3}(?:\.\d+)?$/.test(
+                                                    value.replace(/,/g, "")
+                                                )
+                                            ) {
+                                                return false;
+                                            }
+
+                                            const parentText =
+                                                (
+                                                    node.parentElement
+                                                    ?.textContent
+                                                    ||
+                                                    ""
+                                                );
+
+                                            return (
+                                                parentText.includes(
+                                                    "/100"
+                                                )
+                                                ||
+                                                parentText.includes(
+                                                    "점수"
+                                                )
+                                            );
+                                        }
+                                    );
+
+                                if (scoreNode) {
+                                    const scoreTarget =
+                                        scoreNode.parentElement
+                                        &&
+                                        scoreNode.parentElement !== row
+                                            ? scoreNode.parentElement
+                                            : scoreNode;
+
+                                    scoreTarget.animate(
+                                        [
+                                            {
+                                                opacity: 0,
+                                                transform:
+                                                    "translateX(-12px)"
+                                            },
+                                            {
+                                                opacity: 1,
+                                                transform:
+                                                    "translateX(0)"
+                                            }
+                                        ],
+                                        {
+                                            duration: 460,
+                                            delay:
+                                                delay + 260,
+                                            easing:
+                                                "cubic-bezier(.16,1,.3,1)",
+                                            fill: "both"
+                                        }
+                                    );
+                                }
+                            }
+                        );
+                    },
+                    260
+                );
+            }
+
+            // Flask/Jinja 페이지에서도 확실하게 DOM이 만들어진 뒤 실행
+            if (
+                document.readyState === "loading"
+            ) {
+                document.addEventListener(
+                    "DOMContentLoaded",
+                    startRankingReveal,
+                    {
+                        once: true
+                    }
+                );
+            } else {
+                startRankingReveal();
+            }
+
+        })();
+    </script>
+
+    {% block extra_script %}{% endblock %}
+
+</body>
+</html>

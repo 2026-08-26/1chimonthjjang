@@ -1,0 +1,1533 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>DATA TIP-OFF · 경제 시그널</title>
+
+    <style>
+
+        /* ==================================================
+           RESET
+        ================================================== */
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            margin: 0;
+
+            background: #f5f5f3;
+            color: #111;
+
+            font-family:
+                "Noto Sans KR",
+                "Apple SD Gothic Neo",
+                "Malgun Gothic",
+                Arial,
+                sans-serif;
+
+            font-weight: 400;
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        button {
+            font: inherit;
+        }
+
+
+        /* ==================================================
+           HEADER
+           메인/사회 페이지와 동일
+        ================================================== */
+
+        .header {
+            height: 70px;
+            padding: 0 30px;
+
+            background: #111;
+            color: white;
+
+            display: flex;
+            align-items: center;
+            gap: 24px;
+
+            position: sticky;
+            top: 0;
+
+            z-index: 100;
+        }
+
+        .menu-button {
+            width: 36px;
+            height: 36px;
+
+            flex-shrink: 0;
+
+            border: 1px solid #444;
+            background: transparent;
+            color: white;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            font-size: 16px;
+
+            cursor: pointer;
+        }
+
+        .menu-button:hover {
+            border-color: #777;
+        }
+
+        .brand {
+            font-family:
+                Georgia,
+                "Times New Roman",
+                serif;
+
+            font-size: 20px;
+            font-weight: 900;
+
+            white-space: nowrap;
+        }
+
+        .top-nav {
+            margin-left: auto;
+
+            height: 100%;
+
+            display: flex;
+            align-items: stretch;
+        }
+
+        .top-nav a {
+            min-width: 66px;
+
+            padding: 0 13px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            color: #aaa;
+
+            font-size: 10px;
+            font-weight: 800;
+
+            position: relative;
+        }
+
+        .top-nav a:hover {
+            color: white;
+        }
+
+        .top-nav a.active {
+            color: white;
+        }
+
+        .top-nav a.active::after {
+            content: "";
+
+            position: absolute;
+
+            left: 13px;
+            right: 13px;
+            bottom: 0;
+
+            height: 2px;
+
+            background: white;
+        }
+
+        .live {
+            padding: 7px 11px;
+
+            border: 1px solid #444;
+            border-radius: 30px;
+
+            color: #aaa;
+
+            font-size: 9px;
+
+            white-space: nowrap;
+        }
+
+        .blink-dot {
+            display: inline-block;
+
+            margin-right: 4px;
+
+            animation:
+                blinkDot
+                1s
+                ease-in-out
+                infinite;
+        }
+
+        @keyframes blinkDot {
+
+            0%,
+            100% {
+                opacity: .25;
+                transform: scale(.8);
+            }
+
+            50% {
+                opacity: 1;
+                transform: scale(1.2);
+            }
+        }
+
+
+        /* ==================================================
+           PAGE
+        ================================================== */
+
+        .page {
+            width: 100%;
+            max-width: 1500px;
+
+            margin: 0 auto;
+
+            padding:
+                38px
+                30px
+                80px;
+        }
+
+
+        /* ==================================================
+           HERO
+        ================================================== */
+
+        .hero-panel {
+            display: grid;
+
+            grid-template-columns:
+                minmax(0, 1.55fr)
+                minmax(460px, .75fr);
+
+            min-height: 390px;
+
+            background: #fff;
+
+            border: 1px solid #dcdcd8;
+            border-radius: 20px;
+
+            overflow: hidden;
+
+            box-shadow:
+                0 8px 28px
+                rgba(0, 0, 0, .025);
+        }
+
+
+        /* ==================================================
+           HERO LEFT
+        ================================================== */
+
+        .hero-copy {
+            padding:
+                54px
+                58px
+                48px;
+        }
+
+        .hero-eyebrow {
+            display: flex;
+            align-items: center;
+
+            gap: 10px;
+
+            margin-bottom: 25px;
+
+            color: #777;
+
+            font-size: 10px;
+            font-weight: 800;
+
+            letter-spacing: 2px;
+        }
+
+        .hero-eyebrow-dot {
+            width: 7px;
+            height: 7px;
+
+            flex-shrink: 0;
+
+            border-radius: 50%;
+
+            background: #111;
+        }
+
+        .hero-title {
+            margin: 0;
+
+            max-width: 900px;
+
+            font-family:
+                "Noto Sans KR",
+                "Apple SD Gothic Neo",
+                "Malgun Gothic",
+                Arial,
+                sans-serif;
+
+            font-size:
+                clamp(
+                    50px,
+                    5vw,
+                    78px
+                );
+
+            font-weight: 900;
+
+            line-height: 1.08;
+
+            letter-spacing: -5px;
+
+            word-break: keep-all;
+        }
+
+        .hero-description {
+            max-width: 760px;
+
+            margin-top: 30px;
+
+            color: #626262;
+
+            font-size: 13px;
+            font-weight: 400;
+
+            line-height: 1.85;
+
+            word-break: keep-all;
+        }
+
+        .hero-meta {
+            display: flex;
+            align-items: center;
+
+            gap: 12px;
+
+            margin-top: 34px;
+
+            color: #8b8b8b;
+
+            font-size: 10px;
+        }
+
+        .hero-meta strong {
+            color: #111;
+
+            font-size: 10px;
+            font-weight: 900;
+        }
+
+        .hero-meta-divider {
+            color: #bbb;
+        }
+
+
+        /* ==================================================
+           KPI AREA
+        ================================================== */
+
+        .hero-stats {
+            padding: 22px;
+
+            display: grid;
+
+            grid-template-columns:
+                repeat(2, 1fr);
+
+            gap: 12px;
+
+            background: #f7f7f5;
+
+            border-left: 1px solid #dededa;
+        }
+
+        .stat-card {
+            min-height: 160px;
+
+            padding:
+                24px
+                24px
+                22px;
+
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+
+            background: white;
+
+            border: 1px solid #dfdfdb;
+            border-radius: 15px;
+        }
+
+        .stat-top {
+            display: flex;
+            flex-direction: column;
+
+            gap: 10px;
+        }
+
+        .stat-line {
+            width: 24px;
+            height: 3px;
+
+            border-radius: 20px;
+
+            background: #111;
+        }
+
+        .stat-line.high {
+            background: #c82f42;
+        }
+
+        .stat-line.medium {
+            background: #bc7800;
+        }
+
+        .stat-line.rule {
+            background: #557267;
+        }
+
+        .stat-label {
+            color: #777;
+
+            font-size: 9px;
+            font-weight: 800;
+
+            line-height: 1.4;
+        }
+
+        .stat-bottom {
+            display: flex;
+            align-items: baseline;
+
+            gap: 7px;
+        }
+
+        .stat-number {
+            font-family:
+                "Noto Sans KR",
+                "Apple SD Gothic Neo",
+                "Malgun Gothic",
+                Arial,
+                sans-serif;
+
+            font-size: 39px;
+            font-weight: 900;
+
+            line-height: 1;
+
+            letter-spacing: -2.5px;
+        }
+
+        .stat-unit {
+            color: #999;
+
+            font-size: 9px;
+            font-weight: 500;
+        }
+
+
+        /* ==================================================
+           COMMON SECTION
+        ================================================== */
+
+        .section {
+            margin-top: 22px;
+
+            background: white;
+
+            border: 1px solid #dadad6;
+            border-radius: 20px;
+
+            overflow: hidden;
+        }
+
+        .section-head {
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+
+            gap: 40px;
+
+            padding:
+                35px
+                38px
+                28px;
+
+            border-bottom: 1px solid #e0e0dc;
+        }
+
+        .section-eyebrow {
+            margin-bottom: 11px;
+
+            color: #8a8a8a;
+
+            font-size: 9px;
+            font-weight: 900;
+
+            letter-spacing: 1.6px;
+        }
+
+        .section-title {
+            margin: 0;
+
+            font-family:
+                "Noto Sans KR",
+                "Apple SD Gothic Neo",
+                "Malgun Gothic",
+                Arial,
+                sans-serif;
+
+            font-size: 34px;
+            font-weight: 900;
+
+            line-height: 1.05;
+
+            letter-spacing: -2px;
+        }
+
+        .section-description {
+            max-width: 480px;
+
+            color: #888;
+
+            font-size: 10px;
+            font-weight: 400;
+
+            line-height: 1.7;
+
+            text-align: right;
+
+            word-break: keep-all;
+        }
+
+        .section-description strong {
+            color: #111;
+
+            font-weight: 800;
+        }
+
+
+        /* ==================================================
+           SIGNAL TYPE CARDS
+        ================================================== */
+
+        .signal-types {
+            display: grid;
+
+            grid-template-columns:
+                repeat(6, 1fr);
+        }
+
+        .type-card {
+            min-height: 155px;
+
+            padding:
+                24px
+                22px
+                22px;
+
+            border-right: 1px solid #e0e0dc;
+
+            transition:
+                background .2s ease,
+                color .2s ease;
+        }
+
+        .type-card:last-child {
+            border-right: 0;
+        }
+
+        .type-card:hover {
+            background: #111;
+            color: white;
+        }
+
+        .type-index {
+            color: #aaa;
+
+            font-size: 9px;
+            font-weight: 700;
+        }
+
+        .type-name {
+            min-height: 42px;
+
+            margin-top: 22px;
+
+            font-family:
+                "Noto Sans KR",
+                "Apple SD Gothic Neo",
+                "Malgun Gothic",
+                Arial,
+                sans-serif;
+
+            font-size: 14px;
+            font-weight: 900;
+
+            line-height: 1.4;
+
+            letter-spacing: -.6px;
+        }
+
+        .type-bottom {
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+
+            gap: 10px;
+
+            margin-top: 18px;
+        }
+
+        .type-count {
+            font-family:
+                "Noto Sans KR",
+                "Apple SD Gothic Neo",
+                "Malgun Gothic",
+                Arial,
+                sans-serif;
+
+            font-size: 25px;
+            font-weight: 900;
+
+            line-height: 1;
+
+            letter-spacing: -1.5px;
+        }
+
+        .type-count span {
+            margin-left: 4px;
+
+            color: #999;
+
+            font-size: 8px;
+            font-weight: 600;
+
+            letter-spacing: 0;
+        }
+
+        .type-arrow {
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+
+        /* ==================================================
+           RANKING
+        ================================================== */
+
+        .ranking-header,
+        .ranking-row {
+            display: grid;
+
+            grid-template-columns:
+                60px
+                160px
+                minmax(300px, 1fr)
+                125px
+                90px
+                45px;
+
+            column-gap: 18px;
+
+            align-items: center;
+        }
+
+        .ranking-header {
+            min-height: 48px;
+
+            padding:
+                0
+                30px;
+
+            background: #f7f7f5;
+
+            border-bottom: 1px solid #111;
+
+            color: #888;
+
+            font-size: 9px;
+            font-weight: 800;
+        }
+
+        .ranking-row {
+            min-height: 120px;
+
+            padding:
+                22px
+                30px;
+
+            border-bottom: 1px solid #e0e0dc;
+
+            transition:
+                background .2s ease,
+                color .2s ease,
+                padding .2s ease;
+        }
+
+        .ranking-row:last-child {
+            border-bottom: 0;
+        }
+
+        .ranking-row:hover {
+            padding-left: 36px;
+            padding-right: 36px;
+
+            background: #111;
+            color: white;
+        }
+
+        .rank {
+            color: #999;
+
+            font-family:
+                "Noto Sans KR",
+                Arial,
+                sans-serif;
+
+            font-size: 13px;
+            font-weight: 800;
+        }
+
+        .meta {
+            color: #666;
+
+            font-size: 10px;
+            font-weight: 500;
+
+            line-height: 1.7;
+        }
+
+        .ranking-row:hover .meta {
+            color: #aaa;
+        }
+
+        .signal-name {
+            font-family:
+                "Noto Sans KR",
+                "Apple SD Gothic Neo",
+                "Malgun Gothic",
+                Arial,
+                sans-serif;
+
+            font-size:
+                clamp(
+                    20px,
+                    1.8vw,
+                    29px
+                );
+
+            font-weight: 900;
+
+            line-height: 1.2;
+
+            letter-spacing: -1.5px;
+        }
+
+        .reason {
+            max-width: 680px;
+
+            margin-top: 8px;
+
+            color: #888;
+
+            font-size: 10px;
+            font-weight: 400;
+
+            line-height: 1.6;
+
+            word-break: keep-all;
+        }
+
+        .ranking-row:hover .reason {
+            color: #bbb;
+        }
+
+        .score-label {
+            color: #999;
+
+            font-size: 8px;
+            font-weight: 800;
+
+            letter-spacing: 1px;
+        }
+
+        .score {
+            margin-top: 5px;
+
+            font-family:
+                "Noto Sans KR",
+                Arial,
+                sans-serif;
+
+            font-size: 26px;
+            font-weight: 900;
+
+            line-height: 1;
+
+            letter-spacing: -1.5px;
+        }
+
+        .severity {
+            display: inline-block;
+
+            padding:
+                6px
+                8px;
+
+            border: 1px solid currentColor;
+
+            font-size: 8px;
+            font-weight: 900;
+
+            letter-spacing: 1px;
+        }
+
+        .arrow {
+            text-align: right;
+
+            font-size: 19px;
+            font-weight: 700;
+        }
+
+
+        /* ==================================================
+           FOOTNOTE
+        ================================================== */
+
+        .footnote {
+            display: flex;
+            justify-content: space-between;
+
+            gap: 30px;
+
+            margin-top: 22px;
+
+            padding:
+                20px
+                24px;
+
+            color: #777;
+
+            font-size: 9px;
+            line-height: 1.7;
+        }
+
+        .footnote strong {
+            color: #111;
+            font-weight: 900;
+        }
+
+
+        /* ==================================================
+           RESPONSIVE
+        ================================================== */
+
+        @media (max-width: 1100px) {
+
+            .top-nav {
+                display: none;
+            }
+
+            .hero-panel {
+                grid-template-columns: 1fr;
+            }
+
+            .hero-stats {
+                border-left: 0;
+                border-top: 1px solid #dededa;
+            }
+
+            .signal-types {
+                grid-template-columns:
+                    repeat(3, 1fr);
+            }
+
+            .ranking-header {
+                display: none;
+            }
+
+            .ranking-row {
+                grid-template-columns:
+                    50px
+                    150px
+                    1fr
+                    100px;
+            }
+
+            .ranking-row .severity,
+            .ranking-row .arrow {
+                display: none;
+            }
+        }
+
+
+        @media (max-width: 700px) {
+
+            .header {
+                height: 64px;
+
+                padding:
+                    0
+                    16px;
+
+                gap: 14px;
+            }
+
+            .brand {
+                font-size: 18px;
+            }
+
+            .live {
+                display: none;
+            }
+
+            .page {
+                padding:
+                    18px
+                    14px
+                    50px;
+            }
+
+            .hero-copy {
+                padding:
+                    32px
+                    24px;
+            }
+
+            .hero-title {
+                font-size: 43px;
+
+                line-height: 1.08;
+
+                letter-spacing: -3px;
+            }
+
+            .hero-description {
+                margin-top: 22px;
+            }
+
+            .hero-stats {
+                grid-template-columns:
+                    repeat(2, 1fr);
+
+                padding: 14px;
+            }
+
+            .stat-card {
+                min-height: 130px;
+
+                padding: 18px;
+            }
+
+            .stat-number {
+                font-size: 30px;
+            }
+
+            .section-head {
+                display: block;
+
+                padding:
+                    26px
+                    22px
+                    20px;
+            }
+
+            .section-title {
+                font-size: 29px;
+            }
+
+            .section-description {
+                margin-top: 14px;
+
+                text-align: left;
+            }
+
+            .signal-types {
+                grid-template-columns: 1fr;
+            }
+
+            .type-card {
+                border-right: 0;
+                border-bottom: 1px solid #e0e0dc;
+            }
+
+            .ranking-row {
+                grid-template-columns:
+                    38px
+                    1fr
+                    70px;
+            }
+
+            .meta,
+            .reason,
+            .severity,
+            .arrow {
+                display: none;
+            }
+
+            .footnote {
+                display: block;
+            }
+
+            .footnote > div + div {
+                margin-top: 10px;
+            }
+        }
+
+    </style>
+
+{% include 'includes/desk_sidebar_styles.html' %}
+</head>
+
+
+<body>
+
+
+<!-- ==================================================
+     HEADER
+================================================== -->
+
+<header class="header">
+
+    <button
+        id="sidebar-toggle"
+        aria-label="메뉴 열기"
+        aria-controls="newsroom-sidebar"
+        aria-expanded="false"
+        class="menu-button"
+        type="button"
+    >
+        ☰
+    </button>
+
+
+    <a
+        href="/home-v2-nav"
+        class="brand"
+    >
+        DATA TIP-OFF
+    </a>
+
+
+    <nav class="top-nav">
+<a href="/dashboard">대시보드</a>
+
+        <a href="/social">
+            사회
+        </a>
+
+        <a
+            href="/economy"
+            class="active"
+        >
+            경제
+        </a>
+
+        <a href="/stock">
+            주식
+        </a>
+
+        <a href="/trend">
+            K콘텐츠
+        </a>
+
+        <a href="/baseball">
+            야구
+        </a>
+
+    </nav>
+
+
+    <div class="live">
+
+        <span class="blink-dot">●</span>
+
+        주택·금리 시그널 모니터
+
+    </div>
+
+</header>
+
+
+
+<!-- ==================================================
+     PAGE
+================================================== -->
+
+<div class="page">
+
+
+    <!-- ==================================================
+         HERO
+    ================================================== -->
+
+    <section class="hero-panel">
+
+
+        <!-- LEFT -->
+
+        <div class="hero-copy">
+
+            <div class="hero-eyebrow">
+
+                <span class="hero-eyebrow-dot"></span>
+
+                ECONOMY SIGNAL MONITOR
+
+            </div>
+
+
+            <h1 class="hero-title">
+
+                데이터가 발견한<br>
+
+                오늘의 경제 시그널
+
+            </h1>
+
+
+            <div class="hero-description">
+
+                아파트 실거래 가격, 거래량,
+                기준금리 데이터를 결합해 가격 급등·급락,
+                거래량 급변과 서로 엇갈리는 시장 움직임을 탐지합니다.
+
+                데이터는 원인을 설명하지 않습니다.
+                대신 기자가 먼저 확인해야 할 취재 지점을 보여줍니다.
+
+            </div>
+
+
+            <div class="hero-meta">
+
+                <strong>
+                    TOP {{ stats.rules }}
+                </strong>
+
+                <span class="hero-meta-divider">
+                    ·
+                </span>
+
+                <span>
+                    이상감지 기반 경제 취재 우선순위
+                </span>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- RIGHT KPI -->
+
+        <div class="hero-stats">
+
+
+            <div class="stat-card">
+
+                <div class="stat-top">
+
+                    <div class="stat-line"></div>
+
+                    <div class="stat-label">
+                        전체 감지 신호
+                    </div>
+
+                </div>
+
+
+                <div class="stat-bottom">
+
+                    <div class="stat-number">
+                        {{ "{:,}".format(stats.total) }}
+                    </div>
+
+                    <div class="stat-unit">
+                        건
+                    </div>
+
+                </div>
+
+            </div>
+
+
+
+            <div class="stat-card">
+
+                <div class="stat-top">
+
+                    <div class="stat-line high"></div>
+
+                    <div class="stat-label">
+                        HIGH / 높은 우선순위
+                    </div>
+
+                </div>
+
+
+                <div class="stat-bottom">
+
+                    <div class="stat-number">
+                        {{ stats.high }}
+                    </div>
+
+                    <div class="stat-unit">
+                        건
+                    </div>
+
+                </div>
+
+            </div>
+
+
+
+            <div class="stat-card">
+
+                <div class="stat-top">
+
+                    <div class="stat-line medium"></div>
+
+                    <div class="stat-label">
+                        MEDIUM / 주의
+                    </div>
+
+                </div>
+
+
+                <div class="stat-bottom">
+
+                    <div class="stat-number">
+                        {{ stats.medium }}
+                    </div>
+
+                    <div class="stat-unit">
+                        건
+                    </div>
+
+                </div>
+
+            </div>
+
+
+
+            <div class="stat-card">
+
+                <div class="stat-top">
+
+                    <div class="stat-line rule"></div>
+
+                    <div class="stat-label">
+                        탐지 규칙
+                    </div>
+
+                </div>
+
+
+                <div class="stat-bottom">
+
+                    <div class="stat-number">
+                        {{ stats.rules }}
+                    </div>
+
+                    <div class="stat-unit">
+                        개
+                    </div>
+
+                </div>
+
+            </div>
+
+
+        </div>
+
+    </section>
+
+
+
+    <!-- ==================================================
+         SIGNAL TYPES
+    ================================================== -->
+
+    <section class="section">
+
+        <div class="section-head">
+
+            <div>
+
+                <div class="section-eyebrow">
+                    DETECTED SIGNAL TYPES
+                </div>
+
+
+                <h2 class="section-title">
+                    경제 시그널 탐색
+                </h2>
+
+            </div>
+
+
+            <div class="section-description">
+
+                <strong>
+                    탐지 규칙별 대표 결과
+                </strong>
+
+                <br>
+
+                각 탐지 규칙에서 발견된 후보 수와
+                대표 경제 시그널을 확인할 수 있습니다.
+
+            </div>
+
+        </div>
+
+
+
+        <div class="signal-types">
+
+            {% for item in items %}
+
+            <a
+                class="type-card"
+                href="/economy/detail/{{ item.signal_type }}"
+            >
+
+                <div class="type-index">
+                    {{ "%02d"|format(loop.index) }}
+                </div>
+
+
+                <div class="type-name">
+                    {{ item.signal_name }}
+                </div>
+
+
+                <div class="type-bottom">
+
+                    <div class="type-count">
+
+                        {{ item.count }}
+
+                        <span>
+                            signals
+                        </span>
+
+                    </div>
+
+
+                    <div class="type-arrow">
+                        →
+                    </div>
+
+                </div>
+
+            </a>
+
+            {% endfor %}
+
+        </div>
+
+    </section>
+
+
+
+    <!-- ==================================================
+         REPORTING PRIORITY
+    ================================================== -->
+
+    <section class="section">
+
+        <div class="section-head">
+
+            <div>
+
+                <div class="section-eyebrow">
+                    SIGNAL RANKING
+                </div>
+
+
+                <h2 class="section-title">
+                    취재 우선순위 TOP {{ stats.rules }}
+                </h2>
+
+            </div>
+
+
+            <div class="section-description">
+
+                <strong>
+                    이상감지 점수가 높은 순
+                </strong>
+
+                <br>
+
+                평소와 다른 시장 움직임이 크게 나타난
+                경제 시그널부터 확인합니다.
+
+            </div>
+
+        </div>
+
+
+
+        <div class="ranking-header">
+
+            <div>순위</div>
+
+            <div>지역 / 시점</div>
+
+            <div>탐지 시그널</div>
+
+            <div>SCORE</div>
+
+            <div>등급</div>
+
+            <div></div>
+
+        </div>
+
+
+
+        {% for item in items %}
+
+        <a
+            class="ranking-row"
+            href="/economy/detail/{{ item.signal_type }}"
+        >
+
+            <div class="rank">
+                {{ "%02d"|format(loop.index) }}
+            </div>
+
+
+            <div class="meta">
+
+                {{ item.region }}
+
+                <br>
+
+                {{ item.date }}
+
+                <br>
+
+                {{ item.count }} candidates
+
+            </div>
+
+
+            <div>
+
+                <div class="signal-name">
+                    {{ item.signal_name }}
+                </div>
+
+
+                <div class="reason">
+                    {{ item.reason }}
+                </div>
+
+            </div>
+
+
+            <div>
+
+                <div class="score-label">
+                    SIGNAL SCORE
+                </div>
+
+
+                <div class="score">
+                    {{ item.score }}
+                </div>
+
+            </div>
+
+
+            <div>
+
+                <span class="severity">
+                    {{ item.severity }}
+                </span>
+
+            </div>
+
+
+            <div class="arrow">
+                →
+            </div>
+
+        </a>
+
+        {% endfor %}
+
+    </section>
+
+
+
+    <!-- ==================================================
+         FOOTNOTE
+    ================================================== -->
+
+    <div class="footnote">
+
+        <div>
+
+            <strong>
+                DATA TIP-OFF · ECONOMY SIGNAL MONITOR
+            </strong>
+
+            <br>
+
+            아파트 실거래·거래량·기준금리 데이터에서
+            평소와 다른 시장 변화 패턴을 탐지합니다.
+
+        </div>
+
+
+        <div>
+
+            탐지 결과는 가격 변화의 원인을 단정하지 않습니다.
+
+            <br>
+
+            기자가 추가 데이터와 현장을 확인할 수 있도록
+            제시하는 취재 시그널 후보입니다.
+
+        </div>
+
+    </div>
+
+
+</div>
+
+
+{% with sidebar_section = 'economy' %}
+{% include 'includes/desk_sidebar.html' %}
+{% endwith %}
+</body>
+</html>

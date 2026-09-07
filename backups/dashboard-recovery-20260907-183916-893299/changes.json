@@ -1,0 +1,15 @@
+{
+  "total.py": true,
+  "total_team.py": true,
+  "templates/home/home_index_v2_nav.html": true,
+  "templates/social/social_index.html": true,
+  "templates/economy/economy_index.html": true,
+  "templates/baseball.html": true,
+  "templates/stock/base.html": true,
+  "templates/trend/trend_base.html": true,
+  "web/dashboard_data.py": true,
+  "web/dashboard_routes.py": true,
+  "web/dashboard_evidence.py": false,
+  "static/dashboard/dashboard.css": false,
+  "static/dashboard/dashboard.js": false
+}

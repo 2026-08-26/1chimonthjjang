@@ -1,0 +1,14 @@
+{
+  "static/project_intro/intro.css": {
+    "existed": true,
+    "installed_sha256": "bfc80ae3b5c223666a2170725b9c244fe54342c4b6afce8952916fb149737cfb"
+  },
+  "static/project_intro/intro.js": {
+    "existed": true,
+    "installed_sha256": "bada7fd0c8e5b8fecd329c8939348860921b9909b5bda67b1b8868078eaa91c8"
+  },
+  "templates/project_intro/index.html": {
+    "existed": true,
+    "installed_sha256": "ea1fb98087e8b323ed1325fabb155ce08a32958f89e1930c3c3ad86944f1975e"
+  }
+}

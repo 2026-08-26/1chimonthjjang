@@ -1,0 +1,26 @@
+{
+  "web/dashboard_routes.py": {
+    "existed": true,
+    "installed_sha256": "3c6d207c2b160a1345d5f2d3ddfbff9072c4f609843d98bbfaefab7200b496f1"
+  },
+  "templates/home/home_index_v2_nav.html": {
+    "existed": true,
+    "installed_sha256": "0b3f4a3f4b3540eb837dd2aed46e1462b7ebfb78f9bae9617bc0b24fb7ff8a1f"
+  },
+  "web/project_intro_data.py": {
+    "existed": false,
+    "installed_sha256": "43dd2c4472b0d3f3fb5b621cc4585006b4c61fdc6894456364edfece30862da7"
+  },
+  "static/project_intro/intro.css": {
+    "existed": false,
+    "installed_sha256": "00af48b10af5d32a8701275a0fa1d258c3d4e38520b56976fe6fabaadb887bff"
+  },
+  "static/project_intro/intro.js": {
+    "existed": false,
+    "installed_sha256": "2bcc8e3636b4e6e65eae268d231daa5a64c56ed8218105312776e6a46c0c7442"
+  },
+  "templates/project_intro/index.html": {
+    "existed": false,
+    "installed_sha256": "bddbad27a8b0b6b5b8cf1d15743fb6a47972b7aa8ae21b87f4bc668aa97d37be"
+  }
+}

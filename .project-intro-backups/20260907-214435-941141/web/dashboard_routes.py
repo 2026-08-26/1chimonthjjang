@@ -5,20 +5,10 @@ dashboard_bp=Blueprint('dashboard',__name__)
 
 @dashboard_bp.get('/dashboard')
 def dashboard():
-    return render_template('project_intro/index.html')
+    return render_template('dashboard/index.html')
 
 @dashboard_bp.get('/api/dashboard/<section>')
 def dashboard_api(section):
     if section not in ['all','overview','social','economy','stock','baseball','content','signals','sources','evidence']: abort(404)
     data=load_dashboard()
     return jsonify(data if section=='all' else data[section])
-
-@dashboard_bp.get('/project-intro')
-def project_intro():
-    return render_template('project_intro/index.html')
-
-
-@dashboard_bp.get('/api/project-intro')
-def project_intro_api():
-    from web.project_intro_data import load_intro
-    return jsonify(load_intro())

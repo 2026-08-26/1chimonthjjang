@@ -1,0 +1,18 @@
+{
+  "web/project_intro_data.py": {
+    "existed": true,
+    "installed_sha256": "8971c12c3dc7fadf8afdd986038ef65483742733c6911a405712f0de1e5f7230"
+  },
+  "static/project_intro/intro.css": {
+    "existed": true,
+    "installed_sha256": "727e239b2cc07b6e507b0d74c8949b17ed434eb98f98f1309296ccdd941dcdbd"
+  },
+  "static/project_intro/intro.js": {
+    "existed": true,
+    "installed_sha256": "41bc8398e33d9b454510c12e9f8f3f547342b8f456a2b46c2d70a7387ae8aa94"
+  },
+  "templates/project_intro/index.html": {
+    "existed": true,
+    "installed_sha256": "1dd948f397363486c71776d99aa7f0206c8cda4eb7ab067be6327163e5968463"
+  }
+}
